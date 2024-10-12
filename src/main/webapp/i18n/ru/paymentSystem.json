@@ -1,0 +1,24 @@
+{
+  "subscriptionManagementServiceApp": {
+    "paymentSystem": {
+      "home": {
+        "title": "Payment Systems",
+        "refreshListLabel": "Обновить список",
+        "createLabel": "Создать новый Payment System",
+        "createOrEditLabel": "Создать или отредактировать Payment System",
+        "notFound": "Payment Systems не найдено"
+      },
+      "created": "Новый Payment System создан с идентификатором { param }",
+      "updated": "Payment System обновлен с идентификатором { param }",
+      "deleted": "Payment System удален с идентификатором { param }",
+      "delete": {
+        "question": "Вы уверены что хотите удалить Payment System { id }?"
+      },
+      "detail": {
+        "title": "Payment System"
+      },
+      "id": "ID",
+      "name": "Name"
+    }
+  }
+}

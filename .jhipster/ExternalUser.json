@@ -1,0 +1,16 @@
+{
+  "annotations": {
+    "changelogDate": "20241012075803"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "externalUserId",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "unique"]
+    }
+  ],
+  "name": "ExternalUser",
+  "relationships": [],
+  "searchEngine": "no"
+}

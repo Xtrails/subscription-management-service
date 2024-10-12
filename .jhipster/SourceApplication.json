@@ -1,0 +1,35 @@
+{
+  "annotations": {
+    "changelogDate": "20241012075810"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "applicationName",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "unique"]
+    }
+  ],
+  "name": "SourceApplication",
+  "relationships": [
+    {
+      "otherEntityName": "referralProgram",
+      "relationshipName": "referralPrograms",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "subscriptionType",
+      "relationshipName": "subscriptionTypes",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "externalUser",
+      "relationshipName": "user",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no"
+}

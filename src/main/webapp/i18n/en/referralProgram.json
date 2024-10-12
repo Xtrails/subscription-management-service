@@ -1,0 +1,27 @@
+{
+  "subscriptionManagementServiceApp": {
+    "referralProgram": {
+      "home": {
+        "title": "Referral Programs",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Referral Program",
+        "createOrEditLabel": "Create or edit a Referral Program",
+        "notFound": "No Referral Programs found"
+      },
+      "created": "A new Referral Program is created with identifier { param }",
+      "updated": "A Referral Program is updated with identifier { param }",
+      "deleted": "A Referral Program is deleted with identifier { param }",
+      "delete": {
+        "question": "Are you sure you want to delete Referral Program { id }?"
+      },
+      "detail": {
+        "title": "Referral Program"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "rewardAmount": "Reward Amount",
+      "sourceApplication": "Source Application"
+    }
+  }
+}

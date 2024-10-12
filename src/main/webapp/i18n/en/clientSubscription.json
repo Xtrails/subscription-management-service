@@ -1,0 +1,28 @@
+{
+  "subscriptionManagementServiceApp": {
+    "clientSubscription": {
+      "home": {
+        "title": "Client Subscriptions",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Client Subscription",
+        "createOrEditLabel": "Create or edit a Client Subscription",
+        "notFound": "No Client Subscriptions found"
+      },
+      "created": "A new Client Subscription is created with identifier { param }",
+      "updated": "A Client Subscription is updated with identifier { param }",
+      "deleted": "A Client Subscription is deleted with identifier { param }",
+      "delete": {
+        "question": "Are you sure you want to delete Client Subscription { id }?"
+      },
+      "detail": {
+        "title": "Client Subscription"
+      },
+      "id": "ID",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "status": "Status",
+      "user": "User",
+      "subscriptionType": "Subscription Type"
+    }
+  }
+}

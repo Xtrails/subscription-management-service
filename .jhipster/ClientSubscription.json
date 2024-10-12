@@ -1,0 +1,41 @@
+{
+  "annotations": {
+    "changelogDate": "20241012075804"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "startDate",
+      "fieldType": "LocalDate",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "endDate",
+      "fieldType": "LocalDate",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "SubscriptionStatus",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "ACTIVE,EXPIRED,CANCELLED"
+    }
+  ],
+  "name": "ClientSubscription",
+  "pagination": "infinite-scroll",
+  "relationships": [
+    {
+      "otherEntityName": "externalUser",
+      "relationshipName": "user",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "subscriptionType",
+      "relationshipName": "subscriptionType",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no"
+}

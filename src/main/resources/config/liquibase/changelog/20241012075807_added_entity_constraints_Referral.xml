@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <!--
+        Added the constraints for entity Referral.
+    -->
+    <changeSet id="20241012075807-2" author="jhipster">
+
+        <addForeignKeyConstraint baseColumnNames="referrer_id"
+                                 baseTableName="referral"
+                                 constraintName="fk_referral__referrer_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="external_user"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="referral_program_id"
+                                 baseTableName="referral"
+                                 constraintName="fk_referral__referral_program_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="referral_program"
+                                 />
+    </changeSet>
+</databaseChangeLog>
