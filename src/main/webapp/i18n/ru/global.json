@@ -7,7 +7,15 @@
       "jhipster-needle-menu-add-element": "JHipster will add additional menu entries here (do not translate!)",
       "entities": {
         "main": "Сущности",
-        "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
+        "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)",
+        "externalUser": "External User",
+        "clientSubscription": "Client Subscription",
+        "subscriptionType": "Subscription Type",
+        "referralProgram": "Referral Program",
+        "referral": "Referral",
+        "payment": "Payment",
+        "paymentSystem": "Payment System",
+        "sourceApplication": "Source Application"
       },
       "account": {
         "main": "Профиль",

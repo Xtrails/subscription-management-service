@@ -41,6 +41,16 @@ public class CacheConfiguration {
             createCache(cm, ru.aniscan.subscription.management.service.repository.UserRepository.USERS_BY_LOGIN_CACHE);
             createCache(cm, ru.aniscan.subscription.management.service.repository.UserRepository.USERS_BY_EMAIL_CACHE);
             createCache(cm, ru.aniscan.subscription.management.service.domain.Authority.class.getName());
+            createCache(cm, ru.aniscan.subscription.management.service.domain.ExternalUser.class.getName());
+            createCache(cm, ru.aniscan.subscription.management.service.domain.ClientSubscription.class.getName());
+            createCache(cm, ru.aniscan.subscription.management.service.domain.SubscriptionType.class.getName());
+            createCache(cm, ru.aniscan.subscription.management.service.domain.ReferralProgram.class.getName());
+            createCache(cm, ru.aniscan.subscription.management.service.domain.Referral.class.getName());
+            createCache(cm, ru.aniscan.subscription.management.service.domain.Payment.class.getName());
+            createCache(cm, ru.aniscan.subscription.management.service.domain.PaymentSystem.class.getName());
+            createCache(cm, ru.aniscan.subscription.management.service.domain.SourceApplication.class.getName());
+            createCache(cm, ru.aniscan.subscription.management.service.domain.SourceApplication.class.getName() + ".referralPrograms");
+            createCache(cm, ru.aniscan.subscription.management.service.domain.SourceApplication.class.getName() + ".subscriptionTypes");
             // jhipster-needle-ehcache-add-entry
         };
     }

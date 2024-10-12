@@ -1,0 +1,28 @@
+{
+  "subscriptionManagementServiceApp": {
+    "subscriptionType": {
+      "home": {
+        "title": "Subscription Types",
+        "refreshListLabel": "Обновить список",
+        "createLabel": "Создать новый Subscription Type",
+        "createOrEditLabel": "Создать или отредактировать Subscription Type",
+        "notFound": "Subscription Types не найдено"
+      },
+      "created": "Новый Subscription Type создан с идентификатором { param }",
+      "updated": "Subscription Type обновлен с идентификатором { param }",
+      "deleted": "Subscription Type удален с идентификатором { param }",
+      "delete": {
+        "question": "Вы уверены что хотите удалить Subscription Type { id }?"
+      },
+      "detail": {
+        "title": "Subscription Type"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "price": "Price",
+      "duration": "Duration",
+      "sourceApplication": "Source Application"
+    }
+  }
+}

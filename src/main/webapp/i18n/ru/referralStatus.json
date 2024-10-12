@@ -1,0 +1,10 @@
+{
+  "subscriptionManagementServiceApp": {
+    "ReferralStatus": {
+      "null": "",
+      "PENDING": "PENDING",
+      "COMPLETED": "COMPLETED",
+      "EXPIRED": "EXPIRED"
+    }
+  }
+}

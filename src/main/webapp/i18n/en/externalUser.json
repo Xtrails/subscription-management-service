@@ -1,0 +1,24 @@
+{
+  "subscriptionManagementServiceApp": {
+    "externalUser": {
+      "home": {
+        "title": "External Users",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new External User",
+        "createOrEditLabel": "Create or edit a External User",
+        "notFound": "No External Users found"
+      },
+      "created": "A new External User is created with identifier { param }",
+      "updated": "A External User is updated with identifier { param }",
+      "deleted": "A External User is deleted with identifier { param }",
+      "delete": {
+        "question": "Are you sure you want to delete External User { id }?"
+      },
+      "detail": {
+        "title": "External User"
+      },
+      "id": "ID",
+      "externalUserId": "External User Id"
+    }
+  }
+}

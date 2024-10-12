@@ -1,0 +1,10 @@
+{
+  "subscriptionManagementServiceApp": {
+    "SubscriptionStatus": {
+      "null": "",
+      "ACTIVE": "ACTIVE",
+      "EXPIRED": "EXPIRED",
+      "CANCELLED": "CANCELLED"
+    }
+  }
+}

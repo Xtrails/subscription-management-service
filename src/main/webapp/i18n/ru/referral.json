@@ -1,0 +1,27 @@
+{
+  "subscriptionManagementServiceApp": {
+    "referral": {
+      "home": {
+        "title": "Referrals",
+        "refreshListLabel": "Обновить список",
+        "createLabel": "Создать новый Referral",
+        "createOrEditLabel": "Создать или отредактировать Referral",
+        "notFound": "Referrals не найдено"
+      },
+      "created": "Новый Referral создан с идентификатором { param }",
+      "updated": "Referral обновлен с идентификатором { param }",
+      "deleted": "Referral удален с идентификатором { param }",
+      "delete": {
+        "question": "Вы уверены что хотите удалить Referral { id }?"
+      },
+      "detail": {
+        "title": "Referral"
+      },
+      "id": "ID",
+      "referralCode": "Referral Code",
+      "status": "Status",
+      "referrer": "Referrer",
+      "referralProgram": "Referral Program"
+    }
+  }
+}

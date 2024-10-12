@@ -1,0 +1,25 @@
+{
+  "annotations": {
+    "changelogDate": "20241012075806"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "rewardAmount",
+      "fieldType": "BigDecimal",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "ReferralProgram",
+  "relationships": [],
+  "searchEngine": "no"
+}

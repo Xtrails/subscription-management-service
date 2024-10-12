@@ -1,0 +1,71 @@
+entity ExternalUser {
+  externalUserId String required unique
+}
+
+entity ClientSubscription {
+  startDate LocalDate required,
+  endDate LocalDate required,
+  status SubscriptionStatus required
+}
+
+entity SubscriptionType {
+  name String required,
+  description String,
+  price BigDecimal required,
+  duration Integer required
+}
+
+entity ReferralProgram {
+  name String required,
+  description String,
+  rewardAmount BigDecimal required
+}
+
+entity Referral {
+  referralCode String required unique,
+  status ReferralStatus required
+}
+
+entity Payment {
+  amount BigDecimal required,
+  status PaymentStatus required,
+  paymentDate LocalDate required
+}
+
+entity PaymentSystem {
+  name String required
+}
+
+entity SourceApplication {
+  applicationName String required unique
+}
+
+enum SubscriptionStatus {
+  ACTIVE, EXPIRED, CANCELLED
+}
+
+enum ReferralStatus {
+  PENDING, COMPLETED, EXPIRED
+}
+
+enum PaymentStatus {
+  PENDING, COMPLETED, FAILED
+}
+
+relationship ManyToOne {
+  ClientSubscription{user} to ExternalUser,
+  ClientSubscription{subscriptionType} to SubscriptionType,
+  Referral{referrer} to ExternalUser,
+  Referral{referralProgram} to ReferralProgram,
+  Payment{user} to ExternalUser,
+  SourceApplication{user} to ExternalUser,
+  Payment{clietntSubscription} to ClientSubscription
+  Payment{paymentSystem} to PaymentSystem
+}
+
+relationship OneToMany {
+  SourceApplication{referralPrograms} to ReferralProgram,
+  SourceApplication{subscriptionTypes} to SubscriptionType
+}
+
+paginate ClientSubscription, Referral, Payment with infinite-scroll
