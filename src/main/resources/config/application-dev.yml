@@ -32,15 +32,17 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:postgresql://localhost:5432/subscriptionManagementService
-    username: subscriptionManagementService
-    password: password
+    url: jdbc:postgresql://localhost:5432/AniScan
+    username: AniScan
+    password:
     hikari:
       poolName: Hikari
       auto-commit: false
+      schema: subscription_management_service
   liquibase:
     # Remove 'faker' if you do not want the sample data to be loaded automatically
-    contexts: dev, faker
+    contexts: dev
+    liquibase-schema: subscription_management_service
   mail:
     host: localhost
     port: 25
