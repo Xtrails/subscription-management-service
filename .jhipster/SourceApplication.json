@@ -26,9 +26,16 @@
     },
     {
       "otherEntityName": "externalUser",
-      "relationshipName": "user",
+      "relationshipName": "users",
       "relationshipSide": "left",
-      "relationshipType": "many-to-one"
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "paymentSystem",
+      "otherEntityRelationshipName": "sourceApplications",
+      "relationshipName": "paymentSystems",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-many"
     }
   ],
   "searchEngine": "no"

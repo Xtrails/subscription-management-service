@@ -75,17 +75,37 @@
               for="subscription-type-duration"
             ></label>
             <input
-              type="number"
+              type="text"
               class="form-control"
               name="duration"
               id="subscription-type-duration"
               data-cy="duration"
               :class="{ valid: !v$.duration.$invalid, invalid: v$.duration.$invalid }"
-              v-model.number="v$.duration.$model"
+              v-model="v$.duration.$model"
               required
             />
             <div v-if="v$.duration.$anyDirty && v$.duration.$invalid">
               <small class="form-text text-danger" v-for="error of v$.duration.$errors" :key="error.$uid">{{ error.$message }}</small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label
+              class="form-control-label"
+              v-text="t$('subscriptionManagementServiceApp.subscriptionType.visible')"
+              for="subscription-type-visible"
+            ></label>
+            <input
+              type="checkbox"
+              class="form-check"
+              name="visible"
+              id="subscription-type-visible"
+              data-cy="visible"
+              :class="{ valid: !v$.visible.$invalid, invalid: v$.visible.$invalid }"
+              v-model="v$.visible.$model"
+              required
+            />
+            <div v-if="v$.visible.$anyDirty && v$.visible.$invalid">
+              <small class="form-text text-danger" v-for="error of v$.visible.$errors" :key="error.$uid">{{ error.$message }}</small>
             </div>
           </div>
           <div class="form-group">

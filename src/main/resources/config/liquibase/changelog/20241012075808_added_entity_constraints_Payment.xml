@@ -17,9 +17,9 @@
                                  referencedTableName="external_user"
                                  />
 
-        <addForeignKeyConstraint baseColumnNames="clietnt_subscription_id"
+        <addForeignKeyConstraint baseColumnNames="client_subscription_id"
                                  baseTableName="payment"
-                                 constraintName="fk_payment__clietnt_subscription_id"
+                                 constraintName="fk_payment__client_subscription_id"
                                  referencedColumnNames="id"
                                  referencedTableName="client_subscription"
                                  />
@@ -29,6 +29,13 @@
                                  constraintName="fk_payment__payment_system_id"
                                  referencedColumnNames="id"
                                  referencedTableName="payment_system"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="source_application_id"
+                                 baseTableName="payment"
+                                 constraintName="fk_payment__source_application_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="source_application"
                                  />
     </changeSet>
 </databaseChangeLog>

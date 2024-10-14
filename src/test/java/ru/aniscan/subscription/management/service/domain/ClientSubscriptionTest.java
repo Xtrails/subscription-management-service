@@ -3,6 +3,7 @@ package ru.aniscan.subscription.management.service.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static ru.aniscan.subscription.management.service.domain.ClientSubscriptionTestSamples.*;
 import static ru.aniscan.subscription.management.service.domain.ExternalUserTestSamples.*;
+import static ru.aniscan.subscription.management.service.domain.SourceApplicationTestSamples.*;
 import static ru.aniscan.subscription.management.service.domain.SubscriptionTypeTestSamples.*;
 
 import org.junit.jupiter.api.Test;
@@ -46,5 +47,17 @@ class ClientSubscriptionTest {
 
         clientSubscription.subscriptionType(null);
         assertThat(clientSubscription.getSubscriptionType()).isNull();
+    }
+
+    @Test
+    void sourceApplicationTest() {
+        ClientSubscription clientSubscription = getClientSubscriptionRandomSampleGenerator();
+        SourceApplication sourceApplicationBack = getSourceApplicationRandomSampleGenerator();
+
+        clientSubscription.setSourceApplication(sourceApplicationBack);
+        assertThat(clientSubscription.getSourceApplication()).isEqualTo(sourceApplicationBack);
+
+        clientSubscription.sourceApplication(null);
+        assertThat(clientSubscription.getSourceApplication()).isNull();
     }
 }

@@ -21,6 +21,20 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="20241012075809-1-relations" author="jhipster">
+
+        <createTable tableName="rel_payment_system__source_applications">
+            <column name="source_applications_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="payment_system_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="payment_system_id, source_applications_id" tableName="rel_payment_system__source_applications"/>
+    </changeSet>
+
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
 
     <!--

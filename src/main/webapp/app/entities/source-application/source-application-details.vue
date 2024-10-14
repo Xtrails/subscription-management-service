@@ -13,14 +13,15 @@
             <span>{{ sourceApplication.applicationName }}</span>
           </dd>
           <dt>
-            <span v-text="t$('subscriptionManagementServiceApp.sourceApplication.user')"></span>
+            <span v-text="t$('subscriptionManagementServiceApp.sourceApplication.paymentSystems')"></span>
           </dt>
           <dd>
-            <div v-if="sourceApplication.user">
-              <router-link :to="{ name: 'ExternalUserView', params: { externalUserId: sourceApplication.user.id } }">{{
-                sourceApplication.user.id
+            <span v-for="(paymentSystems, i) in sourceApplication.paymentSystems" :key="paymentSystems.id"
+              >{{ i > 0 ? ', ' : '' }}
+              <router-link :to="{ name: 'PaymentSystemView', params: { paymentSystemId: paymentSystems.id } }">{{
+                paymentSystems.id
               }}</router-link>
-            </div>
+            </span>
           </dd>
         </dl>
         <button type="submit" @click.prevent="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">

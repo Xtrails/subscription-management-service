@@ -5,7 +5,8 @@ export interface ISubscriptionType {
   name?: string;
   description?: string | null;
   price?: number;
-  duration?: number;
+  duration?: string;
+  visible?: boolean;
   sourceApplication?: ISourceApplication | null;
 }
 
@@ -15,7 +16,10 @@ export class SubscriptionType implements ISubscriptionType {
     public name?: string,
     public description?: string | null,
     public price?: number,
-    public duration?: number,
+    public duration?: string,
+    public visible?: boolean,
     public sourceApplication?: ISourceApplication | null,
-  ) {}
+  ) {
+    this.visible = this.visible ?? false;
+  }
 }

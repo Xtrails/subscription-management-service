@@ -12,6 +12,17 @@
           <dd>
             <span>{{ paymentSystem.name }}</span>
           </dd>
+          <dt>
+            <span v-text="t$('subscriptionManagementServiceApp.paymentSystem.sourceApplications')"></span>
+          </dt>
+          <dd>
+            <span v-for="(sourceApplications, i) in paymentSystem.sourceApplications" :key="sourceApplications.id"
+              >{{ i > 0 ? ', ' : '' }}
+              <router-link :to="{ name: 'SourceApplicationView', params: { sourceApplicationId: sourceApplications.id } }">{{
+                sourceApplications.id
+              }}</router-link>
+            </span>
+          </dd>
         </dl>
         <button type="submit" @click.prevent="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
           <font-awesome-icon icon="arrow-left"></font-awesome-icon>&nbsp;<span v-text="t$('entity.action.back')"></span>

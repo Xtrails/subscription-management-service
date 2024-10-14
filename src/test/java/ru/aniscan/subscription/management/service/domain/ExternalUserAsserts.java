@@ -57,6 +57,8 @@ public class ExternalUserAsserts {
      * @param actual the actual entity
      */
     public static void assertExternalUserUpdatableRelationshipsEquals(ExternalUser expected, ExternalUser actual) {
-        // empty method
+        assertThat(expected)
+            .as("Verify ExternalUser relationships")
+            .satisfies(e -> assertThat(e.getSourceApplication()).as("check sourceApplication").isEqualTo(actual.getSourceApplication()));
     }
 }

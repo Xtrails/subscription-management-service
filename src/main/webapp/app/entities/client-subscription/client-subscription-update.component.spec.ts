@@ -10,6 +10,7 @@ import AlertService from '@/shared/alert/alert.service';
 
 import ExternalUserService from '@/entities/external-user/external-user.service';
 import SubscriptionTypeService from '@/entities/subscription-type/subscription-type.service';
+import SourceApplicationService from '@/entities/source-application/source-application.service';
 
 type ClientSubscriptionUpdateComponentType = InstanceType<typeof ClientSubscriptionUpdate>;
 
@@ -60,6 +61,10 @@ describe('Component Tests', () => {
             } as any),
           subscriptionTypeService: () =>
             sinon.createStubInstance<SubscriptionTypeService>(SubscriptionTypeService, {
+              retrieve: sinon.stub().resolves({}),
+            } as any),
+          sourceApplicationService: () =>
+            sinon.createStubInstance<SourceApplicationService>(SourceApplicationService, {
               retrieve: sinon.stub().resolves({}),
             } as any),
         },

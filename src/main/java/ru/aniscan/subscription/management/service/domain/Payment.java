@@ -38,14 +38,20 @@ public class Payment implements Serializable {
     private LocalDate paymentDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "sourceApplication" }, allowSetters = true)
     private ExternalUser user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "user", "subscriptionType" }, allowSetters = true)
-    private ClientSubscription clietntSubscription;
+    @JsonIgnoreProperties(value = { "user", "subscriptionType", "sourceApplication" }, allowSetters = true)
+    private ClientSubscription clientSubscription;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "sourceApplications" }, allowSetters = true)
     private PaymentSystem paymentSystem;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "referralPrograms", "subscriptionTypes", "users", "paymentSystems" }, allowSetters = true)
+    private SourceApplication sourceApplication;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -114,16 +120,16 @@ public class Payment implements Serializable {
         return this;
     }
 
-    public ClientSubscription getClietntSubscription() {
-        return this.clietntSubscription;
+    public ClientSubscription getClientSubscription() {
+        return this.clientSubscription;
     }
 
-    public void setClietntSubscription(ClientSubscription clientSubscription) {
-        this.clietntSubscription = clientSubscription;
+    public void setClientSubscription(ClientSubscription clientSubscription) {
+        this.clientSubscription = clientSubscription;
     }
 
-    public Payment clietntSubscription(ClientSubscription clientSubscription) {
-        this.setClietntSubscription(clientSubscription);
+    public Payment clientSubscription(ClientSubscription clientSubscription) {
+        this.setClientSubscription(clientSubscription);
         return this;
     }
 
@@ -137,6 +143,19 @@ public class Payment implements Serializable {
 
     public Payment paymentSystem(PaymentSystem paymentSystem) {
         this.setPaymentSystem(paymentSystem);
+        return this;
+    }
+
+    public SourceApplication getSourceApplication() {
+        return this.sourceApplication;
+    }
+
+    public void setSourceApplication(SourceApplication sourceApplication) {
+        this.sourceApplication = sourceApplication;
+    }
+
+    public Payment sourceApplication(SourceApplication sourceApplication) {
+        this.setSourceApplication(sourceApplication);
         return this;
     }
 

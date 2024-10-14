@@ -7,6 +7,8 @@ import ExternalUserService from './external-user.service';
 import { useValidation } from '@/shared/composables';
 import { useAlertService } from '@/shared/alert/alert.service';
 
+import SourceApplicationService from '@/entities/source-application/source-application.service';
+import { type ISourceApplication } from '@/shared/model/source-application.model';
 import { ExternalUser, type IExternalUser } from '@/shared/model/external-user.model';
 
 export default defineComponent({
@@ -17,6 +19,10 @@ export default defineComponent({
     const alertService = inject('alertService', () => useAlertService(), true);
 
     const externalUser: Ref<IExternalUser> = ref(new ExternalUser());
+
+    const sourceApplicationService = inject('sourceApplicationService', () => new SourceApplicationService());
+
+    const sourceApplications: Ref<ISourceApplication[]> = ref([]);
     const isSaving = ref(false);
     const currentLanguage = inject('currentLanguage', () => computed(() => navigator.language ?? 'ru'), true);
 
@@ -38,12 +44,23 @@ export default defineComponent({
       retrieveExternalUser(route.params.externalUserId);
     }
 
+    const initRelationships = () => {
+      sourceApplicationService()
+        .retrieve()
+        .then(res => {
+          sourceApplications.value = res.data;
+        });
+    };
+
+    initRelationships();
+
     const { t: t$ } = useI18n();
     const validations = useValidation();
     const validationRules = {
       externalUserId: {
         required: validations.required(t$('entity.validation.required').toString()),
       },
+      sourceApplication: {},
     };
     const v$ = useVuelidate(validationRules, externalUser as any);
     v$.value.$validate();
@@ -55,6 +72,7 @@ export default defineComponent({
       previousState,
       isSaving,
       currentLanguage,
+      sourceApplications,
       v$,
       t$,
     };

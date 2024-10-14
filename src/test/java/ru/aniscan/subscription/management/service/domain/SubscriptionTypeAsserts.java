@@ -51,7 +51,8 @@ public class SubscriptionTypeAsserts {
             .satisfies(e -> assertThat(e.getName()).as("check name").isEqualTo(actual.getName()))
             .satisfies(e -> assertThat(e.getDescription()).as("check description").isEqualTo(actual.getDescription()))
             .satisfies(e -> assertThat(e.getPrice()).as("check price").usingComparator(bigDecimalCompareTo).isEqualTo(actual.getPrice()))
-            .satisfies(e -> assertThat(e.getDuration()).as("check duration").isEqualTo(actual.getDuration()));
+            .satisfies(e -> assertThat(e.getDuration()).as("check duration").isEqualTo(actual.getDuration()))
+            .satisfies(e -> assertThat(e.getVisible()).as("check visible").isEqualTo(actual.getVisible()));
     }
 
     /**

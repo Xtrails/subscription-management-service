@@ -1,5 +1,6 @@
 package ru.aniscan.subscription.management.service.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
@@ -23,6 +24,10 @@ public class ExternalUser implements Serializable {
     @NotNull
     @Column(name = "external_user_id", nullable = false, unique = true)
     private String externalUserId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "referralPrograms", "subscriptionTypes", "users", "paymentSystems" }, allowSetters = true)
+    private SourceApplication sourceApplication;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -50,6 +55,19 @@ public class ExternalUser implements Serializable {
 
     public void setExternalUserId(String externalUserId) {
         this.externalUserId = externalUserId;
+    }
+
+    public SourceApplication getSourceApplication() {
+        return this.sourceApplication;
+    }
+
+    public void setSourceApplication(SourceApplication sourceApplication) {
+        this.sourceApplication = sourceApplication;
+    }
+
+    public ExternalUser sourceApplication(SourceApplication sourceApplication) {
+        this.setSourceApplication(sourceApplication);
+        return this;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here

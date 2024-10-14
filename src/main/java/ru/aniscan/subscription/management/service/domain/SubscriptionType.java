@@ -35,10 +35,14 @@ public class SubscriptionType implements Serializable {
 
     @NotNull
     @Column(name = "duration", nullable = false)
-    private Integer duration;
+    private String duration;
+
+    @NotNull
+    @Column(name = "visible", nullable = false)
+    private Boolean visible;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "referralPrograms", "subscriptionTypes", "user" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "referralPrograms", "subscriptionTypes", "users", "paymentSystems" }, allowSetters = true)
     private SourceApplication sourceApplication;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -95,17 +99,30 @@ public class SubscriptionType implements Serializable {
         this.price = price;
     }
 
-    public Integer getDuration() {
+    public String getDuration() {
         return this.duration;
     }
 
-    public SubscriptionType duration(Integer duration) {
+    public SubscriptionType duration(String duration) {
         this.setDuration(duration);
         return this;
     }
 
-    public void setDuration(Integer duration) {
+    public void setDuration(String duration) {
         this.duration = duration;
+    }
+
+    public Boolean getVisible() {
+        return this.visible;
+    }
+
+    public SubscriptionType visible(Boolean visible) {
+        this.setVisible(visible);
+        return this;
+    }
+
+    public void setVisible(Boolean visible) {
+        this.visible = visible;
     }
 
     public SourceApplication getSourceApplication() {
@@ -148,7 +165,8 @@ public class SubscriptionType implements Serializable {
             ", name='" + getName() + "'" +
             ", description='" + getDescription() + "'" +
             ", price=" + getPrice() +
-            ", duration=" + getDuration() +
+            ", duration='" + getDuration() + "'" +
+            ", visible='" + getVisible() + "'" +
             "}";
     }
 }

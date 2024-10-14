@@ -10,6 +10,7 @@ import AlertService from '@/shared/alert/alert.service';
 
 import ExternalUserService from '@/entities/external-user/external-user.service';
 import ReferralProgramService from '@/entities/referral-program/referral-program.service';
+import SourceApplicationService from '@/entities/source-application/source-application.service';
 
 type ReferralUpdateComponentType = InstanceType<typeof ReferralUpdate>;
 
@@ -60,6 +61,10 @@ describe('Component Tests', () => {
             } as any),
           referralProgramService: () =>
             sinon.createStubInstance<ReferralProgramService>(ReferralProgramService, {
+              retrieve: sinon.stub().resolves({}),
+            } as any),
+          sourceApplicationService: () =>
+            sinon.createStubInstance<SourceApplicationService>(SourceApplicationService, {
               retrieve: sinon.stub().resolves({}),
             } as any),
         },

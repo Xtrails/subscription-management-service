@@ -26,10 +26,13 @@
             <column name="user_id" type="bigint">
                 <constraints nullable="true" />
             </column>
-            <column name="clietnt_subscription_id" type="bigint">
+            <column name="client_subscription_id" type="bigint">
                 <constraints nullable="true" />
             </column>
             <column name="payment_system_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <column name="source_application_id" type="bigint">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->

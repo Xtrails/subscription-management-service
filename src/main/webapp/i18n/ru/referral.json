@@ -21,7 +21,8 @@
       "referralCode": "Referral Code",
       "status": "Status",
       "referrer": "Referrer",
-      "referralProgram": "Referral Program"
+      "referralProgram": "Referral Program",
+      "sourceApplication": "Source Application"
     }
   }
 }

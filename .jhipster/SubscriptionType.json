@@ -20,7 +20,12 @@
     },
     {
       "fieldName": "duration",
-      "fieldType": "Integer",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "visible",
+      "fieldType": "Boolean",
       "fieldValidateRules": ["required"]
     }
   ],

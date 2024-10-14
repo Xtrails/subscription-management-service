@@ -36,22 +36,24 @@
           </div>
           <div class="form-group">
             <label
-              class="form-control-label"
-              v-text="t$('subscriptionManagementServiceApp.sourceApplication.user')"
-              for="source-application-user"
+              v-text="t$('subscriptionManagementServiceApp.sourceApplication.paymentSystems')"
+              for="source-application-paymentSystems"
             ></label>
-            <select class="form-control" id="source-application-user" data-cy="user" name="user" v-model="sourceApplication.user">
-              <option :value="null"></option>
+            <select
+              class="form-control"
+              id="source-application-paymentSystems"
+              data-cy="paymentSystems"
+              multiple
+              name="paymentSystems"
+              v-if="sourceApplication.paymentSystems !== undefined"
+              v-model="sourceApplication.paymentSystems"
+            >
               <option
-                :value="
-                  sourceApplication.user && externalUserOption.id === sourceApplication.user.id
-                    ? sourceApplication.user
-                    : externalUserOption
-                "
-                v-for="externalUserOption in externalUsers"
-                :key="externalUserOption.id"
+                :value="getSelected(sourceApplication.paymentSystems, paymentSystemOption, 'id')"
+                v-for="paymentSystemOption in paymentSystems"
+                :key="paymentSystemOption.id"
               >
-                {{ externalUserOption.id }}
+                {{ paymentSystemOption.id }}
               </option>
             </select>
           </div>

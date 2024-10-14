@@ -52,6 +52,10 @@
               <span v-text="t$('subscriptionManagementServiceApp.clientSubscription.subscriptionType')"></span>
               <jhi-sort-indicator :current-order="propOrder" :reverse="reverse" :field-name="'subscriptionType.id'"></jhi-sort-indicator>
             </th>
+            <th scope="row" @click="changeOrder('sourceApplication.id')">
+              <span v-text="t$('subscriptionManagementServiceApp.clientSubscription.sourceApplication')"></span>
+              <jhi-sort-indicator :current-order="propOrder" :reverse="reverse" :field-name="'sourceApplication.id'"></jhi-sort-indicator>
+            </th>
             <th scope="row"></th>
           </tr>
         </thead>
@@ -77,6 +81,14 @@
                 <router-link
                   :to="{ name: 'SubscriptionTypeView', params: { subscriptionTypeId: clientSubscription.subscriptionType.id } }"
                   >{{ clientSubscription.subscriptionType.id }}</router-link
+                >
+              </div>
+            </td>
+            <td>
+              <div v-if="clientSubscription.sourceApplication">
+                <router-link
+                  :to="{ name: 'SourceApplicationView', params: { sourceApplicationId: clientSubscription.sourceApplication.id } }"
+                  >{{ clientSubscription.sourceApplication.id }}</router-link
                 >
               </div>
             </td>

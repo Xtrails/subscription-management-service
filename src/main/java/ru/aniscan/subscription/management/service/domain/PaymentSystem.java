@@ -1,8 +1,11 @@
 package ru.aniscan.subscription.management.service.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A PaymentSystem.
@@ -23,6 +26,15 @@ public class PaymentSystem implements Serializable {
     @NotNull
     @Column(name = "name", nullable = false)
     private String name;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "rel_payment_system__source_applications",
+        joinColumns = @JoinColumn(name = "payment_system_id"),
+        inverseJoinColumns = @JoinColumn(name = "source_applications_id")
+    )
+    @JsonIgnoreProperties(value = { "referralPrograms", "subscriptionTypes", "users", "paymentSystems" }, allowSetters = true)
+    private Set<SourceApplication> sourceApplications = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -50,6 +62,29 @@ public class PaymentSystem implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Set<SourceApplication> getSourceApplications() {
+        return this.sourceApplications;
+    }
+
+    public void setSourceApplications(Set<SourceApplication> sourceApplications) {
+        this.sourceApplications = sourceApplications;
+    }
+
+    public PaymentSystem sourceApplications(Set<SourceApplication> sourceApplications) {
+        this.setSourceApplications(sourceApplications);
+        return this;
+    }
+
+    public PaymentSystem addSourceApplications(SourceApplication sourceApplication) {
+        this.sourceApplications.add(sourceApplication);
+        return this;
+    }
+
+    public PaymentSystem removeSourceApplications(SourceApplication sourceApplication) {
+        this.sourceApplications.remove(sourceApplication);
+        return this;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
