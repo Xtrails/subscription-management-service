@@ -12,7 +12,8 @@ entity SubscriptionType {
   name String required,
   description String,
   price BigDecimal required,
-  duration Integer required
+  duration String required,
+  visible Boolean required
 }
 
 entity ReferralProgram {
@@ -53,19 +54,26 @@ enum PaymentStatus {
 }
 
 relationship ManyToOne {
-  ClientSubscription{user} to ExternalUser,
-  ClientSubscription{subscriptionType} to SubscriptionType,
-  Referral{referrer} to ExternalUser,
-  Referral{referralProgram} to ReferralProgram,
-  Payment{user} to ExternalUser,
-  SourceApplication{user} to ExternalUser,
-  Payment{clietntSubscription} to ClientSubscription
+  ClientSubscription{user} to ExternalUser
+  ClientSubscription{subscriptionType} to SubscriptionType
+  ClientSubscription{sourceApplication} to SourceApplication
+  Referral{referrer} to ExternalUser
+  Referral{referralProgram} to ReferralProgram
+  Referral{sourceApplication} to SourceApplication
+  Payment{user} to ExternalUser
+  Payment{clientSubscription} to ClientSubscription
   Payment{paymentSystem} to PaymentSystem
+  Payment{sourceApplication} to SourceApplication
 }
 
 relationship OneToMany {
-  SourceApplication{referralPrograms} to ReferralProgram,
+  SourceApplication{referralPrograms} to ReferralProgram
   SourceApplication{subscriptionTypes} to SubscriptionType
+  SourceApplication{users} to ExternalUser
+}
+
+relationship ManyToMany {
+  PaymentSystem{sourceApplications} to SourceApplication{paymentSystems}
 }
 
 paginate ClientSubscription, Referral, Payment with infinite-scroll

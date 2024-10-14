@@ -11,6 +11,14 @@
     }
   ],
   "name": "PaymentSystem",
-  "relationships": [],
+  "relationships": [
+    {
+      "otherEntityName": "sourceApplication",
+      "otherEntityRelationshipName": "paymentSystems",
+      "relationshipName": "sourceApplications",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-many"
+    }
+  ],
   "searchEngine": "no"
 }

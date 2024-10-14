@@ -21,7 +21,8 @@
       "applicationName": "Application Name",
       "referralPrograms": "Referral Programs",
       "subscriptionTypes": "Subscription Types",
-      "user": "User"
+      "users": "Users",
+      "paymentSystems": "Payment Systems"
     }
   }
 }

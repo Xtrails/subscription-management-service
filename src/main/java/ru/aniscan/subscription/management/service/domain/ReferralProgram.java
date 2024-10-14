@@ -34,7 +34,7 @@ public class ReferralProgram implements Serializable {
     private BigDecimal rewardAmount;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "referralPrograms", "subscriptionTypes", "user" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "referralPrograms", "subscriptionTypes", "users", "paymentSystems" }, allowSetters = true)
     private SourceApplication sourceApplication;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

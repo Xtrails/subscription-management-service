@@ -17,6 +17,9 @@
             <column name="external_user_id" type="varchar(255)">
                 <constraints nullable="false" unique="true" uniqueConstraintName="ux_external_user__external_user_id" />
             </column>
+            <column name="source_application_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
     </changeSet>

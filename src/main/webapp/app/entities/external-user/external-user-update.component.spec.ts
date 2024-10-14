@@ -8,6 +8,8 @@ import ExternalUserUpdate from './external-user-update.vue';
 import ExternalUserService from './external-user.service';
 import AlertService from '@/shared/alert/alert.service';
 
+import SourceApplicationService from '@/entities/source-application/source-application.service';
+
 type ExternalUserUpdateComponentType = InstanceType<typeof ExternalUserUpdate>;
 
 let route: Partial<RouteLocation>;
@@ -51,6 +53,10 @@ describe('Component Tests', () => {
         provide: {
           alertService,
           externalUserService: () => externalUserServiceStub,
+          sourceApplicationService: () =>
+            sinon.createStubInstance<SourceApplicationService>(SourceApplicationService, {
+              retrieve: sinon.stub().resolves({}),
+            } as any),
         },
       };
     });

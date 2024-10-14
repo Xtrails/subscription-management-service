@@ -2,6 +2,7 @@ package ru.aniscan.subscription.management.service.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ru.aniscan.subscription.management.service.domain.PaymentSystemAsserts.*;
@@ -9,13 +10,19 @@ import static ru.aniscan.subscription.management.service.web.rest.TestUtil.creat
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,6 +35,7 @@ import ru.aniscan.subscription.management.service.repository.PaymentSystemReposi
  * Integration tests for the {@link PaymentSystemResource} REST controller.
  */
 @IntegrationTest
+@ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
 class PaymentSystemResourceIT {
@@ -46,6 +54,9 @@ class PaymentSystemResourceIT {
 
     @Autowired
     private PaymentSystemRepository paymentSystemRepository;
+
+    @Mock
+    private PaymentSystemRepository paymentSystemRepositoryMock;
 
     @Autowired
     private EntityManager em;
@@ -158,6 +169,23 @@ class PaymentSystemResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(paymentSystem.getId().intValue())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    void getAllPaymentSystemsWithEagerRelationshipsIsEnabled() throws Exception {
+        when(paymentSystemRepositoryMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
+
+        restPaymentSystemMockMvc.perform(get(ENTITY_API_URL + "?eagerload=true")).andExpect(status().isOk());
+
+        verify(paymentSystemRepositoryMock, times(1)).findAllWithEagerRelationships(any());
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    void getAllPaymentSystemsWithEagerRelationshipsIsNotEnabled() throws Exception {
+        when(paymentSystemRepositoryMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
+
+        restPaymentSystemMockMvc.perform(get(ENTITY_API_URL + "?eagerload=false")).andExpect(status().isOk());
+        verify(paymentSystemRepositoryMock, times(1)).findAll(any(Pageable.class));
     }
 
     @Test

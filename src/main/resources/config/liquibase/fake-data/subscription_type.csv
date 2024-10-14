@@ -1,11 +1,11 @@
-id;name;description;price;duration
-1;throughout round tempting;house mixture meal;5299.15;8409
-2;councilman till;impeccable;27429.1;7653
-3;since sympathetically;smog;23030.47;8811
-4;though dimly wrongly;gladly limply calculus;8515.88;20327
-5;rekindle;vastly aged apropos;32541.6;24953
-6;more;bah;24088.71;15038
-7;giggle our overcharge;anti;3514.31;20733
-8;suspension whoa focused;scaly whenever;18264.23;3217
-9;upright provider but;fluctuate;13795.86;9579
-10;long;cannibalise apparatus out;618.48;12824
+id;name;description;price;duration;visible
+1;throughout round tempting;house mixture meal;5299.15;tribe;true
+2;dereference;gosh;7653.3;since sympathetically;true
+3;past;freely;21798.77;provided uh-huh;false
+4;when;meanwhile;26569.05;handover psst;true
+5;lean bah;obediently;13461;yuck;true
+6;monumental upliftingly;perfumed within boo;20732.79;suspension whoa focused;false
+7;austere ugh search;woot far;4445.13;fluctuate;true
+8;thorny;gosh ugh;1352.9;advocate highly duh;true
+9;around joyfully huzzah;bravely;693.89;gee;false
+10;usually;expert without;32730.37;brr above but;false

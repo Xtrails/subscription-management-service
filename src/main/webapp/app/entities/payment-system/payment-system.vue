@@ -30,6 +30,7 @@
           <tr>
             <th scope="row"><span v-text="t$('global.field.id')"></span></th>
             <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.paymentSystem.name')"></span></th>
+            <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.paymentSystem.sourceApplications')"></span></th>
             <th scope="row"></th>
           </tr>
         </thead>
@@ -41,6 +42,16 @@
               }}</router-link>
             </td>
             <td>{{ paymentSystem.name }}</td>
+            <td>
+              <span v-for="(sourceApplications, i) in paymentSystem.sourceApplications" :key="sourceApplications.id"
+                >{{ i > 0 ? ', ' : '' }}
+                <router-link
+                  class="form-control-static"
+                  :to="{ name: 'SourceApplicationView', params: { sourceApplicationId: sourceApplications.id } }"
+                  >{{ sourceApplications.id }}</router-link
+                >
+              </span>
+            </td>
             <td class="text-right">
               <div class="btn-group">
                 <router-link

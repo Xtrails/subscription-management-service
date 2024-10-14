@@ -37,11 +37,16 @@ public class ClientSubscription implements Serializable {
     private SubscriptionStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "sourceApplication" }, allowSetters = true)
     private ExternalUser user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "sourceApplication" }, allowSetters = true)
     private SubscriptionType subscriptionType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "referralPrograms", "subscriptionTypes", "users", "paymentSystems" }, allowSetters = true)
+    private SourceApplication sourceApplication;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -120,6 +125,19 @@ public class ClientSubscription implements Serializable {
 
     public ClientSubscription subscriptionType(SubscriptionType subscriptionType) {
         this.setSubscriptionType(subscriptionType);
+        return this;
+    }
+
+    public SourceApplication getSourceApplication() {
+        return this.sourceApplication;
+    }
+
+    public void setSourceApplication(SourceApplication sourceApplication) {
+        this.sourceApplication = sourceApplication;
+    }
+
+    public ClientSubscription sourceApplication(SourceApplication sourceApplication) {
+        this.setSourceApplication(sourceApplication);
         return this;
     }
 

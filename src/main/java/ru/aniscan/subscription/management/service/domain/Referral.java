@@ -32,11 +32,16 @@ public class Referral implements Serializable {
     private ReferralStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "sourceApplication" }, allowSetters = true)
     private ExternalUser referrer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "sourceApplication" }, allowSetters = true)
     private ReferralProgram referralProgram;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "referralPrograms", "subscriptionTypes", "users", "paymentSystems" }, allowSetters = true)
+    private SourceApplication sourceApplication;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -102,6 +107,19 @@ public class Referral implements Serializable {
 
     public Referral referralProgram(ReferralProgram referralProgram) {
         this.setReferralProgram(referralProgram);
+        return this;
+    }
+
+    public SourceApplication getSourceApplication() {
+        return this.sourceApplication;
+    }
+
+    public void setSourceApplication(SourceApplication sourceApplication) {
+        this.sourceApplication = sourceApplication;
+    }
+
+    public Referral sourceApplication(SourceApplication sourceApplication) {
+        this.setSourceApplication(sourceApplication);
         return this;
     }
 

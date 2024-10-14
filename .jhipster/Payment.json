@@ -32,13 +32,19 @@
     },
     {
       "otherEntityName": "clientSubscription",
-      "relationshipName": "clietntSubscription",
+      "relationshipName": "clientSubscription",
       "relationshipSide": "left",
       "relationshipType": "many-to-one"
     },
     {
       "otherEntityName": "paymentSystem",
       "relationshipName": "paymentSystem",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "sourceApplication",
+      "relationshipName": "sourceApplication",
       "relationshipSide": "left",
       "relationshipType": "many-to-one"
     }

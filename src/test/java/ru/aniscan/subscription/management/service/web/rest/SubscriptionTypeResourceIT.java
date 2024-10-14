@@ -43,8 +43,11 @@ class SubscriptionTypeResourceIT {
     private static final BigDecimal DEFAULT_PRICE = new BigDecimal(1);
     private static final BigDecimal UPDATED_PRICE = new BigDecimal(2);
 
-    private static final Integer DEFAULT_DURATION = 1;
-    private static final Integer UPDATED_DURATION = 2;
+    private static final String DEFAULT_DURATION = "AAAAAAAAAA";
+    private static final String UPDATED_DURATION = "BBBBBBBBBB";
+
+    private static final Boolean DEFAULT_VISIBLE = false;
+    private static final Boolean UPDATED_VISIBLE = true;
 
     private static final String ENTITY_API_URL = "/api/subscription-types";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -75,7 +78,12 @@ class SubscriptionTypeResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static SubscriptionType createEntity() {
-        return new SubscriptionType().name(DEFAULT_NAME).description(DEFAULT_DESCRIPTION).price(DEFAULT_PRICE).duration(DEFAULT_DURATION);
+        return new SubscriptionType()
+            .name(DEFAULT_NAME)
+            .description(DEFAULT_DESCRIPTION)
+            .price(DEFAULT_PRICE)
+            .duration(DEFAULT_DURATION)
+            .visible(DEFAULT_VISIBLE);
     }
 
     /**
@@ -85,7 +93,12 @@ class SubscriptionTypeResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static SubscriptionType createUpdatedEntity() {
-        return new SubscriptionType().name(UPDATED_NAME).description(UPDATED_DESCRIPTION).price(UPDATED_PRICE).duration(UPDATED_DURATION);
+        return new SubscriptionType()
+            .name(UPDATED_NAME)
+            .description(UPDATED_DESCRIPTION)
+            .price(UPDATED_PRICE)
+            .duration(UPDATED_DURATION)
+            .visible(UPDATED_VISIBLE);
     }
 
     @BeforeEach
@@ -190,6 +203,22 @@ class SubscriptionTypeResourceIT {
 
     @Test
     @Transactional
+    void checkVisibleIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        // set the field null
+        subscriptionType.setVisible(null);
+
+        // Create the SubscriptionType, which fails.
+
+        restSubscriptionTypeMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(subscriptionType)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     void getAllSubscriptionTypes() throws Exception {
         // Initialize the database
         insertedSubscriptionType = subscriptionTypeRepository.saveAndFlush(subscriptionType);
@@ -203,7 +232,8 @@ class SubscriptionTypeResourceIT {
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
             .andExpect(jsonPath("$.[*].price").value(hasItem(sameNumber(DEFAULT_PRICE))))
-            .andExpect(jsonPath("$.[*].duration").value(hasItem(DEFAULT_DURATION)));
+            .andExpect(jsonPath("$.[*].duration").value(hasItem(DEFAULT_DURATION)))
+            .andExpect(jsonPath("$.[*].visible").value(hasItem(DEFAULT_VISIBLE.booleanValue())));
     }
 
     @Test
@@ -221,7 +251,8 @@ class SubscriptionTypeResourceIT {
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION))
             .andExpect(jsonPath("$.price").value(sameNumber(DEFAULT_PRICE)))
-            .andExpect(jsonPath("$.duration").value(DEFAULT_DURATION));
+            .andExpect(jsonPath("$.duration").value(DEFAULT_DURATION))
+            .andExpect(jsonPath("$.visible").value(DEFAULT_VISIBLE.booleanValue()));
     }
 
     @Test
@@ -243,7 +274,12 @@ class SubscriptionTypeResourceIT {
         SubscriptionType updatedSubscriptionType = subscriptionTypeRepository.findById(subscriptionType.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedSubscriptionType are not directly saved in db
         em.detach(updatedSubscriptionType);
-        updatedSubscriptionType.name(UPDATED_NAME).description(UPDATED_DESCRIPTION).price(UPDATED_PRICE).duration(UPDATED_DURATION);
+        updatedSubscriptionType
+            .name(UPDATED_NAME)
+            .description(UPDATED_DESCRIPTION)
+            .price(UPDATED_PRICE)
+            .duration(UPDATED_DURATION)
+            .visible(UPDATED_VISIBLE);
 
         restSubscriptionTypeMockMvc
             .perform(
@@ -323,7 +359,7 @@ class SubscriptionTypeResourceIT {
         SubscriptionType partialUpdatedSubscriptionType = new SubscriptionType();
         partialUpdatedSubscriptionType.setId(subscriptionType.getId());
 
-        partialUpdatedSubscriptionType.name(UPDATED_NAME).price(UPDATED_PRICE).duration(UPDATED_DURATION);
+        partialUpdatedSubscriptionType.name(UPDATED_NAME).price(UPDATED_PRICE).duration(UPDATED_DURATION).visible(UPDATED_VISIBLE);
 
         restSubscriptionTypeMockMvc
             .perform(
@@ -354,7 +390,12 @@ class SubscriptionTypeResourceIT {
         SubscriptionType partialUpdatedSubscriptionType = new SubscriptionType();
         partialUpdatedSubscriptionType.setId(subscriptionType.getId());
 
-        partialUpdatedSubscriptionType.name(UPDATED_NAME).description(UPDATED_DESCRIPTION).price(UPDATED_PRICE).duration(UPDATED_DURATION);
+        partialUpdatedSubscriptionType
+            .name(UPDATED_NAME)
+            .description(UPDATED_DESCRIPTION)
+            .price(UPDATED_PRICE)
+            .duration(UPDATED_DURATION)
+            .visible(UPDATED_VISIBLE);
 
         restSubscriptionTypeMockMvc
             .perform(

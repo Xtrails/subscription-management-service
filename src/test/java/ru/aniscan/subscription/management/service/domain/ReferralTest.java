@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static ru.aniscan.subscription.management.service.domain.ExternalUserTestSamples.*;
 import static ru.aniscan.subscription.management.service.domain.ReferralProgramTestSamples.*;
 import static ru.aniscan.subscription.management.service.domain.ReferralTestSamples.*;
+import static ru.aniscan.subscription.management.service.domain.SourceApplicationTestSamples.*;
 
 import org.junit.jupiter.api.Test;
 import ru.aniscan.subscription.management.service.web.rest.TestUtil;
@@ -46,5 +47,17 @@ class ReferralTest {
 
         referral.referralProgram(null);
         assertThat(referral.getReferralProgram()).isNull();
+    }
+
+    @Test
+    void sourceApplicationTest() {
+        Referral referral = getReferralRandomSampleGenerator();
+        SourceApplication sourceApplicationBack = getSourceApplicationRandomSampleGenerator();
+
+        referral.setSourceApplication(sourceApplicationBack);
+        assertThat(referral.getSourceApplication()).isEqualTo(sourceApplicationBack);
+
+        referral.sourceApplication(null);
+        assertThat(referral.getSourceApplication()).isNull();
     }
 }

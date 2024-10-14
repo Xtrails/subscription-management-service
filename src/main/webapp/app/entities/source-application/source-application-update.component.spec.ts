@@ -8,7 +8,7 @@ import SourceApplicationUpdate from './source-application-update.vue';
 import SourceApplicationService from './source-application.service';
 import AlertService from '@/shared/alert/alert.service';
 
-import ExternalUserService from '@/entities/external-user/external-user.service';
+import PaymentSystemService from '@/entities/payment-system/payment-system.service';
 
 type SourceApplicationUpdateComponentType = InstanceType<typeof SourceApplicationUpdate>;
 
@@ -53,8 +53,8 @@ describe('Component Tests', () => {
         provide: {
           alertService,
           sourceApplicationService: () => sourceApplicationServiceStub,
-          externalUserService: () =>
-            sinon.createStubInstance<ExternalUserService>(ExternalUserService, {
+          paymentSystemService: () =>
+            sinon.createStubInstance<PaymentSystemService>(PaymentSystemService, {
               retrieve: sinon.stub().resolves({}),
             } as any),
         },

@@ -22,7 +22,8 @@
       "endDate": "End Date",
       "status": "Status",
       "user": "User",
-      "subscriptionType": "Subscription Type"
+      "subscriptionType": "Subscription Type",
+      "sourceApplication": "Source Application"
     }
   }
 }

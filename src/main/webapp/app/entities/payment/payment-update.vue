@@ -104,21 +104,21 @@
           <div class="form-group">
             <label
               class="form-control-label"
-              v-text="t$('subscriptionManagementServiceApp.payment.clietntSubscription')"
-              for="payment-clietntSubscription"
+              v-text="t$('subscriptionManagementServiceApp.payment.clientSubscription')"
+              for="payment-clientSubscription"
             ></label>
             <select
               class="form-control"
-              id="payment-clietntSubscription"
-              data-cy="clietntSubscription"
-              name="clietntSubscription"
-              v-model="payment.clietntSubscription"
+              id="payment-clientSubscription"
+              data-cy="clientSubscription"
+              name="clientSubscription"
+              v-model="payment.clientSubscription"
             >
               <option :value="null"></option>
               <option
                 :value="
-                  payment.clietntSubscription && clientSubscriptionOption.id === payment.clietntSubscription.id
-                    ? payment.clietntSubscription
+                  payment.clientSubscription && clientSubscriptionOption.id === payment.clientSubscription.id
+                    ? payment.clientSubscription
                     : clientSubscriptionOption
                 "
                 v-for="clientSubscriptionOption in clientSubscriptions"
@@ -150,6 +150,33 @@
                 :key="paymentSystemOption.id"
               >
                 {{ paymentSystemOption.id }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label
+              class="form-control-label"
+              v-text="t$('subscriptionManagementServiceApp.payment.sourceApplication')"
+              for="payment-sourceApplication"
+            ></label>
+            <select
+              class="form-control"
+              id="payment-sourceApplication"
+              data-cy="sourceApplication"
+              name="sourceApplication"
+              v-model="payment.sourceApplication"
+            >
+              <option :value="null"></option>
+              <option
+                :value="
+                  payment.sourceApplication && sourceApplicationOption.id === payment.sourceApplication.id
+                    ? payment.sourceApplication
+                    : sourceApplicationOption
+                "
+                v-for="sourceApplicationOption in sourceApplications"
+                :key="sourceApplicationOption.id"
+              >
+                {{ sourceApplicationOption.id }}
               </option>
             </select>
           </div>

@@ -100,6 +100,33 @@
               </option>
             </select>
           </div>
+          <div class="form-group">
+            <label
+              class="form-control-label"
+              v-text="t$('subscriptionManagementServiceApp.referral.sourceApplication')"
+              for="referral-sourceApplication"
+            ></label>
+            <select
+              class="form-control"
+              id="referral-sourceApplication"
+              data-cy="sourceApplication"
+              name="sourceApplication"
+              v-model="referral.sourceApplication"
+            >
+              <option :value="null"></option>
+              <option
+                :value="
+                  referral.sourceApplication && sourceApplicationOption.id === referral.sourceApplication.id
+                    ? referral.sourceApplication
+                    : sourceApplicationOption
+                "
+                v-for="sourceApplicationOption in sourceApplications"
+                :key="sourceApplicationOption.id"
+              >
+                {{ sourceApplicationOption.id }}
+              </option>
+            </select>
+          </div>
         </div>
         <div>
           <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" @click="previousState()">

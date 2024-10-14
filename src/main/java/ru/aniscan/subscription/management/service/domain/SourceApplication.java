@@ -35,8 +35,13 @@ public class SourceApplication implements Serializable {
     @JsonIgnoreProperties(value = { "sourceApplication" }, allowSetters = true)
     private Set<SubscriptionType> subscriptionTypes = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private ExternalUser user;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "sourceApplication")
+    @JsonIgnoreProperties(value = { "sourceApplication" }, allowSetters = true)
+    private Set<ExternalUser> users = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sourceApplications")
+    @JsonIgnoreProperties(value = { "sourceApplications" }, allowSetters = true)
+    private Set<PaymentSystem> paymentSystems = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -128,16 +133,65 @@ public class SourceApplication implements Serializable {
         return this;
     }
 
-    public ExternalUser getUser() {
-        return this.user;
+    public Set<ExternalUser> getUsers() {
+        return this.users;
     }
 
-    public void setUser(ExternalUser externalUser) {
-        this.user = externalUser;
+    public void setUsers(Set<ExternalUser> externalUsers) {
+        if (this.users != null) {
+            this.users.forEach(i -> i.setSourceApplication(null));
+        }
+        if (externalUsers != null) {
+            externalUsers.forEach(i -> i.setSourceApplication(this));
+        }
+        this.users = externalUsers;
     }
 
-    public SourceApplication user(ExternalUser externalUser) {
-        this.setUser(externalUser);
+    public SourceApplication users(Set<ExternalUser> externalUsers) {
+        this.setUsers(externalUsers);
+        return this;
+    }
+
+    public SourceApplication addUsers(ExternalUser externalUser) {
+        this.users.add(externalUser);
+        externalUser.setSourceApplication(this);
+        return this;
+    }
+
+    public SourceApplication removeUsers(ExternalUser externalUser) {
+        this.users.remove(externalUser);
+        externalUser.setSourceApplication(null);
+        return this;
+    }
+
+    public Set<PaymentSystem> getPaymentSystems() {
+        return this.paymentSystems;
+    }
+
+    public void setPaymentSystems(Set<PaymentSystem> paymentSystems) {
+        if (this.paymentSystems != null) {
+            this.paymentSystems.forEach(i -> i.removeSourceApplications(this));
+        }
+        if (paymentSystems != null) {
+            paymentSystems.forEach(i -> i.addSourceApplications(this));
+        }
+        this.paymentSystems = paymentSystems;
+    }
+
+    public SourceApplication paymentSystems(Set<PaymentSystem> paymentSystems) {
+        this.setPaymentSystems(paymentSystems);
+        return this;
+    }
+
+    public SourceApplication addPaymentSystems(PaymentSystem paymentSystem) {
+        this.paymentSystems.add(paymentSystem);
+        paymentSystem.getSourceApplications().add(this);
+        return this;
+    }
+
+    public SourceApplication removePaymentSystems(PaymentSystem paymentSystem) {
+        this.paymentSystems.remove(paymentSystem);
+        paymentSystem.getSourceApplications().remove(this);
         return this;
     }
 

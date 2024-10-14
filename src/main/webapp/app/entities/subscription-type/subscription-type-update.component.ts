@@ -66,7 +66,9 @@ export default defineComponent({
       },
       duration: {
         required: validations.required(t$('entity.validation.required').toString()),
-        integer: validations.integer(t$('entity.validation.number').toString()),
+      },
+      visible: {
+        required: validations.required(t$('entity.validation.required').toString()),
       },
       sourceApplication: {},
     };

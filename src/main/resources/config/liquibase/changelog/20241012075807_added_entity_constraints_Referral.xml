@@ -23,5 +23,12 @@
                                  referencedColumnNames="id"
                                  referencedTableName="referral_program"
                                  />
+
+        <addForeignKeyConstraint baseColumnNames="source_application_id"
+                                 baseTableName="referral"
+                                 constraintName="fk_referral__source_application_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="source_application"
+                                 />
     </changeSet>
 </databaseChangeLog>

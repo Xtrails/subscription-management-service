@@ -31,6 +31,12 @@
             <span>{{ subscriptionType.duration }}</span>
           </dd>
           <dt>
+            <span v-text="t$('subscriptionManagementServiceApp.subscriptionType.visible')"></span>
+          </dt>
+          <dd>
+            <span>{{ subscriptionType.visible }}</span>
+          </dd>
+          <dt>
             <span v-text="t$('subscriptionManagementServiceApp.subscriptionType.sourceApplication')"></span>
           </dt>
           <dd>
