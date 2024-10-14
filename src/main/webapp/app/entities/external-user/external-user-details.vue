@@ -12,6 +12,16 @@
           <dd>
             <span>{{ externalUser.externalUserId }}</span>
           </dd>
+          <dt>
+            <span v-text="t$('subscriptionManagementServiceApp.externalUser.sourceApplication')"></span>
+          </dt>
+          <dd>
+            <div v-if="externalUser.sourceApplication">
+              <router-link :to="{ name: 'SourceApplicationView', params: { sourceApplicationId: externalUser.sourceApplication.id } }">{{
+                externalUser.sourceApplication.id
+              }}</router-link>
+            </div>
+          </dd>
         </dl>
         <button type="submit" @click.prevent="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
           <font-awesome-icon icon="arrow-left"></font-awesome-icon>&nbsp;<span v-text="t$('entity.action.back')"></span>

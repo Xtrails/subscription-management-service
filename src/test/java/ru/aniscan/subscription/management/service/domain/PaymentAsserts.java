@@ -63,9 +63,8 @@ public class PaymentAsserts {
         assertThat(expected)
             .as("Verify Payment relationships")
             .satisfies(e -> assertThat(e.getUser()).as("check user").isEqualTo(actual.getUser()))
-            .satisfies(e ->
-                assertThat(e.getClietntSubscription()).as("check clietntSubscription").isEqualTo(actual.getClietntSubscription())
-            )
-            .satisfies(e -> assertThat(e.getPaymentSystem()).as("check paymentSystem").isEqualTo(actual.getPaymentSystem()));
+            .satisfies(e -> assertThat(e.getClientSubscription()).as("check clientSubscription").isEqualTo(actual.getClientSubscription()))
+            .satisfies(e -> assertThat(e.getPaymentSystem()).as("check paymentSystem").isEqualTo(actual.getPaymentSystem()))
+            .satisfies(e -> assertThat(e.getSourceApplication()).as("check sourceApplication").isEqualTo(actual.getSourceApplication()));
     }
 }

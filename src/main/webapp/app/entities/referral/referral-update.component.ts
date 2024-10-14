@@ -11,6 +11,8 @@ import ExternalUserService from '@/entities/external-user/external-user.service'
 import { type IExternalUser } from '@/shared/model/external-user.model';
 import ReferralProgramService from '@/entities/referral-program/referral-program.service';
 import { type IReferralProgram } from '@/shared/model/referral-program.model';
+import SourceApplicationService from '@/entities/source-application/source-application.service';
+import { type ISourceApplication } from '@/shared/model/source-application.model';
 import { type IReferral, Referral } from '@/shared/model/referral.model';
 import { ReferralStatus } from '@/shared/model/enumerations/referral-status.model';
 
@@ -30,6 +32,10 @@ export default defineComponent({
     const referralProgramService = inject('referralProgramService', () => new ReferralProgramService());
 
     const referralPrograms: Ref<IReferralProgram[]> = ref([]);
+
+    const sourceApplicationService = inject('sourceApplicationService', () => new SourceApplicationService());
+
+    const sourceApplications: Ref<ISourceApplication[]> = ref([]);
     const referralStatusValues: Ref<string[]> = ref(Object.keys(ReferralStatus));
     const isSaving = ref(false);
     const currentLanguage = inject('currentLanguage', () => computed(() => navigator.language ?? 'ru'), true);
@@ -63,6 +69,11 @@ export default defineComponent({
         .then(res => {
           referralPrograms.value = res.data;
         });
+      sourceApplicationService()
+        .retrieve()
+        .then(res => {
+          sourceApplications.value = res.data;
+        });
     };
 
     initRelationships();
@@ -78,6 +89,7 @@ export default defineComponent({
       },
       referrer: {},
       referralProgram: {},
+      sourceApplication: {},
     };
     const v$ = useVuelidate(validationRules, referral as any);
     v$.value.$validate();
@@ -92,6 +104,7 @@ export default defineComponent({
       currentLanguage,
       externalUsers,
       referralPrograms,
+      sourceApplications,
       v$,
       t$,
     };

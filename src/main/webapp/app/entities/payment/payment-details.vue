@@ -35,12 +35,12 @@
             </div>
           </dd>
           <dt>
-            <span v-text="t$('subscriptionManagementServiceApp.payment.clietntSubscription')"></span>
+            <span v-text="t$('subscriptionManagementServiceApp.payment.clientSubscription')"></span>
           </dt>
           <dd>
-            <div v-if="payment.clietntSubscription">
-              <router-link :to="{ name: 'ClientSubscriptionView', params: { clientSubscriptionId: payment.clietntSubscription.id } }">{{
-                payment.clietntSubscription.id
+            <div v-if="payment.clientSubscription">
+              <router-link :to="{ name: 'ClientSubscriptionView', params: { clientSubscriptionId: payment.clientSubscription.id } }">{{
+                payment.clientSubscription.id
               }}</router-link>
             </div>
           </dd>
@@ -51,6 +51,16 @@
             <div v-if="payment.paymentSystem">
               <router-link :to="{ name: 'PaymentSystemView', params: { paymentSystemId: payment.paymentSystem.id } }">{{
                 payment.paymentSystem.id
+              }}</router-link>
+            </div>
+          </dd>
+          <dt>
+            <span v-text="t$('subscriptionManagementServiceApp.payment.sourceApplication')"></span>
+          </dt>
+          <dd>
+            <div v-if="payment.sourceApplication">
+              <router-link :to="{ name: 'SourceApplicationView', params: { sourceApplicationId: payment.sourceApplication.id } }">{{
+                payment.sourceApplication.id
               }}</router-link>
             </div>
           </dd>

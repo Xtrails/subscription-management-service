@@ -33,6 +33,7 @@
             <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.subscriptionType.description')"></span></th>
             <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.subscriptionType.price')"></span></th>
             <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.subscriptionType.duration')"></span></th>
+            <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.subscriptionType.visible')"></span></th>
             <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.subscriptionType.sourceApplication')"></span></th>
             <th scope="row"></th>
           </tr>
@@ -48,6 +49,7 @@
             <td>{{ subscriptionType.description }}</td>
             <td>{{ subscriptionType.price }}</td>
             <td>{{ subscriptionType.duration }}</td>
+            <td>{{ subscriptionType.visible }}</td>
             <td>
               <div v-if="subscriptionType.sourceApplication">
                 <router-link

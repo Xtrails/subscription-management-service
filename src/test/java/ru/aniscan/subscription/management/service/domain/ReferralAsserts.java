@@ -61,6 +61,7 @@ public class ReferralAsserts {
         assertThat(expected)
             .as("Verify Referral relationships")
             .satisfies(e -> assertThat(e.getReferrer()).as("check referrer").isEqualTo(actual.getReferrer()))
-            .satisfies(e -> assertThat(e.getReferralProgram()).as("check referralProgram").isEqualTo(actual.getReferralProgram()));
+            .satisfies(e -> assertThat(e.getReferralProgram()).as("check referralProgram").isEqualTo(actual.getReferralProgram()))
+            .satisfies(e -> assertThat(e.getSourceApplication()).as("check sourceApplication").isEqualTo(actual.getSourceApplication()));
     }
 }

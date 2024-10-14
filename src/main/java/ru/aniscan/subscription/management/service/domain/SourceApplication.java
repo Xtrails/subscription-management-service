@@ -35,8 +35,9 @@ public class SourceApplication implements Serializable {
     @JsonIgnoreProperties(value = { "sourceApplication" }, allowSetters = true)
     private Set<SubscriptionType> subscriptionTypes = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private ExternalUser user;
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sourceApplications")
+    @JsonIgnoreProperties(value = { "sourceApplications" }, allowSetters = true)
+    private Set<PaymentSystem> paymentSystems = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -128,16 +129,34 @@ public class SourceApplication implements Serializable {
         return this;
     }
 
-    public ExternalUser getUser() {
-        return this.user;
+    public Set<PaymentSystem> getPaymentSystems() {
+        return this.paymentSystems;
     }
 
-    public void setUser(ExternalUser externalUser) {
-        this.user = externalUser;
+    public void setPaymentSystems(Set<PaymentSystem> paymentSystems) {
+        if (this.paymentSystems != null) {
+            this.paymentSystems.forEach(i -> i.removeSourceApplications(this));
+        }
+        if (paymentSystems != null) {
+            paymentSystems.forEach(i -> i.addSourceApplications(this));
+        }
+        this.paymentSystems = paymentSystems;
     }
 
-    public SourceApplication user(ExternalUser externalUser) {
-        this.setUser(externalUser);
+    public SourceApplication paymentSystems(Set<PaymentSystem> paymentSystems) {
+        this.setPaymentSystems(paymentSystems);
+        return this;
+    }
+
+    public SourceApplication addPaymentSystems(PaymentSystem paymentSystem) {
+        this.paymentSystems.add(paymentSystem);
+        paymentSystem.getSourceApplications().add(this);
+        return this;
+    }
+
+    public SourceApplication removePaymentSystems(PaymentSystem paymentSystem) {
+        this.paymentSystems.remove(paymentSystem);
+        paymentSystem.getSourceApplications().remove(this);
         return this;
     }
 

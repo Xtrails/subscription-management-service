@@ -8,6 +8,8 @@ import PaymentSystemUpdate from './payment-system-update.vue';
 import PaymentSystemService from './payment-system.service';
 import AlertService from '@/shared/alert/alert.service';
 
+import SourceApplicationService from '@/entities/source-application/source-application.service';
+
 type PaymentSystemUpdateComponentType = InstanceType<typeof PaymentSystemUpdate>;
 
 let route: Partial<RouteLocation>;
@@ -51,6 +53,10 @@ describe('Component Tests', () => {
         provide: {
           alertService,
           paymentSystemService: () => paymentSystemServiceStub,
+          sourceApplicationService: () =>
+            sinon.createStubInstance<SourceApplicationService>(SourceApplicationService, {
+              retrieve: sinon.stub().resolves({}),
+            } as any),
         },
       };
     });

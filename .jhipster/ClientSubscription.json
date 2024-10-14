@@ -35,6 +35,12 @@
       "relationshipName": "subscriptionType",
       "relationshipSide": "left",
       "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "sourceApplication",
+      "relationshipName": "sourceApplication",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
     }
   ],
   "searchEngine": "no"

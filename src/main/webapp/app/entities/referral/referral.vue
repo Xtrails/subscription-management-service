@@ -48,6 +48,10 @@
               <span v-text="t$('subscriptionManagementServiceApp.referral.referralProgram')"></span>
               <jhi-sort-indicator :current-order="propOrder" :reverse="reverse" :field-name="'referralProgram.id'"></jhi-sort-indicator>
             </th>
+            <th scope="row" @click="changeOrder('sourceApplication.id')">
+              <span v-text="t$('subscriptionManagementServiceApp.referral.sourceApplication')"></span>
+              <jhi-sort-indicator :current-order="propOrder" :reverse="reverse" :field-name="'sourceApplication.id'"></jhi-sort-indicator>
+            </th>
             <th scope="row"></th>
           </tr>
         </thead>
@@ -69,6 +73,13 @@
               <div v-if="referral.referralProgram">
                 <router-link :to="{ name: 'ReferralProgramView', params: { referralProgramId: referral.referralProgram.id } }">{{
                   referral.referralProgram.id
+                }}</router-link>
+              </div>
+            </td>
+            <td>
+              <div v-if="referral.sourceApplication">
+                <router-link :to="{ name: 'SourceApplicationView', params: { sourceApplicationId: referral.sourceApplication.id } }">{{
+                  referral.sourceApplication.id
                 }}</router-link>
               </div>
             </td>

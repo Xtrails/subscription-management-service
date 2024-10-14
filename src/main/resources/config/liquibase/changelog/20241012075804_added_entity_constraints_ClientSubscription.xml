@@ -23,5 +23,12 @@
                                  referencedColumnNames="id"
                                  referencedTableName="subscription_type"
                                  />
+
+        <addForeignKeyConstraint baseColumnNames="source_application_id"
+                                 baseTableName="client_subscription"
+                                 constraintName="fk_client_subscription__source_application_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="source_application"
+                                 />
     </changeSet>
 </databaseChangeLog>

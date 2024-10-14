@@ -30,6 +30,7 @@
           <tr>
             <th scope="row"><span v-text="t$('global.field.id')"></span></th>
             <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.externalUser.externalUserId')"></span></th>
+            <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.externalUser.sourceApplication')"></span></th>
             <th scope="row"></th>
           </tr>
         </thead>
@@ -41,6 +42,13 @@
               }}</router-link>
             </td>
             <td>{{ externalUser.externalUserId }}</td>
+            <td>
+              <div v-if="externalUser.sourceApplication">
+                <router-link :to="{ name: 'SourceApplicationView', params: { sourceApplicationId: externalUser.sourceApplication.id } }">{{
+                  externalUser.sourceApplication.id
+                }}</router-link>
+              </div>
+            </td>
             <td class="text-right">
               <div class="btn-group">
                 <router-link :to="{ name: 'ExternalUserView', params: { externalUserId: externalUser.id } }" custom v-slot="{ navigate }">

@@ -11,6 +11,8 @@ import ExternalUserService from '@/entities/external-user/external-user.service'
 import { type IExternalUser } from '@/shared/model/external-user.model';
 import SubscriptionTypeService from '@/entities/subscription-type/subscription-type.service';
 import { type ISubscriptionType } from '@/shared/model/subscription-type.model';
+import SourceApplicationService from '@/entities/source-application/source-application.service';
+import { type ISourceApplication } from '@/shared/model/source-application.model';
 import { ClientSubscription, type IClientSubscription } from '@/shared/model/client-subscription.model';
 import { SubscriptionStatus } from '@/shared/model/enumerations/subscription-status.model';
 
@@ -30,6 +32,10 @@ export default defineComponent({
     const subscriptionTypeService = inject('subscriptionTypeService', () => new SubscriptionTypeService());
 
     const subscriptionTypes: Ref<ISubscriptionType[]> = ref([]);
+
+    const sourceApplicationService = inject('sourceApplicationService', () => new SourceApplicationService());
+
+    const sourceApplications: Ref<ISourceApplication[]> = ref([]);
     const subscriptionStatusValues: Ref<string[]> = ref(Object.keys(SubscriptionStatus));
     const isSaving = ref(false);
     const currentLanguage = inject('currentLanguage', () => computed(() => navigator.language ?? 'ru'), true);
@@ -63,6 +69,11 @@ export default defineComponent({
         .then(res => {
           subscriptionTypes.value = res.data;
         });
+      sourceApplicationService()
+        .retrieve()
+        .then(res => {
+          sourceApplications.value = res.data;
+        });
     };
 
     initRelationships();
@@ -81,6 +92,7 @@ export default defineComponent({
       },
       user: {},
       subscriptionType: {},
+      sourceApplication: {},
     };
     const v$ = useVuelidate(validationRules, clientSubscription as any);
     v$.value.$validate();
@@ -95,6 +107,7 @@ export default defineComponent({
       currentLanguage,
       externalUsers,
       subscriptionTypes,
+      sourceApplications,
       v$,
       t$,
     };

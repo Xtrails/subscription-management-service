@@ -5,6 +5,7 @@ import static ru.aniscan.subscription.management.service.domain.ClientSubscripti
 import static ru.aniscan.subscription.management.service.domain.ExternalUserTestSamples.*;
 import static ru.aniscan.subscription.management.service.domain.PaymentSystemTestSamples.*;
 import static ru.aniscan.subscription.management.service.domain.PaymentTestSamples.*;
+import static ru.aniscan.subscription.management.service.domain.SourceApplicationTestSamples.*;
 
 import org.junit.jupiter.api.Test;
 import ru.aniscan.subscription.management.service.web.rest.TestUtil;
@@ -38,15 +39,15 @@ class PaymentTest {
     }
 
     @Test
-    void clietntSubscriptionTest() {
+    void clientSubscriptionTest() {
         Payment payment = getPaymentRandomSampleGenerator();
         ClientSubscription clientSubscriptionBack = getClientSubscriptionRandomSampleGenerator();
 
-        payment.setClietntSubscription(clientSubscriptionBack);
-        assertThat(payment.getClietntSubscription()).isEqualTo(clientSubscriptionBack);
+        payment.setClientSubscription(clientSubscriptionBack);
+        assertThat(payment.getClientSubscription()).isEqualTo(clientSubscriptionBack);
 
-        payment.clietntSubscription(null);
-        assertThat(payment.getClietntSubscription()).isNull();
+        payment.clientSubscription(null);
+        assertThat(payment.getClientSubscription()).isNull();
     }
 
     @Test
@@ -59,5 +60,17 @@ class PaymentTest {
 
         payment.paymentSystem(null);
         assertThat(payment.getPaymentSystem()).isNull();
+    }
+
+    @Test
+    void sourceApplicationTest() {
+        Payment payment = getPaymentRandomSampleGenerator();
+        SourceApplication sourceApplicationBack = getSourceApplicationRandomSampleGenerator();
+
+        payment.setSourceApplication(sourceApplicationBack);
+        assertThat(payment.getSourceApplication()).isEqualTo(sourceApplicationBack);
+
+        payment.sourceApplication(null);
+        assertThat(payment.getSourceApplication()).isNull();
     }
 }

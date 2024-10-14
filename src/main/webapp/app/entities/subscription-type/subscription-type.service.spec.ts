@@ -29,7 +29,7 @@ describe('Service Tests', () => {
 
     beforeEach(() => {
       service = new SubscriptionTypeService();
-      elemDefault = new SubscriptionType(123, 'AAAAAAA', 'AAAAAAA', 0, 0);
+      elemDefault = new SubscriptionType(123, 'AAAAAAA', 'AAAAAAA', 0, 'AAAAAAA', false);
     });
 
     describe('Service methods', () => {
@@ -74,7 +74,7 @@ describe('Service Tests', () => {
       });
 
       it('should update a SubscriptionType', async () => {
-        const returnedFromService = { name: 'BBBBBB', description: 'BBBBBB', price: 1, duration: 1, ...elemDefault };
+        const returnedFromService = { name: 'BBBBBB', description: 'BBBBBB', price: 1, duration: 'BBBBBB', visible: true, ...elemDefault };
 
         const expected = { ...returnedFromService };
         axiosStub.put.resolves({ data: returnedFromService });
@@ -96,7 +96,7 @@ describe('Service Tests', () => {
       });
 
       it('should partial update a SubscriptionType', async () => {
-        const patchObject = { name: 'BBBBBB', description: 'BBBBBB', ...new SubscriptionType() };
+        const patchObject = { name: 'BBBBBB', visible: true, ...new SubscriptionType() };
         const returnedFromService = Object.assign(patchObject, elemDefault);
 
         const expected = { ...returnedFromService };
@@ -119,7 +119,7 @@ describe('Service Tests', () => {
       });
 
       it('should return a list of SubscriptionType', async () => {
-        const returnedFromService = { name: 'BBBBBB', description: 'BBBBBB', price: 1, duration: 1, ...elemDefault };
+        const returnedFromService = { name: 'BBBBBB', description: 'BBBBBB', price: 1, duration: 'BBBBBB', visible: true, ...elemDefault };
         const expected = { ...returnedFromService };
         axiosStub.get.resolves([returnedFromService]);
         return service.retrieve().then(res => {

@@ -62,6 +62,7 @@ public class ClientSubscriptionAsserts {
         assertThat(expected)
             .as("Verify ClientSubscription relationships")
             .satisfies(e -> assertThat(e.getUser()).as("check user").isEqualTo(actual.getUser()))
-            .satisfies(e -> assertThat(e.getSubscriptionType()).as("check subscriptionType").isEqualTo(actual.getSubscriptionType()));
+            .satisfies(e -> assertThat(e.getSubscriptionType()).as("check subscriptionType").isEqualTo(actual.getSubscriptionType()))
+            .satisfies(e -> assertThat(e.getSourceApplication()).as("check sourceApplication").isEqualTo(actual.getSourceApplication()));
     }
 }

@@ -13,6 +13,8 @@ import ClientSubscriptionService from '@/entities/client-subscription/client-sub
 import { type IClientSubscription } from '@/shared/model/client-subscription.model';
 import PaymentSystemService from '@/entities/payment-system/payment-system.service';
 import { type IPaymentSystem } from '@/shared/model/payment-system.model';
+import SourceApplicationService from '@/entities/source-application/source-application.service';
+import { type ISourceApplication } from '@/shared/model/source-application.model';
 import { type IPayment, Payment } from '@/shared/model/payment.model';
 import { PaymentStatus } from '@/shared/model/enumerations/payment-status.model';
 
@@ -36,6 +38,10 @@ export default defineComponent({
     const paymentSystemService = inject('paymentSystemService', () => new PaymentSystemService());
 
     const paymentSystems: Ref<IPaymentSystem[]> = ref([]);
+
+    const sourceApplicationService = inject('sourceApplicationService', () => new SourceApplicationService());
+
+    const sourceApplications: Ref<ISourceApplication[]> = ref([]);
     const paymentStatusValues: Ref<string[]> = ref(Object.keys(PaymentStatus));
     const isSaving = ref(false);
     const currentLanguage = inject('currentLanguage', () => computed(() => navigator.language ?? 'ru'), true);
@@ -74,6 +80,11 @@ export default defineComponent({
         .then(res => {
           paymentSystems.value = res.data;
         });
+      sourceApplicationService()
+        .retrieve()
+        .then(res => {
+          sourceApplications.value = res.data;
+        });
     };
 
     initRelationships();
@@ -91,8 +102,9 @@ export default defineComponent({
         required: validations.required(t$('entity.validation.required').toString()),
       },
       user: {},
-      clietntSubscription: {},
+      clientSubscription: {},
       paymentSystem: {},
+      sourceApplication: {},
     };
     const v$ = useVuelidate(validationRules, payment as any);
     v$.value.$validate();
@@ -108,6 +120,7 @@ export default defineComponent({
       externalUsers,
       clientSubscriptions,
       paymentSystems,
+      sourceApplications,
       v$,
       t$,
     };

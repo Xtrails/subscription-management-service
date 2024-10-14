@@ -30,7 +30,7 @@
           <tr>
             <th scope="row"><span v-text="t$('global.field.id')"></span></th>
             <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.sourceApplication.applicationName')"></span></th>
-            <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.sourceApplication.user')"></span></th>
+            <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.sourceApplication.paymentSystems')"></span></th>
             <th scope="row"></th>
           </tr>
         </thead>
@@ -43,11 +43,14 @@
             </td>
             <td>{{ sourceApplication.applicationName }}</td>
             <td>
-              <div v-if="sourceApplication.user">
-                <router-link :to="{ name: 'ExternalUserView', params: { externalUserId: sourceApplication.user.id } }">{{
-                  sourceApplication.user.id
-                }}</router-link>
-              </div>
+              <span v-for="(paymentSystems, i) in sourceApplication.paymentSystems" :key="paymentSystems.id"
+                >{{ i > 0 ? ', ' : '' }}
+                <router-link
+                  class="form-control-static"
+                  :to="{ name: 'PaymentSystemView', params: { paymentSystemId: paymentSystems.id } }"
+                  >{{ paymentSystems.id }}</router-link
+                >
+              </span>
             </td>
             <td class="text-right">
               <div class="btn-group">

@@ -18,7 +18,8 @@
         "title": "External User"
       },
       "id": "ID",
-      "externalUserId": "External User Id"
+      "externalUserId": "External User Id",
+      "sourceApplication": "Source Application"
     }
   }
 }

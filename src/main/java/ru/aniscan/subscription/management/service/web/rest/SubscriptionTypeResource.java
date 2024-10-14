@@ -136,6 +136,9 @@ public class SubscriptionTypeResource {
                 if (subscriptionType.getDuration() != null) {
                     existingSubscriptionType.setDuration(subscriptionType.getDuration());
                 }
+                if (subscriptionType.getVisible() != null) {
+                    existingSubscriptionType.setVisible(subscriptionType.getVisible());
+                }
 
                 return existingSubscriptionType;
             })

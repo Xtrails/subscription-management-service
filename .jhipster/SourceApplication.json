@@ -25,10 +25,11 @@
       "relationshipType": "one-to-many"
     },
     {
-      "otherEntityName": "externalUser",
-      "relationshipName": "user",
-      "relationshipSide": "left",
-      "relationshipType": "many-to-one"
+      "otherEntityName": "paymentSystem",
+      "otherEntityRelationshipName": "sourceApplications",
+      "relationshipName": "paymentSystems",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-many"
     }
   ],
   "searchEngine": "no"
