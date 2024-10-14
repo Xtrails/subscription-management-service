@@ -7,6 +7,8 @@ import PaymentSystemService from './payment-system.service';
 import { useValidation } from '@/shared/composables';
 import { useAlertService } from '@/shared/alert/alert.service';
 
+import SourceApplicationService from '@/entities/source-application/source-application.service';
+import { type ISourceApplication } from '@/shared/model/source-application.model';
 import { type IPaymentSystem, PaymentSystem } from '@/shared/model/payment-system.model';
 
 export default defineComponent({
@@ -17,6 +19,10 @@ export default defineComponent({
     const alertService = inject('alertService', () => useAlertService(), true);
 
     const paymentSystem: Ref<IPaymentSystem> = ref(new PaymentSystem());
+
+    const sourceApplicationService = inject('sourceApplicationService', () => new SourceApplicationService());
+
+    const sourceApplications: Ref<ISourceApplication[]> = ref([]);
     const isSaving = ref(false);
     const currentLanguage = inject('currentLanguage', () => computed(() => navigator.language ?? 'ru'), true);
 
@@ -38,12 +44,23 @@ export default defineComponent({
       retrievePaymentSystem(route.params.paymentSystemId);
     }
 
+    const initRelationships = () => {
+      sourceApplicationService()
+        .retrieve()
+        .then(res => {
+          sourceApplications.value = res.data;
+        });
+    };
+
+    initRelationships();
+
     const { t: t$ } = useI18n();
     const validations = useValidation();
     const validationRules = {
       name: {
         required: validations.required(t$('entity.validation.required').toString()),
       },
+      sourceApplications: {},
     };
     const v$ = useVuelidate(validationRules, paymentSystem as any);
     v$.value.$validate();
@@ -55,11 +72,14 @@ export default defineComponent({
       previousState,
       isSaving,
       currentLanguage,
+      sourceApplications,
       v$,
       t$,
     };
   },
-  created(): void {},
+  created(): void {
+    this.paymentSystem.sourceApplications = [];
+  },
   methods: {
     save(): void {
       this.isSaving = true;
@@ -90,6 +110,13 @@ export default defineComponent({
             this.alertService.showHttpError(error.response);
           });
       }
+    },
+
+    getSelected(selectedVals, option, pkField = 'id'): any {
+      if (selectedVals) {
+        return selectedVals.find(value => option[pkField] === value[pkField]) ?? option;
+      }
+      return option;
     },
   },
 });

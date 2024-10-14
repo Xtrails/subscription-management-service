@@ -57,6 +57,8 @@ public class PaymentSystemAsserts {
      * @param actual the actual entity
      */
     public static void assertPaymentSystemUpdatableRelationshipsEquals(PaymentSystem expected, PaymentSystem actual) {
-        // empty method
+        assertThat(expected)
+            .as("Verify PaymentSystem relationships")
+            .satisfies(e -> assertThat(e.getSourceApplications()).as("check sourceApplications").isEqualTo(actual.getSourceApplications()));
     }
 }

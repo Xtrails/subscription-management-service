@@ -59,6 +59,6 @@ public class SourceApplicationAsserts {
     public static void assertSourceApplicationUpdatableRelationshipsEquals(SourceApplication expected, SourceApplication actual) {
         assertThat(expected)
             .as("Verify SourceApplication relationships")
-            .satisfies(e -> assertThat(e.getUser()).as("check user").isEqualTo(actual.getUser()));
+            .satisfies(e -> assertThat(e.getPaymentSystems()).as("check paymentSystems").isEqualTo(actual.getPaymentSystems()));
     }
 }

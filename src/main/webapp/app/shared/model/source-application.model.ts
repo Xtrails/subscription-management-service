@@ -1,15 +1,15 @@
-import { type IExternalUser } from '@/shared/model/external-user.model';
+import { type IPaymentSystem } from '@/shared/model/payment-system.model';
 
 export interface ISourceApplication {
   id?: number;
   applicationName?: string;
-  user?: IExternalUser | null;
+  paymentSystems?: IPaymentSystem[] | null;
 }
 
 export class SourceApplication implements ISourceApplication {
   constructor(
     public id?: number,
     public applicationName?: string,
-    public user?: IExternalUser | null,
+    public paymentSystems?: IPaymentSystem[] | null,
   ) {}
 }

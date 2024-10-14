@@ -7,8 +7,8 @@ import SourceApplicationService from './source-application.service';
 import { useValidation } from '@/shared/composables';
 import { useAlertService } from '@/shared/alert/alert.service';
 
-import ExternalUserService from '@/entities/external-user/external-user.service';
-import { type IExternalUser } from '@/shared/model/external-user.model';
+import PaymentSystemService from '@/entities/payment-system/payment-system.service';
+import { type IPaymentSystem } from '@/shared/model/payment-system.model';
 import { type ISourceApplication, SourceApplication } from '@/shared/model/source-application.model';
 
 export default defineComponent({
@@ -20,9 +20,9 @@ export default defineComponent({
 
     const sourceApplication: Ref<ISourceApplication> = ref(new SourceApplication());
 
-    const externalUserService = inject('externalUserService', () => new ExternalUserService());
+    const paymentSystemService = inject('paymentSystemService', () => new PaymentSystemService());
 
-    const externalUsers: Ref<IExternalUser[]> = ref([]);
+    const paymentSystems: Ref<IPaymentSystem[]> = ref([]);
     const isSaving = ref(false);
     const currentLanguage = inject('currentLanguage', () => computed(() => navigator.language ?? 'ru'), true);
 
@@ -45,10 +45,10 @@ export default defineComponent({
     }
 
     const initRelationships = () => {
-      externalUserService()
+      paymentSystemService()
         .retrieve()
         .then(res => {
-          externalUsers.value = res.data;
+          paymentSystems.value = res.data;
         });
     };
 
@@ -60,7 +60,7 @@ export default defineComponent({
       applicationName: {
         required: validations.required(t$('entity.validation.required').toString()),
       },
-      user: {},
+      paymentSystems: {},
     };
     const v$ = useVuelidate(validationRules, sourceApplication as any);
     v$.value.$validate();
@@ -72,12 +72,14 @@ export default defineComponent({
       previousState,
       isSaving,
       currentLanguage,
-      externalUsers,
+      paymentSystems,
       v$,
       t$,
     };
   },
-  created(): void {},
+  created(): void {
+    this.sourceApplication.paymentSystems = [];
+  },
   methods: {
     save(): void {
       this.isSaving = true;
@@ -108,6 +110,13 @@ export default defineComponent({
             this.alertService.showHttpError(error.response);
           });
       }
+    },
+
+    getSelected(selectedVals, option, pkField = 'id'): any {
+      if (selectedVals) {
+        return selectedVals.find(value => option[pkField] === value[pkField]) ?? option;
+      }
+      return option;
     },
   },
 });

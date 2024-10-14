@@ -22,8 +22,9 @@
       "status": "Status",
       "paymentDate": "Payment Date",
       "user": "User",
-      "clietntSubscription": "Clietnt Subscription",
-      "paymentSystem": "Payment System"
+      "clientSubscription": "Client Subscription",
+      "paymentSystem": "Payment System",
+      "sourceApplication": "Source Application"
     }
   }
 }

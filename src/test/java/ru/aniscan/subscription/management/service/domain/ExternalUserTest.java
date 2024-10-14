@@ -2,6 +2,7 @@ package ru.aniscan.subscription.management.service.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static ru.aniscan.subscription.management.service.domain.ExternalUserTestSamples.*;
+import static ru.aniscan.subscription.management.service.domain.SourceApplicationTestSamples.*;
 
 import org.junit.jupiter.api.Test;
 import ru.aniscan.subscription.management.service.web.rest.TestUtil;
@@ -20,5 +21,17 @@ class ExternalUserTest {
 
         externalUser2 = getExternalUserSample2();
         assertThat(externalUser1).isNotEqualTo(externalUser2);
+    }
+
+    @Test
+    void sourceApplicationTest() {
+        ExternalUser externalUser = getExternalUserRandomSampleGenerator();
+        SourceApplication sourceApplicationBack = getSourceApplicationRandomSampleGenerator();
+
+        externalUser.setSourceApplication(sourceApplicationBack);
+        assertThat(externalUser.getSourceApplication()).isEqualTo(sourceApplicationBack);
+
+        externalUser.sourceApplication(null);
+        assertThat(externalUser.getSourceApplication()).isNull();
     }
 }

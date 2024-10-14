@@ -32,6 +32,33 @@
               <small class="form-text text-danger" v-for="error of v$.externalUserId.$errors" :key="error.$uid">{{ error.$message }}</small>
             </div>
           </div>
+          <div class="form-group">
+            <label
+              class="form-control-label"
+              v-text="t$('subscriptionManagementServiceApp.externalUser.sourceApplication')"
+              for="external-user-sourceApplication"
+            ></label>
+            <select
+              class="form-control"
+              id="external-user-sourceApplication"
+              data-cy="sourceApplication"
+              name="sourceApplication"
+              v-model="externalUser.sourceApplication"
+            >
+              <option :value="null"></option>
+              <option
+                :value="
+                  externalUser.sourceApplication && sourceApplicationOption.id === externalUser.sourceApplication.id
+                    ? externalUser.sourceApplication
+                    : sourceApplicationOption
+                "
+                v-for="sourceApplicationOption in sourceApplications"
+                :key="sourceApplicationOption.id"
+              >
+                {{ sourceApplicationOption.id }}
+              </option>
+            </select>
+          </div>
         </div>
         <div>
           <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" @click="previousState()">

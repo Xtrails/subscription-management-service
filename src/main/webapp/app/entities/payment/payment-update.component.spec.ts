@@ -11,6 +11,7 @@ import AlertService from '@/shared/alert/alert.service';
 import ExternalUserService from '@/entities/external-user/external-user.service';
 import ClientSubscriptionService from '@/entities/client-subscription/client-subscription.service';
 import PaymentSystemService from '@/entities/payment-system/payment-system.service';
+import SourceApplicationService from '@/entities/source-application/source-application.service';
 
 type PaymentUpdateComponentType = InstanceType<typeof PaymentUpdate>;
 
@@ -65,6 +66,10 @@ describe('Component Tests', () => {
             } as any),
           paymentSystemService: () =>
             sinon.createStubInstance<PaymentSystemService>(PaymentSystemService, {
+              retrieve: sinon.stub().resolves({}),
+            } as any),
+          sourceApplicationService: () =>
+            sinon.createStubInstance<SourceApplicationService>(SourceApplicationService, {
               retrieve: sinon.stub().resolves({}),
             } as any),
         },

@@ -11,6 +11,13 @@
     }
   ],
   "name": "ExternalUser",
-  "relationships": [],
+  "relationships": [
+    {
+      "otherEntityName": "sourceApplication",
+      "relationshipName": "sourceApplication",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
   "searchEngine": "no"
 }

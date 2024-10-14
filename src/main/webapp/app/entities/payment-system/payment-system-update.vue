@@ -32,6 +32,29 @@
               <small class="form-text text-danger" v-for="error of v$.name.$errors" :key="error.$uid">{{ error.$message }}</small>
             </div>
           </div>
+          <div class="form-group">
+            <label
+              v-text="t$('subscriptionManagementServiceApp.paymentSystem.sourceApplications')"
+              for="payment-system-sourceApplications"
+            ></label>
+            <select
+              class="form-control"
+              id="payment-system-sourceApplications"
+              data-cy="sourceApplications"
+              multiple
+              name="sourceApplications"
+              v-if="paymentSystem.sourceApplications !== undefined"
+              v-model="paymentSystem.sourceApplications"
+            >
+              <option
+                :value="getSelected(paymentSystem.sourceApplications, sourceApplicationOption, 'id')"
+                v-for="sourceApplicationOption in sourceApplications"
+                :key="sourceApplicationOption.id"
+              >
+                {{ sourceApplicationOption.id }}
+              </option>
+            </select>
+          </div>
         </div>
         <div>
           <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" @click="previousState()">

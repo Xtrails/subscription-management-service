@@ -1,7 +1,7 @@
 package ru.aniscan.subscription.management.service.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static ru.aniscan.subscription.management.service.domain.ExternalUserTestSamples.*;
+import static ru.aniscan.subscription.management.service.domain.PaymentSystemTestSamples.*;
 import static ru.aniscan.subscription.management.service.domain.ReferralProgramTestSamples.*;
 import static ru.aniscan.subscription.management.service.domain.SourceApplicationTestSamples.*;
 import static ru.aniscan.subscription.management.service.domain.SubscriptionTypeTestSamples.*;
@@ -72,14 +72,24 @@ class SourceApplicationTest {
     }
 
     @Test
-    void userTest() {
+    void paymentSystemsTest() {
         SourceApplication sourceApplication = getSourceApplicationRandomSampleGenerator();
-        ExternalUser externalUserBack = getExternalUserRandomSampleGenerator();
+        PaymentSystem paymentSystemBack = getPaymentSystemRandomSampleGenerator();
 
-        sourceApplication.setUser(externalUserBack);
-        assertThat(sourceApplication.getUser()).isEqualTo(externalUserBack);
+        sourceApplication.addPaymentSystems(paymentSystemBack);
+        assertThat(sourceApplication.getPaymentSystems()).containsOnly(paymentSystemBack);
+        assertThat(paymentSystemBack.getSourceApplications()).containsOnly(sourceApplication);
 
-        sourceApplication.user(null);
-        assertThat(sourceApplication.getUser()).isNull();
+        sourceApplication.removePaymentSystems(paymentSystemBack);
+        assertThat(sourceApplication.getPaymentSystems()).doesNotContain(paymentSystemBack);
+        assertThat(paymentSystemBack.getSourceApplications()).doesNotContain(sourceApplication);
+
+        sourceApplication.paymentSystems(new HashSet<>(Set.of(paymentSystemBack)));
+        assertThat(sourceApplication.getPaymentSystems()).containsOnly(paymentSystemBack);
+        assertThat(paymentSystemBack.getSourceApplications()).containsOnly(sourceApplication);
+
+        sourceApplication.setPaymentSystems(new HashSet<>());
+        assertThat(sourceApplication.getPaymentSystems()).doesNotContain(paymentSystemBack);
+        assertThat(paymentSystemBack.getSourceApplications()).doesNotContain(sourceApplication);
     }
 }

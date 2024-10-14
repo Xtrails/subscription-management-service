@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <!--
+        Added the constraints for entity PaymentSystem.
+    -->
+    <changeSet id="20241012075809-2" author="jhipster">
+
+        <addForeignKeyConstraint baseColumnNames="payment_system_id"
+                                 baseTableName="rel_payment_system__source_applications"
+                                 constraintName="fk_rel_payment_system__source_applications__payment_system_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="payment_system"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="source_applications_id"
+                                 baseTableName="rel_payment_system__source_applications"
+                                 constraintName="fk_rel_payment_system__source_a__source_applications_10_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="source_application"
+                                 />
+    </changeSet>
+</databaseChangeLog>
