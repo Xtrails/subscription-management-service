@@ -1,3 +1,0 @@
-org.springframework.test.context.ContextCustomizerFactory = ru.aniscan.\
-    subscription.management.service.config.\
-    SqlTestContainersSpringContextCustomizerFactory
