@@ -1,0 +1,43 @@
+{
+  "annotations": {
+    "changelogDate": "20250627111843"
+  },
+  "applications": ["subscriptionManagementService"],
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "startDttm",
+      "fieldType": "LocalDate",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "endDttm",
+      "fieldType": "LocalDate",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "SubscriptionStatus",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "ACTIVE,EXPIRED,CANCELLED"
+    }
+  ],
+  "name": "ClientSubscription",
+  "pagination": "infinite-scroll",
+  "relationships": [
+    {
+      "otherEntityName": "externalUser",
+      "relationshipName": "user",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "subscriptionDetails",
+      "relationshipName": "subscriptionDetails",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

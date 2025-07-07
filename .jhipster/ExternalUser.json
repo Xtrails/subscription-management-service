@@ -1,0 +1,31 @@
+{
+  "annotations": {
+    "changelogDate": "20250627111743"
+  },
+  "applications": ["subscriptionManagementService"],
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "externalUserId",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "unique"]
+    }
+  ],
+  "name": "ExternalUser",
+  "relationships": [
+    {
+      "otherEntityName": "referralProgram",
+      "relationshipName": "referralCreator",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "referralProgram",
+      "relationshipName": "referralProgram",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

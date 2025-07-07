@@ -1,0 +1,28 @@
+{
+  "subscriptionManagementServiceApp": {
+    "subscriptionDetails": {
+      "home": {
+        "title": "Subscription Details",
+        "refreshListLabel": "Обновить список",
+        "createLabel": "Создать новый Subscription Details",
+        "createOrEditLabel": "Создать или отредактировать Subscription Details",
+        "notFound": "Subscription Details не найдено"
+      },
+      "created": "Новый Subscription Details создан с идентификатором { param }",
+      "updated": "Subscription Details обновлен с идентификатором { param }",
+      "deleted": "Subscription Details удален с идентификатором { param }",
+      "delete": {
+        "question": "Вы уверены что хотите удалить Subscription Details { id }?"
+      },
+      "detail": {
+        "title": "Subscription Details"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "price": "Price",
+      "duration": "Duration",
+      "sourceApplication": "Source Application"
+    }
+  }
+}

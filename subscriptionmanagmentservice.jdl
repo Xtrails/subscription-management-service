@@ -1,3 +1,42 @@
+//jhipster jdl subscriptionmanagmentservice.jdl--force
+//application {
+//  config {
+//    baseName subscriptionManagementServiceBack
+//    applicationType monolith
+//    authenticationType oauth2
+//    buildTool gradle
+//    clientFramework vue
+//    languages [en, ru]
+//    packageName ru.ani.subscription.management.service
+//    prodDatabaseType postgresql
+//    skipClient true
+//  }
+//  entities *
+//  dto * with mapstruct
+//}
+//
+//application {
+//  config {
+//    baseName subscriptionManagementServiceFront
+//    applicationType monolith
+//    authenticationType oauth2
+//    buildTool gradle
+//    clientFramework vue
+//    languages [en, ru]
+//    packageName ru.ani.subscription.management.service
+//    prodDatabaseType postgresql
+//    skipServer true
+//  }
+//  entities *
+//  dto * with mapstruct
+//}
+//
+//deployment {
+//  deploymentType kubernetes
+//  appsFolders [subscriptionManagementServiceFront, subscriptionManagementServiceBack]
+//  dockerRepositoryName "subscriptionManagementService"
+//}
+
 application {
   config {
     baseName subscriptionManagementService
@@ -16,7 +55,7 @@ application {
 deployment {
   deploymentType kubernetes
   appsFolders [subscriptionManagementService]
-  dockerRepositoryName "subscription-management-service"
+  dockerRepositoryName "subscriptionManagementService"
 }
 
 entity ExternalUser {

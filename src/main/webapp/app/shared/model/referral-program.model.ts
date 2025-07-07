@@ -1,0 +1,28 @@
+import { type ISourceApplication } from '@/shared/model/source-application.model';
+
+import { type ReferralStatus } from '@/shared/model/enumerations/referral-status.model';
+export interface IReferralProgram {
+  id?: number;
+  name?: string;
+  referralCode?: string;
+  description?: string | null;
+  startDttm?: Date;
+  endDttm?: Date;
+  rewardAmount?: number;
+  status?: keyof typeof ReferralStatus;
+  sourceApplication?: ISourceApplication | null;
+}
+
+export class ReferralProgram implements IReferralProgram {
+  constructor(
+    public id?: number,
+    public name?: string,
+    public referralCode?: string,
+    public description?: string | null,
+    public startDttm?: Date,
+    public endDttm?: Date,
+    public rewardAmount?: number,
+    public status?: keyof typeof ReferralStatus,
+    public sourceApplication?: ISourceApplication | null,
+  ) {}
+}

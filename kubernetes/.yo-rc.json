@@ -1,0 +1,18 @@
+{
+  "generator-jhipster": {
+    "deploymentType": "kubernetes",
+    "appsFolders": ["subscriptionManagementService"],
+    "directoryPath": "../",
+    "kubernetesServiceType": "LoadBalancer",
+    "istio": false,
+    "ingressDomain": "",
+    "monitoring": "no",
+    "clusteredDbApps": [],
+    "serviceDiscoveryType": "consul",
+    "dockerRepositoryName": "subscriptionManagementService",
+    "dockerPushCommand": "docker push",
+    "kubernetesNamespace": "default",
+    "kubernetesUseDynamicStorage": false,
+    "kubernetesStorageClassName": ""
+  }
+}

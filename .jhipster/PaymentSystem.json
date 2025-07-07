@@ -1,0 +1,18 @@
+{
+  "annotations": {
+    "changelogDate": "20250627112243"
+  },
+  "applications": ["subscriptionManagementService"],
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "unique"]
+    }
+  ],
+  "name": "PaymentSystem",
+  "relationships": [],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

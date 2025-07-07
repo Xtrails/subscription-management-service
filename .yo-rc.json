@@ -1,0 +1,25 @@
+{
+  "generator-jhipster": {
+    "applicationType": "monolith",
+    "authenticationType": "oauth2",
+    "baseName": "subscriptionManagementService",
+    "buildTool": "gradle",
+    "clientFramework": "vue",
+    "entities": [
+      "ExternalUser",
+      "ClientSubscription",
+      "SubscriptionDetails",
+      "ReferralProgram",
+      "Payment",
+      "PaymentSystem",
+      "SourceApplication"
+    ],
+    "jhipsterVersion": "8.11.0",
+    "languages": ["en", "ru"],
+    "lastLiquibaseTimestamp": 1751023423000,
+    "nativeLanguage": "en",
+    "packageName": "ru.ani.subscription.management.service",
+    "prodDatabaseType": "postgresql",
+    "skipUserManagement": true
+  }
+}

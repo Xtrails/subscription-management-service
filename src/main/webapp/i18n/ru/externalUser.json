@@ -1,0 +1,26 @@
+{
+  "subscriptionManagementServiceApp": {
+    "externalUser": {
+      "home": {
+        "title": "External Users",
+        "refreshListLabel": "Обновить список",
+        "createLabel": "Создать новый External User",
+        "createOrEditLabel": "Создать или отредактировать External User",
+        "notFound": "External Users не найдено"
+      },
+      "created": "Новый External User создан с идентификатором { param }",
+      "updated": "External User обновлен с идентификатором { param }",
+      "deleted": "External User удален с идентификатором { param }",
+      "delete": {
+        "question": "Вы уверены что хотите удалить External User { id }?"
+      },
+      "detail": {
+        "title": "External User"
+      },
+      "id": "ID",
+      "externalUserId": "External User Id",
+      "referralCreator": "Referral Creator",
+      "referralProgram": "Referral Program"
+    }
+  }
+}
