@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -111,12 +112,26 @@ public final class SecurityUtils {
         return mapRolesToGrantedAuthorities(getRolesFromClaims(claims));
     }
 
+    /**
+     * Извлечение ролей из токена
+     *
+     * @param claims атрибуты из токена
+     * @return список ролей пользователя
+     */
     @SuppressWarnings("unchecked")
     private static Collection<String> getRolesFromClaims(Map<String, Object> claims) {
-        return (Collection<String>) claims.getOrDefault(
+        var roles = (Collection<String>) claims.getOrDefault(
             "groups",
             claims.getOrDefault("roles", claims.getOrDefault(CLAIMS_NAMESPACE + "roles", new ArrayList<>()))
         );
+        if (roles.isEmpty()) {
+            return Optional.ofNullable((LinkedHashMap<String, LinkedHashMap<String, ArrayList<String>>>) claims.get("resource_access"))
+                .map(it -> it.get("web_app"))
+                .map(it -> it.get("roles"))
+                .orElse(new ArrayList<>());
+        } else {
+            return roles;
+        }
     }
 
     private static List<GrantedAuthority> mapRolesToGrantedAuthorities(Collection<String> roles) {
