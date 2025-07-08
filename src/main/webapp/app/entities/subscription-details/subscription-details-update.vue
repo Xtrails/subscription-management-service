@@ -71,21 +71,57 @@
           <div class="form-group">
             <label
               class="form-control-label"
+              v-text="t$('subscriptionManagementServiceApp.subscriptionDetails.priceByMonth')"
+              for="subscription-details-priceByMonth"
+            ></label>
+            <input
+              type="number"
+              class="form-control"
+              name="priceByMonth"
+              id="subscription-details-priceByMonth"
+              data-cy="priceByMonth"
+              :class="{ valid: !v$.priceByMonth.$invalid, invalid: v$.priceByMonth.$invalid }"
+              v-model.number="v$.priceByMonth.$model"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              class="form-control-label"
               v-text="t$('subscriptionManagementServiceApp.subscriptionDetails.duration')"
               for="subscription-details-duration"
             ></label>
             <input
-              type="number"
+              type="text"
               class="form-control"
               name="duration"
               id="subscription-details-duration"
               data-cy="duration"
               :class="{ valid: !v$.duration.$invalid, invalid: v$.duration.$invalid }"
-              v-model.number="v$.duration.$model"
+              v-model="v$.duration.$model"
               required
             />
             <div v-if="v$.duration.$anyDirty && v$.duration.$invalid">
               <small class="form-text text-danger" v-for="error of v$.duration.$errors" :key="error.$uid">{{ error.$message }}</small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label
+              class="form-control-label"
+              v-text="t$('subscriptionManagementServiceApp.subscriptionDetails.active')"
+              for="subscription-details-active"
+            ></label>
+            <input
+              type="checkbox"
+              class="form-check"
+              name="active"
+              id="subscription-details-active"
+              data-cy="active"
+              :class="{ valid: !v$.active.$invalid, invalid: v$.active.$invalid }"
+              v-model="v$.active.$model"
+              required
+            />
+            <div v-if="v$.active.$anyDirty && v$.active.$invalid">
+              <small class="form-text text-danger" v-for="error of v$.active.$errors" :key="error.$uid">{{ error.$message }}</small>
             </div>
           </div>
           <div class="form-group">
@@ -112,6 +148,29 @@
                 :key="sourceApplicationOption.id"
               >
                 {{ sourceApplicationOption.id }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label
+              v-text="t$('subscriptionManagementServiceApp.subscriptionDetails.subscriptionAccess')"
+              for="subscription-details-subscriptionAccess"
+            ></label>
+            <select
+              class="form-control"
+              id="subscription-details-subscriptionAccesses"
+              data-cy="subscriptionAccess"
+              multiple
+              name="subscriptionAccess"
+              v-if="subscriptionDetails.subscriptionAccesses !== undefined"
+              v-model="subscriptionDetails.subscriptionAccesses"
+            >
+              <option
+                :value="getSelected(subscriptionDetails.subscriptionAccesses, subscriptionAccessOption, 'id')"
+                v-for="subscriptionAccessOption in subscriptionAccesses"
+                :key="subscriptionAccessOption.id"
+              >
+                {{ subscriptionAccessOption.id }}
               </option>
             </select>
           </div>

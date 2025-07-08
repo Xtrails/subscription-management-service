@@ -458,7 +458,7 @@ class ReferralProgramResourceIT {
         ReferralProgramDao partialUpdatedReferralProgramDao = new ReferralProgramDao();
         partialUpdatedReferralProgramDao.setId(referralProgramDao.getId());
 
-        partialUpdatedReferralProgramDao.referralCode(UPDATED_REFERRAL_CODE);
+        partialUpdatedReferralProgramDao.referralCode(UPDATED_REFERRAL_CODE).endDttm(UPDATED_END_DTTM).status(UPDATED_STATUS);
 
         restReferralProgramMockMvc
             .perform(

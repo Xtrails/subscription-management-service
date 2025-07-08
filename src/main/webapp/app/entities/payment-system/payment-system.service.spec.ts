@@ -95,7 +95,7 @@ describe('Service Tests', () => {
       });
 
       it('should partial update a PaymentSystem', async () => {
-        const patchObject = { name: 'BBBBBB', ...new PaymentSystem() };
+        const patchObject = { ...new PaymentSystem() };
         const returnedFromService = Object.assign(patchObject, elemDefault);
 
         const expected = { ...returnedFromService };

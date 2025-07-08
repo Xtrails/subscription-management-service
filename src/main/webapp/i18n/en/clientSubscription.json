@@ -22,8 +22,7 @@
       "endDttm": "End Dttm",
       "status": "Status",
       "user": "User",
-      "subscriptionDetails": "Subscription Details",
-      "payment": "Payment"
+      "subscriptionDetails": "Subscription Details"
     }
   }
 }

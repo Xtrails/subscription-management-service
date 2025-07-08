@@ -3,7 +3,9 @@ package ru.ani.subscription.management.service.service.dto;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -12,7 +14,6 @@ import java.util.UUID;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class SubscriptionDetailsDto implements Serializable {
 
-    @NotNull
     private UUID id;
 
     @NotNull
@@ -23,10 +24,17 @@ public class SubscriptionDetailsDto implements Serializable {
     @NotNull
     private BigDecimal price;
 
+    private BigDecimal priceByMonth;
+
     @NotNull
-    private Integer duration;
+    private String duration;
+
+    @NotNull
+    private Boolean active;
 
     private SourceApplicationDto sourceApplication;
+
+    private Set<SubscriptionAccessDto> subscriptionAccesses = new HashSet<>();
 
     public UUID getId() {
         return id;
@@ -60,12 +68,28 @@ public class SubscriptionDetailsDto implements Serializable {
         this.price = price;
     }
 
-    public Integer getDuration() {
+    public BigDecimal getPriceByMonth() {
+        return priceByMonth;
+    }
+
+    public void setPriceByMonth(BigDecimal priceByMonth) {
+        this.priceByMonth = priceByMonth;
+    }
+
+    public String getDuration() {
         return duration;
     }
 
-    public void setDuration(Integer duration) {
+    public void setDuration(String duration) {
         this.duration = duration;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
     public SourceApplicationDto getSourceApplication() {
@@ -74,6 +98,14 @@ public class SubscriptionDetailsDto implements Serializable {
 
     public void setSourceApplication(SourceApplicationDto sourceApplication) {
         this.sourceApplication = sourceApplication;
+    }
+
+    public Set<SubscriptionAccessDto> getSubscriptionAccesses() {
+        return subscriptionAccesses;
+    }
+
+    public void setSubscriptionAccesses(Set<SubscriptionAccessDto> subscriptionAccesses) {
+        this.subscriptionAccesses = subscriptionAccesses;
     }
 
     @Override
@@ -105,8 +137,11 @@ public class SubscriptionDetailsDto implements Serializable {
             ", name='" + getName() + "'" +
             ", description='" + getDescription() + "'" +
             ", price=" + getPrice() +
-            ", duration=" + getDuration() +
+            ", priceByMonth=" + getPriceByMonth() +
+            ", duration='" + getDuration() + "'" +
+            ", active='" + getActive() + "'" +
             ", sourceApplication=" + getSourceApplication() +
+            ", subscriptionAccesses=" + getSubscriptionAccesses() +
             "}";
     }
 }

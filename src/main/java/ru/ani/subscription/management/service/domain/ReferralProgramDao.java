@@ -15,17 +15,16 @@ import ru.ani.subscription.management.service.domain.enumeration.ReferralStatus;
  * A ReferralProgramDao.
  */
 @Entity
-@Table(name = "referral_program")
+@Table(name = "referral_program", schema = "subscription_management_service")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ReferralProgramDao implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @NotNull
     @Id
     @GeneratedValue
-    @Column(name = "id", nullable = false, unique = true)
+    @Column(name = "id", unique = true)
     private UUID id;
 
     @NotNull
@@ -56,9 +55,8 @@ public class ReferralProgramDao implements Serializable {
     @Column(name = "status", nullable = false)
     private ReferralStatus status;
 
-    @JsonIgnoreProperties(value = { "referralCreator", "referralProgram" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "referralCreator")
-    private ExternalUserDao externalUser;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ExternalUserDao referralCreator;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "referralPrograms", "subscriptionDetails", "user" }, allowSetters = true)
@@ -170,22 +168,16 @@ public class ReferralProgramDao implements Serializable {
         this.status = status;
     }
 
-    public ExternalUserDao getExternalUser() {
-        return this.externalUser;
+    public ExternalUserDao getReferralCreator() {
+        return this.referralCreator;
     }
 
-    public void setExternalUser(ExternalUserDao externalUser) {
-        if (this.externalUser != null) {
-            this.externalUser.setReferralCreator(null);
-        }
-        if (externalUser != null) {
-            externalUser.setReferralCreator(this);
-        }
-        this.externalUser = externalUser;
+    public void setReferralCreator(ExternalUserDao externalUser) {
+        this.referralCreator = externalUser;
     }
 
-    public ReferralProgramDao externalUser(ExternalUserDao externalUser) {
-        this.setExternalUser(externalUser);
+    public ReferralProgramDao referralCreator(ExternalUserDao externalUser) {
+        this.setReferralCreator(externalUser);
         return this;
     }
 

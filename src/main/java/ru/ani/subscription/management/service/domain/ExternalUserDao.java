@@ -1,6 +1,5 @@
 package ru.ani.subscription.management.service.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
@@ -12,31 +11,21 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
  * A ExternalUserDao.
  */
 @Entity
-@Table(name = "external_user")
+@Table(name = "external_user", schema = "subscription_management_service")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ExternalUserDao implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @NotNull
     @Id
     @GeneratedValue
-    @Column(name = "id", nullable = false, unique = true)
+    @Column(name = "id", unique = true)
     private UUID id;
 
     @NotNull
     @Column(name = "external_user_id", nullable = false, unique = true)
     private String externalUserId;
-
-    @JsonIgnoreProperties(value = { "externalUser", "sourceApplication" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(unique = true)
-    private ReferralProgramDao referralCreator;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "externalUser", "sourceApplication" }, allowSetters = true)
-    private ReferralProgramDao referralProgram;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -64,32 +53,6 @@ public class ExternalUserDao implements Serializable {
 
     public void setExternalUserId(String externalUserId) {
         this.externalUserId = externalUserId;
-    }
-
-    public ReferralProgramDao getReferralCreator() {
-        return this.referralCreator;
-    }
-
-    public void setReferralCreator(ReferralProgramDao referralProgram) {
-        this.referralCreator = referralProgram;
-    }
-
-    public ExternalUserDao referralCreator(ReferralProgramDao referralProgram) {
-        this.setReferralCreator(referralProgram);
-        return this;
-    }
-
-    public ReferralProgramDao getReferralProgram() {
-        return this.referralProgram;
-    }
-
-    public void setReferralProgram(ReferralProgramDao referralProgram) {
-        this.referralProgram = referralProgram;
-    }
-
-    public ExternalUserDao referralProgram(ReferralProgramDao referralProgram) {
-        this.setReferralProgram(referralProgram);
-        return this;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here

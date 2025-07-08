@@ -19,7 +19,7 @@
       },
       "id": "Id",
       "applicationName": "Application Name",
-      "referralPrograms": "Referral Programs",
+      "referralProgram": "Referral Program",
       "subscriptionDetails": "Subscription Details",
       "user": "User"
     }

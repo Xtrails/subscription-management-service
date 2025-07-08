@@ -14,7 +14,6 @@ import ru.ani.subscription.management.service.domain.enumeration.ReferralStatus;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ReferralProgramDto implements Serializable {
 
-    @NotNull
     private UUID id;
 
     @NotNull
@@ -36,6 +35,8 @@ public class ReferralProgramDto implements Serializable {
 
     @NotNull
     private ReferralStatus status;
+
+    private ExternalUserDto referralCreator;
 
     private SourceApplicationDto sourceApplication;
 
@@ -103,6 +104,14 @@ public class ReferralProgramDto implements Serializable {
         this.status = status;
     }
 
+    public ExternalUserDto getReferralCreator() {
+        return referralCreator;
+    }
+
+    public void setReferralCreator(ExternalUserDto referralCreator) {
+        this.referralCreator = referralCreator;
+    }
+
     public SourceApplicationDto getSourceApplication() {
         return sourceApplication;
     }
@@ -144,6 +153,7 @@ public class ReferralProgramDto implements Serializable {
             ", endDttm='" + getEndDttm() + "'" +
             ", rewardAmount=" + getRewardAmount() +
             ", status='" + getStatus() + "'" +
+            ", referralCreator=" + getReferralCreator() +
             ", sourceApplication=" + getSourceApplication() +
             "}";
     }

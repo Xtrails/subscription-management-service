@@ -1,3 +1,4 @@
+import { type IExternalUser } from '@/shared/model/external-user.model';
 import { type ISourceApplication } from '@/shared/model/source-application.model';
 
 import { type ReferralStatus } from '@/shared/model/enumerations/referral-status.model';
@@ -10,6 +11,7 @@ export interface IReferralProgram {
   endDttm?: Date;
   rewardAmount?: number;
   status?: keyof typeof ReferralStatus;
+  referralCreator?: IExternalUser | null;
   sourceApplication?: ISourceApplication | null;
 }
 
@@ -23,6 +25,7 @@ export class ReferralProgram implements IReferralProgram {
     public endDttm?: Date,
     public rewardAmount?: number,
     public status?: keyof typeof ReferralStatus,
+    public referralCreator?: IExternalUser | null,
     public sourceApplication?: ISourceApplication | null,
   ) {}
 }

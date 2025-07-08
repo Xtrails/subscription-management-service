@@ -21,8 +21,11 @@
       "name": "Name",
       "description": "Description",
       "price": "Price",
+      "priceByMonth": "Price By Month",
       "duration": "Duration",
-      "sourceApplication": "Source Application"
+      "active": "Active",
+      "sourceApplication": "Source Application",
+      "subscriptionAccess": "Subscription Access"
     }
   }
 }

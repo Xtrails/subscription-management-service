@@ -8,7 +8,7 @@
     {
       "fieldName": "id",
       "fieldType": "UUID",
-      "fieldValidateRules": ["required", "unique"]
+      "fieldValidateRules": ["unique"]
     },
     {
       "fieldName": "name",

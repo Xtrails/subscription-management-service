@@ -7,10 +7,10 @@ import PaymentService from './payment.service';
 import { useValidation } from '@/shared/composables';
 import { useAlertService } from '@/shared/alert/alert.service';
 
-import ClientSubscriptionService from '@/entities/client-subscription/client-subscription.service';
-import { type IClientSubscription } from '@/shared/model/client-subscription.model';
 import ExternalUserService from '@/entities/external-user/external-user.service';
 import { type IExternalUser } from '@/shared/model/external-user.model';
+import ClientSubscriptionService from '@/entities/client-subscription/client-subscription.service';
+import { type IClientSubscription } from '@/shared/model/client-subscription.model';
 import PaymentSystemService from '@/entities/payment-system/payment-system.service';
 import { type IPaymentSystem } from '@/shared/model/payment-system.model';
 import { type IPayment, Payment } from '@/shared/model/payment.model';
@@ -25,13 +25,13 @@ export default defineComponent({
 
     const payment: Ref<IPayment> = ref(new Payment());
 
-    const clientSubscriptionService = inject('clientSubscriptionService', () => new ClientSubscriptionService());
-
-    const clientSubscriptions: Ref<IClientSubscription[]> = ref([]);
-
     const externalUserService = inject('externalUserService', () => new ExternalUserService());
 
     const externalUsers: Ref<IExternalUser[]> = ref([]);
+
+    const clientSubscriptionService = inject('clientSubscriptionService', () => new ClientSubscriptionService());
+
+    const clientSubscriptions: Ref<IClientSubscription[]> = ref([]);
 
     const paymentSystemService = inject('paymentSystemService', () => new PaymentSystemService());
 
@@ -59,15 +59,15 @@ export default defineComponent({
     }
 
     const initRelationships = () => {
-      clientSubscriptionService()
-        .retrieve()
-        .then(res => {
-          clientSubscriptions.value = res.data;
-        });
       externalUserService()
         .retrieve()
         .then(res => {
           externalUsers.value = res.data;
+        });
+      clientSubscriptionService()
+        .retrieve()
+        .then(res => {
+          clientSubscriptions.value = res.data;
         });
       paymentSystemService()
         .retrieve()
@@ -93,9 +93,8 @@ export default defineComponent({
       hashSum: {
         required: validations.required(t$('entity.validation.required').toString()),
       },
-      clientSubscription: {},
       user: {},
-      clietntSubscription: {},
+      clientSubscription: {},
       paymentSystem: {},
     };
     const v$ = useVuelidate(validationRules, payment as any);
@@ -109,8 +108,8 @@ export default defineComponent({
       paymentStatusValues,
       isSaving,
       currentLanguage,
-      clientSubscriptions,
       externalUsers,
+      clientSubscriptions,
       paymentSystems,
       v$,
       t$,

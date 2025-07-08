@@ -26,18 +26,6 @@ class PaymentDaoTest {
     }
 
     @Test
-    void clientSubscriptionTest() {
-        PaymentDao paymentDao = getPaymentDaoRandomSampleGenerator();
-        ClientSubscriptionDao clientSubscriptionDaoBack = getClientSubscriptionDaoRandomSampleGenerator();
-
-        paymentDao.setClientSubscription(clientSubscriptionDaoBack);
-        assertThat(paymentDao.getClientSubscription()).isEqualTo(clientSubscriptionDaoBack);
-
-        paymentDao.clientSubscription(null);
-        assertThat(paymentDao.getClientSubscription()).isNull();
-    }
-
-    @Test
     void userTest() {
         PaymentDao paymentDao = getPaymentDaoRandomSampleGenerator();
         ExternalUserDao externalUserDaoBack = getExternalUserDaoRandomSampleGenerator();
@@ -50,15 +38,15 @@ class PaymentDaoTest {
     }
 
     @Test
-    void clietntSubscriptionTest() {
+    void clientSubscriptionTest() {
         PaymentDao paymentDao = getPaymentDaoRandomSampleGenerator();
         ClientSubscriptionDao clientSubscriptionDaoBack = getClientSubscriptionDaoRandomSampleGenerator();
 
-        paymentDao.setClietntSubscription(clientSubscriptionDaoBack);
-        assertThat(paymentDao.getClietntSubscription()).isEqualTo(clientSubscriptionDaoBack);
+        paymentDao.setClientSubscription(clientSubscriptionDaoBack);
+        assertThat(paymentDao.getClientSubscription()).isEqualTo(clientSubscriptionDaoBack);
 
-        paymentDao.clietntSubscription(null);
-        assertThat(paymentDao.getClietntSubscription()).isNull();
+        paymentDao.clientSubscription(null);
+        assertThat(paymentDao.getClientSubscription()).isNull();
     }
 
     @Test

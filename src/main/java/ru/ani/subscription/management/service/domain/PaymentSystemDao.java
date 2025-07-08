@@ -11,17 +11,16 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
  * A PaymentSystemDao.
  */
 @Entity
-@Table(name = "payment_system")
+@Table(name = "payment_system", schema = "subscription_management_service")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class PaymentSystemDao implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @NotNull
     @Id
     @GeneratedValue
-    @Column(name = "id", nullable = false, unique = true)
+    @Column(name = "id", unique = true)
     private UUID id;
 
     @NotNull

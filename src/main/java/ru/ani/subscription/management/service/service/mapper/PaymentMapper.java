@@ -17,21 +17,20 @@ import ru.ani.subscription.management.service.service.dto.PaymentSystemDto;
  */
 @Mapper(componentModel = "spring")
 public interface PaymentMapper extends EntityMapper<PaymentDto, PaymentDao> {
-    @Mapping(target = "clientSubscription", source = "clientSubscription", qualifiedByName = "clientSubscriptionId")
     @Mapping(target = "user", source = "user", qualifiedByName = "externalUserId")
-    @Mapping(target = "clietntSubscription", source = "clietntSubscription", qualifiedByName = "clientSubscriptionId")
+    @Mapping(target = "clientSubscription", source = "clientSubscription", qualifiedByName = "clientSubscriptionId")
     @Mapping(target = "paymentSystem", source = "paymentSystem", qualifiedByName = "paymentSystemId")
     PaymentDto toDto(PaymentDao s);
-
-    @Named("clientSubscriptionId")
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
-    ClientSubscriptionDto toDtoClientSubscriptionId(ClientSubscriptionDao clientSubscriptionDao);
 
     @Named("externalUserId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     ExternalUserDto toDtoExternalUserId(ExternalUserDao externalUserDao);
+
+    @Named("clientSubscriptionId")
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "id", source = "id")
+    ClientSubscriptionDto toDtoClientSubscriptionId(ClientSubscriptionDao clientSubscriptionDao);
 
     @Named("paymentSystemId")
     @BeanMapping(ignoreByDefault = true)

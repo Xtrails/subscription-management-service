@@ -65,11 +65,8 @@ public class PaymentDaoAsserts {
     public static void assertPaymentDaoUpdatableRelationshipsEquals(PaymentDao expected, PaymentDao actual) {
         assertThat(actual)
             .as("Verify PaymentDao relationships")
-            .satisfies(a -> assertThat(a.getClientSubscription()).as("check clientSubscription").isEqualTo(expected.getClientSubscription())
-            )
             .satisfies(a -> assertThat(a.getUser()).as("check user").isEqualTo(expected.getUser()))
-            .satisfies(a ->
-                assertThat(a.getClietntSubscription()).as("check clietntSubscription").isEqualTo(expected.getClietntSubscription())
+            .satisfies(a -> assertThat(a.getClientSubscription()).as("check clientSubscription").isEqualTo(expected.getClientSubscription())
             )
             .satisfies(a -> assertThat(a.getPaymentSystem()).as("check paymentSystem").isEqualTo(expected.getPaymentSystem()));
     }

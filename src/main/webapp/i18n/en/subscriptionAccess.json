@@ -1,0 +1,30 @@
+{
+  "subscriptionManagementServiceApp": {
+    "subscriptionAccess": {
+      "home": {
+        "title": "Subscription Accesses",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Subscription Access",
+        "createOrEditLabel": "Create or edit a Subscription Access",
+        "notFound": "No Subscription Accesses found"
+      },
+      "created": "A new Subscription Access is created with identifier { param }",
+      "updated": "A Subscription Access is updated with identifier { param }",
+      "deleted": "A Subscription Access is deleted with identifier { param }",
+      "delete": {
+        "question": "Are you sure you want to delete Subscription Access { id }?"
+      },
+      "detail": {
+        "title": "Subscription Access"
+      },
+      "id": "Id",
+      "name": "Name",
+      "description": "Description",
+      "order": "Order",
+      "role": "Role",
+      "roleGroup": "Role Group",
+      "active": "Active",
+      "subscriptionDetails": "Subscription Details"
+    }
+  }
+}

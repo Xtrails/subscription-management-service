@@ -8,7 +8,7 @@
     {
       "fieldName": "id",
       "fieldType": "UUID",
-      "fieldValidateRules": ["required", "unique"]
+      "fieldValidateRules": ["unique"]
     },
     {
       "fieldName": "externalUserId",
@@ -17,20 +17,7 @@
     }
   ],
   "name": "ExternalUser",
-  "relationships": [
-    {
-      "otherEntityName": "referralProgram",
-      "relationshipName": "referralCreator",
-      "relationshipSide": "left",
-      "relationshipType": "one-to-one"
-    },
-    {
-      "otherEntityName": "referralProgram",
-      "relationshipName": "referralProgram",
-      "relationshipSide": "left",
-      "relationshipType": "many-to-one"
-    }
-  ],
+  "relationships": [],
   "searchEngine": "no",
   "service": "serviceClass"
 }

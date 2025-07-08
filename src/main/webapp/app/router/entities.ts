@@ -29,6 +29,10 @@ const SourceApplication = () => import('@/entities/source-application/source-app
 const SourceApplicationUpdate = () => import('@/entities/source-application/source-application-update.vue');
 const SourceApplicationDetails = () => import('@/entities/source-application/source-application-details.vue');
 
+const SubscriptionAccess = () => import('@/entities/subscription-access/subscription-access.vue');
+const SubscriptionAccessUpdate = () => import('@/entities/subscription-access/subscription-access-update.vue');
+const SubscriptionAccessDetails = () => import('@/entities/subscription-access/subscription-access-details.vue');
+
 // jhipster-needle-add-entity-to-router-import - JHipster will import entities to the router here
 
 export default {
@@ -201,6 +205,30 @@ export default {
       path: 'source-application/:sourceApplicationId/view',
       name: 'SourceApplicationView',
       component: SourceApplicationDetails,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'subscription-access',
+      name: 'SubscriptionAccess',
+      component: SubscriptionAccess,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'subscription-access/new',
+      name: 'SubscriptionAccessCreate',
+      component: SubscriptionAccessUpdate,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'subscription-access/:subscriptionAccessId/edit',
+      name: 'SubscriptionAccessEdit',
+      component: SubscriptionAccessUpdate,
+      meta: { authorities: [Authority.USER] },
+    },
+    {
+      path: 'subscription-access/:subscriptionAccessId/view',
+      name: 'SubscriptionAccessView',
+      component: SubscriptionAccessDetails,
       meta: { authorities: [Authority.USER] },
     },
     // jhipster-needle-add-entity-to-router - JHipster will add entities to the router here

@@ -304,8 +304,6 @@ class PaymentSystemResourceIT {
         PaymentSystemDao partialUpdatedPaymentSystemDao = new PaymentSystemDao();
         partialUpdatedPaymentSystemDao.setId(paymentSystemDao.getId());
 
-        partialUpdatedPaymentSystemDao.name(UPDATED_NAME);
-
         restPaymentSystemMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedPaymentSystemDao.getId())

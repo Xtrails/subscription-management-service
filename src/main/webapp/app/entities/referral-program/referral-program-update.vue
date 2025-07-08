@@ -191,6 +191,33 @@
           <div class="form-group">
             <label
               class="form-control-label"
+              v-text="t$('subscriptionManagementServiceApp.referralProgram.referralCreator')"
+              for="referral-program-referralCreator"
+            ></label>
+            <select
+              class="form-control"
+              id="referral-program-referralCreator"
+              data-cy="referralCreator"
+              name="referralCreator"
+              v-model="referralProgram.referralCreator"
+            >
+              <option :value="null"></option>
+              <option
+                :value="
+                  referralProgram.referralCreator && externalUserOption.id === referralProgram.referralCreator.id
+                    ? referralProgram.referralCreator
+                    : externalUserOption
+                "
+                v-for="externalUserOption in externalUsers"
+                :key="externalUserOption.id"
+              >
+                {{ externalUserOption.id }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label
+              class="form-control-label"
               v-text="t$('subscriptionManagementServiceApp.referralProgram.sourceApplication')"
               for="referral-program-sourceApplication"
             ></label>

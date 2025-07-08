@@ -109,7 +109,7 @@ describe('Service Tests', () => {
       });
 
       it('should partial update a Payment', async () => {
-        const patchObject = { status: 'BBBBBB', paymentDttm: dayjs(currentDate).format(DATE_FORMAT), hashSum: 'BBBBBB', ...new Payment() };
+        const patchObject = { status: 'BBBBBB', hashSum: 'BBBBBB', ...new Payment() };
         const returnedFromService = Object.assign(patchObject, elemDefault);
 
         const expected = { paymentDttm: currentDate, ...returnedFromService };

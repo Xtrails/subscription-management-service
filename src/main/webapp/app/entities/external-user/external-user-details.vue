@@ -12,26 +12,6 @@
           <dd>
             <span>{{ externalUser.externalUserId }}</span>
           </dd>
-          <dt>
-            <span v-text="t$('subscriptionManagementServiceApp.externalUser.referralCreator')"></span>
-          </dt>
-          <dd>
-            <div v-if="externalUser.referralCreator">
-              <router-link :to="{ name: 'ReferralProgramView', params: { referralProgramId: externalUser.referralCreator.id } }">{{
-                externalUser.referralCreator.id
-              }}</router-link>
-            </div>
-          </dd>
-          <dt>
-            <span v-text="t$('subscriptionManagementServiceApp.externalUser.referralProgram')"></span>
-          </dt>
-          <dd>
-            <div v-if="externalUser.referralProgram">
-              <router-link :to="{ name: 'ReferralProgramView', params: { referralProgramId: externalUser.referralProgram.id } }">{{
-                externalUser.referralProgram.id
-              }}</router-link>
-            </div>
-          </dd>
         </dl>
         <button type="submit" @click.prevent="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
           <font-awesome-icon icon="arrow-left"></font-awesome-icon>&nbsp;<span v-text="t$('entity.action.back')"></span>

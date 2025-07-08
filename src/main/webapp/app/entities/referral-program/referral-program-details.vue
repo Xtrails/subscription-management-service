@@ -49,6 +49,16 @@
             <span v-text="t$('subscriptionManagementServiceApp.ReferralStatus.' + referralProgram.status)"></span>
           </dd>
           <dt>
+            <span v-text="t$('subscriptionManagementServiceApp.referralProgram.referralCreator')"></span>
+          </dt>
+          <dd>
+            <div v-if="referralProgram.referralCreator">
+              <router-link :to="{ name: 'ExternalUserView', params: { externalUserId: referralProgram.referralCreator.id } }">{{
+                referralProgram.referralCreator.id
+              }}</router-link>
+            </div>
+          </dd>
+          <dt>
             <span v-text="t$('subscriptionManagementServiceApp.referralProgram.sourceApplication')"></span>
           </dt>
           <dd>

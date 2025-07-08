@@ -14,17 +14,16 @@ import ru.ani.subscription.management.service.domain.enumeration.SubscriptionSta
  * A ClientSubscriptionDao.
  */
 @Entity
-@Table(name = "client_subscription")
+@Table(name = "client_subscription", schema = "subscription_management_service")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ClientSubscriptionDao implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @NotNull
     @Id
     @GeneratedValue
-    @Column(name = "id", nullable = false, unique = true)
+    @Column(name = "id", unique = true)
     private UUID id;
 
     @NotNull
@@ -41,16 +40,11 @@ public class ClientSubscriptionDao implements Serializable {
     private SubscriptionStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "referralCreator", "referralProgram" }, allowSetters = true)
     private ExternalUserDao user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "sourceApplication" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "sourceApplication", "subscriptionAccesses" }, allowSetters = true)
     private SubscriptionDetailsDao subscriptionDetails;
-
-    @JsonIgnoreProperties(value = { "clientSubscription", "user", "clietntSubscription", "paymentSystem" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "clientSubscription")
-    private PaymentDao payment;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -129,25 +123,6 @@ public class ClientSubscriptionDao implements Serializable {
 
     public ClientSubscriptionDao subscriptionDetails(SubscriptionDetailsDao subscriptionDetails) {
         this.setSubscriptionDetails(subscriptionDetails);
-        return this;
-    }
-
-    public PaymentDao getPayment() {
-        return this.payment;
-    }
-
-    public void setPayment(PaymentDao payment) {
-        if (this.payment != null) {
-            this.payment.setClientSubscription(null);
-        }
-        if (payment != null) {
-            payment.setClientSubscription(this);
-        }
-        this.payment = payment;
-    }
-
-    public ClientSubscriptionDao payment(PaymentDao payment) {
-        this.setPayment(payment);
         return this;
     }
 

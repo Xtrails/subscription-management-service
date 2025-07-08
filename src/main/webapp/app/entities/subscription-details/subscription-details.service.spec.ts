@@ -28,7 +28,7 @@ describe('Service Tests', () => {
 
     beforeEach(() => {
       service = new SubscriptionDetailsService();
-      elemDefault = new SubscriptionDetails('9fec3727-3421-4967-b213-ba36557ca194', 'AAAAAAA', 'AAAAAAA', 0, 0);
+      elemDefault = new SubscriptionDetails('9fec3727-3421-4967-b213-ba36557ca194', 'AAAAAAA', 'AAAAAAA', 0, 0, 'AAAAAAA', false);
     });
 
     describe('Service methods', () => {
@@ -73,7 +73,15 @@ describe('Service Tests', () => {
       });
 
       it('should update a SubscriptionDetails', async () => {
-        const returnedFromService = { name: 'BBBBBB', description: 'BBBBBB', price: 1, duration: 1, ...elemDefault };
+        const returnedFromService = {
+          name: 'BBBBBB',
+          description: 'BBBBBB',
+          price: 1,
+          priceByMonth: 1,
+          duration: 'BBBBBB',
+          active: true,
+          ...elemDefault,
+        };
 
         const expected = { ...returnedFromService };
         axiosStub.put.resolves({ data: returnedFromService });
@@ -95,7 +103,7 @@ describe('Service Tests', () => {
       });
 
       it('should partial update a SubscriptionDetails', async () => {
-        const patchObject = { name: 'BBBBBB', description: 'BBBBBB', duration: 1, ...new SubscriptionDetails() };
+        const patchObject = { duration: 'BBBBBB', ...new SubscriptionDetails() };
         const returnedFromService = Object.assign(patchObject, elemDefault);
 
         const expected = { ...returnedFromService };
@@ -118,7 +126,15 @@ describe('Service Tests', () => {
       });
 
       it('should return a list of SubscriptionDetails', async () => {
-        const returnedFromService = { name: 'BBBBBB', description: 'BBBBBB', price: 1, duration: 1, ...elemDefault };
+        const returnedFromService = {
+          name: 'BBBBBB',
+          description: 'BBBBBB',
+          price: 1,
+          priceByMonth: 1,
+          duration: 'BBBBBB',
+          active: true,
+          ...elemDefault,
+        };
         const expected = { ...returnedFromService };
         axiosStub.get.resolves([returnedFromService]);
         return service.retrieve().then(res => {

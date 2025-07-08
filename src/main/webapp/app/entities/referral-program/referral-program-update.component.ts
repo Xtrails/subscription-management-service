@@ -7,6 +7,8 @@ import ReferralProgramService from './referral-program.service';
 import { useValidation } from '@/shared/composables';
 import { useAlertService } from '@/shared/alert/alert.service';
 
+import ExternalUserService from '@/entities/external-user/external-user.service';
+import { type IExternalUser } from '@/shared/model/external-user.model';
 import SourceApplicationService from '@/entities/source-application/source-application.service';
 import { type ISourceApplication } from '@/shared/model/source-application.model';
 import { type IReferralProgram, ReferralProgram } from '@/shared/model/referral-program.model';
@@ -20,6 +22,10 @@ export default defineComponent({
     const alertService = inject('alertService', () => useAlertService(), true);
 
     const referralProgram: Ref<IReferralProgram> = ref(new ReferralProgram());
+
+    const externalUserService = inject('externalUserService', () => new ExternalUserService());
+
+    const externalUsers: Ref<IExternalUser[]> = ref([]);
 
     const sourceApplicationService = inject('sourceApplicationService', () => new SourceApplicationService());
 
@@ -47,6 +53,11 @@ export default defineComponent({
     }
 
     const initRelationships = () => {
+      externalUserService()
+        .retrieve()
+        .then(res => {
+          externalUsers.value = res.data;
+        });
       sourceApplicationService()
         .retrieve()
         .then(res => {
@@ -78,7 +89,7 @@ export default defineComponent({
       status: {
         required: validations.required(t$('entity.validation.required').toString()),
       },
-      externalUser: {},
+      referralCreator: {},
       sourceApplication: {},
     };
     const v$ = useVuelidate(validationRules, referralProgram as any);
@@ -92,6 +103,7 @@ export default defineComponent({
       referralStatusValues,
       isSaving,
       currentLanguage,
+      externalUsers,
       sourceApplications,
       v$,
       t$,

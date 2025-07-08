@@ -32,60 +32,6 @@
               <small class="form-text text-danger" v-for="error of v$.externalUserId.$errors" :key="error.$uid">{{ error.$message }}</small>
             </div>
           </div>
-          <div class="form-group">
-            <label
-              class="form-control-label"
-              v-text="t$('subscriptionManagementServiceApp.externalUser.referralCreator')"
-              for="external-user-referralCreator"
-            ></label>
-            <select
-              class="form-control"
-              id="external-user-referralCreator"
-              data-cy="referralCreator"
-              name="referralCreator"
-              v-model="externalUser.referralCreator"
-            >
-              <option :value="null"></option>
-              <option
-                :value="
-                  externalUser.referralCreator && referralProgramOption.id === externalUser.referralCreator.id
-                    ? externalUser.referralCreator
-                    : referralProgramOption
-                "
-                v-for="referralProgramOption in referralPrograms"
-                :key="referralProgramOption.id"
-              >
-                {{ referralProgramOption.id }}
-              </option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label
-              class="form-control-label"
-              v-text="t$('subscriptionManagementServiceApp.externalUser.referralProgram')"
-              for="external-user-referralProgram"
-            ></label>
-            <select
-              class="form-control"
-              id="external-user-referralProgram"
-              data-cy="referralProgram"
-              name="referralProgram"
-              v-model="externalUser.referralProgram"
-            >
-              <option :value="null"></option>
-              <option
-                :value="
-                  externalUser.referralProgram && referralProgramOption.id === externalUser.referralProgram.id
-                    ? externalUser.referralProgram
-                    : referralProgramOption
-                "
-                v-for="referralProgramOption in referralPrograms"
-                :key="referralProgramOption.id"
-              >
-                {{ referralProgramOption.id }}
-              </option>
-            </select>
-          </div>
         </div>
         <div>
           <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" @click="previousState()">

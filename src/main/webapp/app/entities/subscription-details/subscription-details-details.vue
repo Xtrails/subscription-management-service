@@ -25,10 +25,22 @@
             <span>{{ subscriptionDetails.price }}</span>
           </dd>
           <dt>
+            <span v-text="t$('subscriptionManagementServiceApp.subscriptionDetails.priceByMonth')"></span>
+          </dt>
+          <dd>
+            <span>{{ subscriptionDetails.priceByMonth }}</span>
+          </dd>
+          <dt>
             <span v-text="t$('subscriptionManagementServiceApp.subscriptionDetails.duration')"></span>
           </dt>
           <dd>
             <span>{{ subscriptionDetails.duration }}</span>
+          </dd>
+          <dt>
+            <span v-text="t$('subscriptionManagementServiceApp.subscriptionDetails.active')"></span>
+          </dt>
+          <dd>
+            <span>{{ subscriptionDetails.active }}</span>
           </dd>
           <dt>
             <span v-text="t$('subscriptionManagementServiceApp.subscriptionDetails.sourceApplication')"></span>
@@ -40,6 +52,17 @@
                 >{{ subscriptionDetails.sourceApplication.id }}</router-link
               >
             </div>
+          </dd>
+          <dt>
+            <span v-text="t$('subscriptionManagementServiceApp.subscriptionDetails.subscriptionAccess')"></span>
+          </dt>
+          <dd>
+            <span v-for="(subscriptionAccess, i) in subscriptionDetails.subscriptionAccesses" :key="subscriptionAccess.id"
+              >{{ i > 0 ? ', ' : '' }}
+              <router-link :to="{ name: 'SubscriptionAccessView', params: { subscriptionAccessId: subscriptionAccess.id } }">{{
+                subscriptionAccess.id
+              }}</router-link>
+            </span>
           </dd>
         </dl>
         <button type="submit" @click.prevent="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">

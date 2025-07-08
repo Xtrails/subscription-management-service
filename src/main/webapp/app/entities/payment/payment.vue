@@ -48,17 +48,13 @@
               <span v-text="t$('subscriptionManagementServiceApp.payment.hashSum')"></span>
               <jhi-sort-indicator :current-order="propOrder" :reverse="reverse" :field-name="'hashSum'"></jhi-sort-indicator>
             </th>
-            <th scope="row" @click="changeOrder('clientSubscription.id')">
-              <span v-text="t$('subscriptionManagementServiceApp.payment.clientSubscription')"></span>
-              <jhi-sort-indicator :current-order="propOrder" :reverse="reverse" :field-name="'clientSubscription.id'"></jhi-sort-indicator>
-            </th>
             <th scope="row" @click="changeOrder('user.id')">
               <span v-text="t$('subscriptionManagementServiceApp.payment.user')"></span>
               <jhi-sort-indicator :current-order="propOrder" :reverse="reverse" :field-name="'user.id'"></jhi-sort-indicator>
             </th>
-            <th scope="row" @click="changeOrder('clietntSubscription.id')">
-              <span v-text="t$('subscriptionManagementServiceApp.payment.clietntSubscription')"></span>
-              <jhi-sort-indicator :current-order="propOrder" :reverse="reverse" :field-name="'clietntSubscription.id'"></jhi-sort-indicator>
+            <th scope="row" @click="changeOrder('clientSubscription.id')">
+              <span v-text="t$('subscriptionManagementServiceApp.payment.clientSubscription')"></span>
+              <jhi-sort-indicator :current-order="propOrder" :reverse="reverse" :field-name="'clientSubscription.id'"></jhi-sort-indicator>
             </th>
             <th scope="row" @click="changeOrder('paymentSystem.id')">
               <span v-text="t$('subscriptionManagementServiceApp.payment.paymentSystem')"></span>
@@ -77,13 +73,6 @@
             <td>{{ payment.paymentDttm }}</td>
             <td>{{ payment.hashSum }}</td>
             <td>
-              <div v-if="payment.clientSubscription">
-                <router-link :to="{ name: 'ClientSubscriptionView', params: { clientSubscriptionId: payment.clientSubscription.id } }">{{
-                  payment.clientSubscription.id
-                }}</router-link>
-              </div>
-            </td>
-            <td>
               <div v-if="payment.user">
                 <router-link :to="{ name: 'ExternalUserView', params: { externalUserId: payment.user.id } }">{{
                   payment.user.id
@@ -91,9 +80,9 @@
               </div>
             </td>
             <td>
-              <div v-if="payment.clietntSubscription">
-                <router-link :to="{ name: 'ClientSubscriptionView', params: { clientSubscriptionId: payment.clietntSubscription.id } }">{{
-                  payment.clietntSubscription.id
+              <div v-if="payment.clientSubscription">
+                <router-link :to="{ name: 'ClientSubscriptionView', params: { clientSubscriptionId: payment.clientSubscription.id } }">{{
+                  payment.clientSubscription.id
                 }}</router-link>
               </div>
             </td>

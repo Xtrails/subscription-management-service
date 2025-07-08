@@ -10,13 +10,6 @@
     -->
     <changeSet id="20250707225002-2" author="jhipster">
 
-        <addForeignKeyConstraint baseColumnNames="client_subscription_id"
-                                 baseTableName="payment"
-                                 constraintName="fk_payment__client_subscription_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="client_subscription"
-                                 />
-
         <addForeignKeyConstraint baseColumnNames="user_id"
                                  baseTableName="payment"
                                  constraintName="fk_payment__user_id"
@@ -24,9 +17,9 @@
                                  referencedTableName="external_user"
                                  />
 
-        <addForeignKeyConstraint baseColumnNames="clietnt_subscription_id"
+        <addForeignKeyConstraint baseColumnNames="client_subscription_id"
                                  baseTableName="payment"
-                                 constraintName="fk_payment__clietnt_subscription_id"
+                                 constraintName="fk_payment__client_subscription_id"
                                  referencedColumnNames="id"
                                  referencedTableName="client_subscription"
                                  />

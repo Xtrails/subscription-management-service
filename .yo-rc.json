@@ -6,6 +6,7 @@
     "buildTool": "gradle",
     "clientFramework": "vue",
     "clientThemeVariant": "dark",
+    "creationTimestamp": 1751957381799,
     "dtoSuffix": "Dto",
     "entities": [
       "ExternalUser",
@@ -14,12 +15,13 @@
       "ReferralProgram",
       "Payment",
       "PaymentSystem",
-      "SourceApplication"
+      "SourceApplication",
+      "SubscriptionAccess"
     ],
     "entitySuffix": "Dao",
     "jhipsterVersion": "8.11.0",
     "languages": ["ru", "en"],
-    "lastLiquibaseTimestamp": 1751928722000,
+    "lastLiquibaseTimestamp": 1751976102000,
     "nativeLanguage": "ru",
     "packageName": "ru.ani.subscription.management.service",
     "prodDatabaseType": "postgresql",

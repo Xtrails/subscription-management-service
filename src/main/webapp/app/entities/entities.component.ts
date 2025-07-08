@@ -7,6 +7,7 @@ import ReferralProgramService from './referral-program/referral-program.service'
 import PaymentService from './payment/payment.service';
 import PaymentSystemService from './payment-system/payment-system.service';
 import SourceApplicationService from './source-application/source-application.service';
+import SubscriptionAccessService from './subscription-access/subscription-access.service';
 // jhipster-needle-add-entity-service-to-entities-component-import - JHipster will import entities services here
 
 export default defineComponent({
@@ -20,6 +21,7 @@ export default defineComponent({
     provide('paymentService', () => new PaymentService());
     provide('paymentSystemService', () => new PaymentSystemService());
     provide('sourceApplicationService', () => new SourceApplicationService());
+    provide('subscriptionAccessService', () => new SubscriptionAccessService());
     // jhipster-needle-add-entity-service-to-entities-component - JHipster will import entities services here
   },
 });

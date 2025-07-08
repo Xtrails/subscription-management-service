@@ -10,6 +10,13 @@
     -->
     <changeSet id="20250707224902-2" author="jhipster">
 
+        <addForeignKeyConstraint baseColumnNames="referral_creator_id"
+                                 baseTableName="referral_program"
+                                 constraintName="fk_referral_program__referral_creator_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="external_user"
+                                 />
+
         <addForeignKeyConstraint baseColumnNames="source_application_id"
                                  baseTableName="referral_program"
                                  constraintName="fk_referral_program__source_application_id"

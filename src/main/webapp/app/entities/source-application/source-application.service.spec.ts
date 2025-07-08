@@ -95,7 +95,7 @@ describe('Service Tests', () => {
       });
 
       it('should partial update a SourceApplication', async () => {
-        const patchObject = { ...new SourceApplication() };
+        const patchObject = { applicationName: 'BBBBBB', ...new SourceApplication() };
         const returnedFromService = Object.assign(patchObject, elemDefault);
 
         const expected = { ...returnedFromService };
