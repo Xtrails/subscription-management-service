@@ -1,7 +1,7 @@
 package ru.ani.subscription.management.service.service.mapper;
 
-import static ru.ani.subscription.management.service.domain.PaymentAsserts.*;
-import static ru.ani.subscription.management.service.domain.PaymentTestSamples.*;
+import static ru.ani.subscription.management.service.domain.PaymentDaoAsserts.*;
+import static ru.ani.subscription.management.service.domain.PaymentDaoTestSamples.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,8 +17,8 @@ class PaymentMapperTest {
 
     @Test
     void shouldConvertToDtoAndBack() {
-        var expected = getPaymentSample1();
+        var expected = getPaymentDaoSample1();
         var actual = paymentMapper.toEntity(paymentMapper.toDto(expected));
-        assertPaymentAllPropertiesEquals(expected, actual);
+        assertPaymentDaoAllPropertiesEquals(expected, actual);
     }
 }

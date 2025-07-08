@@ -5,7 +5,7 @@ import { type IPaymentSystem } from '@/shared/model/payment-system.model';
 const baseApiUrl = 'api/payment-systems';
 
 export default class PaymentSystemService {
-  find(id: number): Promise<IPaymentSystem> {
+  find(id: string): Promise<IPaymentSystem> {
     return new Promise<IPaymentSystem>((resolve, reject) => {
       axios
         .get(`${baseApiUrl}/${id}`)
@@ -31,7 +31,7 @@ export default class PaymentSystemService {
     });
   }
 
-  delete(id: number): Promise<any> {
+  delete(id: string): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       axios
         .delete(`${baseApiUrl}/${id}`)

@@ -1,7 +1,7 @@
 package ru.ani.subscription.management.service.service.mapper;
 
-import static ru.ani.subscription.management.service.domain.ReferralProgramAsserts.*;
-import static ru.ani.subscription.management.service.domain.ReferralProgramTestSamples.*;
+import static ru.ani.subscription.management.service.domain.ReferralProgramDaoAsserts.*;
+import static ru.ani.subscription.management.service.domain.ReferralProgramDaoTestSamples.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,8 +17,8 @@ class ReferralProgramMapperTest {
 
     @Test
     void shouldConvertToDtoAndBack() {
-        var expected = getReferralProgramSample1();
+        var expected = getReferralProgramDaoSample1();
         var actual = referralProgramMapper.toEntity(referralProgramMapper.toDto(expected));
-        assertReferralProgramAllPropertiesEquals(expected, actual);
+        assertReferralProgramDaoAllPropertiesEquals(expected, actual);
     }
 }

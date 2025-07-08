@@ -20,7 +20,7 @@ export default defineComponent({
     const { login } = loginService;
 
     const accountService = inject<AccountService>('accountService');
-    const currentLanguage = inject('currentLanguage', () => computed(() => navigator.language ?? 'en'), true);
+    const currentLanguage = inject('currentLanguage', () => computed(() => navigator.language ?? 'ru'), true);
     const changeLanguage = inject<(string) => Promise<void>>('changeLanguage');
 
     const isActiveLanguage = (key: string) => {

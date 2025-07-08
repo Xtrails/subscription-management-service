@@ -70,7 +70,7 @@ export default defineComponent({
       await retrievePayments();
     });
 
-    const removeId: Ref<number> = ref(null);
+    const removeId: Ref<string> = ref(null);
     const removeEntity = ref<any>(null);
     const prepareRemove = (instance: IPayment) => {
       removeId.value = instance.id;

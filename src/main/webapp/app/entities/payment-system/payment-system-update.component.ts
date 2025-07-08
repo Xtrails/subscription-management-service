@@ -18,7 +18,7 @@ export default defineComponent({
 
     const paymentSystem: Ref<IPaymentSystem> = ref(new PaymentSystem());
     const isSaving = ref(false);
-    const currentLanguage = inject('currentLanguage', () => computed(() => navigator.language ?? 'en'), true);
+    const currentLanguage = inject('currentLanguage', () => computed(() => navigator.language ?? 'ru'), true);
 
     const route = useRoute();
     const router = useRouter();

@@ -17,7 +17,7 @@
       "detail": {
         "title": "External User"
       },
-      "id": "ID",
+      "id": "Id",
       "externalUserId": "External User Id",
       "referralCreator": "Referral Creator",
       "referralProgram": "Referral Program"

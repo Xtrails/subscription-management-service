@@ -55,7 +55,7 @@ describe('Component Tests', () => {
     describe('Mount', () => {
       it('Should call load all on init', async () => {
         // GIVEN
-        sourceApplicationServiceStub.retrieve.resolves({ headers: {}, data: [{ id: 123 }] });
+        sourceApplicationServiceStub.retrieve.resolves({ headers: {}, data: [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }] });
 
         // WHEN
         const wrapper = shallowMount(SourceApplication, { global: mountOptions });
@@ -64,7 +64,7 @@ describe('Component Tests', () => {
 
         // THEN
         expect(sourceApplicationServiceStub.retrieve.calledOnce).toBeTruthy();
-        expect(comp.sourceApplications[0]).toEqual(expect.objectContaining({ id: 123 }));
+        expect(comp.sourceApplications[0]).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
       });
     });
     describe('Handles', () => {
@@ -83,7 +83,7 @@ describe('Component Tests', () => {
         sourceApplicationServiceStub.delete.resolves({});
 
         // WHEN
-        comp.prepareRemove({ id: 123 });
+        comp.prepareRemove({ id: '9fec3727-3421-4967-b213-ba36557ca194' });
 
         comp.removeSourceApplication();
         await comp.$nextTick(); // clear components

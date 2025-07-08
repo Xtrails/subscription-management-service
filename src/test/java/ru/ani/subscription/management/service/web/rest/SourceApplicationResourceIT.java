@@ -5,13 +5,12 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static ru.ani.subscription.management.service.domain.SourceApplicationAsserts.*;
+import static ru.ani.subscription.management.service.domain.SourceApplicationDaoAsserts.*;
 import static ru.ani.subscription.management.service.web.rest.TestUtil.createUpdateProxyForBean;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,9 +21,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ani.subscription.management.service.IntegrationTest;
-import ru.ani.subscription.management.service.domain.SourceApplication;
+import ru.ani.subscription.management.service.domain.SourceApplicationDao;
 import ru.ani.subscription.management.service.repository.SourceApplicationRepository;
-import ru.ani.subscription.management.service.service.dto.SourceApplicationDTO;
+import ru.ani.subscription.management.service.service.dto.SourceApplicationDto;
 import ru.ani.subscription.management.service.service.mapper.SourceApplicationMapper;
 
 /**
@@ -41,9 +40,6 @@ class SourceApplicationResourceIT {
     private static final String ENTITY_API_URL = "/api/source-applications";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
-    private static Random random = new Random();
-    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
-
     @Autowired
     private ObjectMapper om;
 
@@ -59,9 +55,9 @@ class SourceApplicationResourceIT {
     @Autowired
     private MockMvc restSourceApplicationMockMvc;
 
-    private SourceApplication sourceApplication;
+    private SourceApplicationDao sourceApplicationDao;
 
-    private SourceApplication insertedSourceApplication;
+    private SourceApplicationDao insertedSourceApplicationDao;
 
     /**
      * Create an entity for this test.
@@ -69,8 +65,8 @@ class SourceApplicationResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static SourceApplication createEntity() {
-        return new SourceApplication().applicationName(DEFAULT_APPLICATION_NAME);
+    public static SourceApplicationDao createEntity() {
+        return new SourceApplicationDao().applicationName(DEFAULT_APPLICATION_NAME);
     }
 
     /**
@@ -79,20 +75,20 @@ class SourceApplicationResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static SourceApplication createUpdatedEntity() {
-        return new SourceApplication().applicationName(UPDATED_APPLICATION_NAME);
+    public static SourceApplicationDao createUpdatedEntity() {
+        return new SourceApplicationDao().applicationName(UPDATED_APPLICATION_NAME);
     }
 
     @BeforeEach
     void initTest() {
-        sourceApplication = createEntity();
+        sourceApplicationDao = createEntity();
     }
 
     @AfterEach
     void cleanup() {
-        if (insertedSourceApplication != null) {
-            sourceApplicationRepository.delete(insertedSourceApplication);
-            insertedSourceApplication = null;
+        if (insertedSourceApplicationDao != null) {
+            sourceApplicationRepository.delete(insertedSourceApplicationDao);
+            insertedSourceApplicationDao = null;
         }
     }
 
@@ -101,36 +97,39 @@ class SourceApplicationResourceIT {
     void createSourceApplication() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
         // Create the SourceApplication
-        SourceApplicationDTO sourceApplicationDTO = sourceApplicationMapper.toDto(sourceApplication);
-        var returnedSourceApplicationDTO = om.readValue(
+        SourceApplicationDto sourceApplicationDto = sourceApplicationMapper.toDto(sourceApplicationDao);
+        var returnedSourceApplicationDto = om.readValue(
             restSourceApplicationMockMvc
                 .perform(
                     post(ENTITY_API_URL)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(om.writeValueAsBytes(sourceApplicationDTO))
+                        .content(om.writeValueAsBytes(sourceApplicationDto))
                 )
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse()
                 .getContentAsString(),
-            SourceApplicationDTO.class
+            SourceApplicationDto.class
         );
 
         // Validate the SourceApplication in the database
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
-        var returnedSourceApplication = sourceApplicationMapper.toEntity(returnedSourceApplicationDTO);
-        assertSourceApplicationUpdatableFieldsEquals(returnedSourceApplication, getPersistedSourceApplication(returnedSourceApplication));
+        var returnedSourceApplicationDao = sourceApplicationMapper.toEntity(returnedSourceApplicationDto);
+        assertSourceApplicationDaoUpdatableFieldsEquals(
+            returnedSourceApplicationDao,
+            getPersistedSourceApplicationDao(returnedSourceApplicationDao)
+        );
 
-        insertedSourceApplication = returnedSourceApplication;
+        insertedSourceApplicationDao = returnedSourceApplicationDao;
     }
 
     @Test
     @Transactional
     void createSourceApplicationWithExistingId() throws Exception {
         // Create the SourceApplication with an existing ID
-        sourceApplication.setId(1L);
-        SourceApplicationDTO sourceApplicationDTO = sourceApplicationMapper.toDto(sourceApplication);
+        insertedSourceApplicationDao = sourceApplicationRepository.saveAndFlush(sourceApplicationDao);
+        SourceApplicationDto sourceApplicationDto = sourceApplicationMapper.toDto(sourceApplicationDao);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
 
@@ -140,7 +139,7 @@ class SourceApplicationResourceIT {
                 post(ENTITY_API_URL)
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(sourceApplicationDTO))
+                    .content(om.writeValueAsBytes(sourceApplicationDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -153,17 +152,17 @@ class SourceApplicationResourceIT {
     void checkApplicationNameIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        sourceApplication.setApplicationName(null);
+        sourceApplicationDao.setApplicationName(null);
 
         // Create the SourceApplication, which fails.
-        SourceApplicationDTO sourceApplicationDTO = sourceApplicationMapper.toDto(sourceApplication);
+        SourceApplicationDto sourceApplicationDto = sourceApplicationMapper.toDto(sourceApplicationDao);
 
         restSourceApplicationMockMvc
             .perform(
                 post(ENTITY_API_URL)
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(sourceApplicationDTO))
+                    .content(om.writeValueAsBytes(sourceApplicationDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -174,14 +173,14 @@ class SourceApplicationResourceIT {
     @Transactional
     void getAllSourceApplications() throws Exception {
         // Initialize the database
-        insertedSourceApplication = sourceApplicationRepository.saveAndFlush(sourceApplication);
+        insertedSourceApplicationDao = sourceApplicationRepository.saveAndFlush(sourceApplicationDao);
 
         // Get all the sourceApplicationList
         restSourceApplicationMockMvc
             .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(sourceApplication.getId().intValue())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(sourceApplicationDao.getId().toString())))
             .andExpect(jsonPath("$.[*].applicationName").value(hasItem(DEFAULT_APPLICATION_NAME)));
     }
 
@@ -189,14 +188,14 @@ class SourceApplicationResourceIT {
     @Transactional
     void getSourceApplication() throws Exception {
         // Initialize the database
-        insertedSourceApplication = sourceApplicationRepository.saveAndFlush(sourceApplication);
+        insertedSourceApplicationDao = sourceApplicationRepository.saveAndFlush(sourceApplicationDao);
 
         // Get the sourceApplication
         restSourceApplicationMockMvc
-            .perform(get(ENTITY_API_URL_ID, sourceApplication.getId()))
+            .perform(get(ENTITY_API_URL_ID, sourceApplicationDao.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.id").value(sourceApplication.getId().intValue()))
+            .andExpect(jsonPath("$.id").value(sourceApplicationDao.getId().toString()))
             .andExpect(jsonPath("$.applicationName").value(DEFAULT_APPLICATION_NAME));
     }
 
@@ -204,54 +203,54 @@ class SourceApplicationResourceIT {
     @Transactional
     void getNonExistingSourceApplication() throws Exception {
         // Get the sourceApplication
-        restSourceApplicationMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
+        restSourceApplicationMockMvc.perform(get(ENTITY_API_URL_ID, UUID.randomUUID().toString())).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
     void putExistingSourceApplication() throws Exception {
         // Initialize the database
-        insertedSourceApplication = sourceApplicationRepository.saveAndFlush(sourceApplication);
+        insertedSourceApplicationDao = sourceApplicationRepository.saveAndFlush(sourceApplicationDao);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the sourceApplication
-        SourceApplication updatedSourceApplication = sourceApplicationRepository.findById(sourceApplication.getId()).orElseThrow();
-        // Disconnect from session so that the updates on updatedSourceApplication are not directly saved in db
-        em.detach(updatedSourceApplication);
-        updatedSourceApplication.applicationName(UPDATED_APPLICATION_NAME);
-        SourceApplicationDTO sourceApplicationDTO = sourceApplicationMapper.toDto(updatedSourceApplication);
+        SourceApplicationDao updatedSourceApplicationDao = sourceApplicationRepository.findById(sourceApplicationDao.getId()).orElseThrow();
+        // Disconnect from session so that the updates on updatedSourceApplicationDao are not directly saved in db
+        em.detach(updatedSourceApplicationDao);
+        updatedSourceApplicationDao.applicationName(UPDATED_APPLICATION_NAME);
+        SourceApplicationDto sourceApplicationDto = sourceApplicationMapper.toDto(updatedSourceApplicationDao);
 
         restSourceApplicationMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, sourceApplicationDTO.getId())
+                put(ENTITY_API_URL_ID, sourceApplicationDto.getId())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(sourceApplicationDTO))
+                    .content(om.writeValueAsBytes(sourceApplicationDto))
             )
             .andExpect(status().isOk());
 
         // Validate the SourceApplication in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertPersistedSourceApplicationToMatchAllProperties(updatedSourceApplication);
+        assertPersistedSourceApplicationDaoToMatchAllProperties(updatedSourceApplicationDao);
     }
 
     @Test
     @Transactional
     void putNonExistingSourceApplication() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        sourceApplication.setId(longCount.incrementAndGet());
+        sourceApplicationDao.setId(UUID.randomUUID());
 
         // Create the SourceApplication
-        SourceApplicationDTO sourceApplicationDTO = sourceApplicationMapper.toDto(sourceApplication);
+        SourceApplicationDto sourceApplicationDto = sourceApplicationMapper.toDto(sourceApplicationDao);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restSourceApplicationMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, sourceApplicationDTO.getId())
+                put(ENTITY_API_URL_ID, sourceApplicationDto.getId())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(sourceApplicationDTO))
+                    .content(om.writeValueAsBytes(sourceApplicationDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -263,18 +262,18 @@ class SourceApplicationResourceIT {
     @Transactional
     void putWithIdMismatchSourceApplication() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        sourceApplication.setId(longCount.incrementAndGet());
+        sourceApplicationDao.setId(UUID.randomUUID());
 
         // Create the SourceApplication
-        SourceApplicationDTO sourceApplicationDTO = sourceApplicationMapper.toDto(sourceApplication);
+        SourceApplicationDto sourceApplicationDto = sourceApplicationMapper.toDto(sourceApplicationDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restSourceApplicationMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, longCount.incrementAndGet())
+                put(ENTITY_API_URL_ID, UUID.randomUUID())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(sourceApplicationDTO))
+                    .content(om.writeValueAsBytes(sourceApplicationDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -286,15 +285,15 @@ class SourceApplicationResourceIT {
     @Transactional
     void putWithMissingIdPathParamSourceApplication() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        sourceApplication.setId(longCount.incrementAndGet());
+        sourceApplicationDao.setId(UUID.randomUUID());
 
         // Create the SourceApplication
-        SourceApplicationDTO sourceApplicationDTO = sourceApplicationMapper.toDto(sourceApplication);
+        SourceApplicationDto sourceApplicationDto = sourceApplicationMapper.toDto(sourceApplicationDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restSourceApplicationMockMvc
             .perform(
-                put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(sourceApplicationDTO))
+                put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(sourceApplicationDto))
             )
             .andExpect(status().isMethodNotAllowed());
 
@@ -306,31 +305,31 @@ class SourceApplicationResourceIT {
     @Transactional
     void partialUpdateSourceApplicationWithPatch() throws Exception {
         // Initialize the database
-        insertedSourceApplication = sourceApplicationRepository.saveAndFlush(sourceApplication);
+        insertedSourceApplicationDao = sourceApplicationRepository.saveAndFlush(sourceApplicationDao);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the sourceApplication using partial update
-        SourceApplication partialUpdatedSourceApplication = new SourceApplication();
-        partialUpdatedSourceApplication.setId(sourceApplication.getId());
+        SourceApplicationDao partialUpdatedSourceApplicationDao = new SourceApplicationDao();
+        partialUpdatedSourceApplicationDao.setId(sourceApplicationDao.getId());
 
-        partialUpdatedSourceApplication.applicationName(UPDATED_APPLICATION_NAME);
+        partialUpdatedSourceApplicationDao.applicationName(UPDATED_APPLICATION_NAME);
 
         restSourceApplicationMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, partialUpdatedSourceApplication.getId())
+                patch(ENTITY_API_URL_ID, partialUpdatedSourceApplicationDao.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedSourceApplication))
+                    .content(om.writeValueAsBytes(partialUpdatedSourceApplicationDao))
             )
             .andExpect(status().isOk());
 
         // Validate the SourceApplication in the database
 
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertSourceApplicationUpdatableFieldsEquals(
-            createUpdateProxyForBean(partialUpdatedSourceApplication, sourceApplication),
-            getPersistedSourceApplication(sourceApplication)
+        assertSourceApplicationDaoUpdatableFieldsEquals(
+            createUpdateProxyForBean(partialUpdatedSourceApplicationDao, sourceApplicationDao),
+            getPersistedSourceApplicationDao(sourceApplicationDao)
         );
     }
 
@@ -338,31 +337,31 @@ class SourceApplicationResourceIT {
     @Transactional
     void fullUpdateSourceApplicationWithPatch() throws Exception {
         // Initialize the database
-        insertedSourceApplication = sourceApplicationRepository.saveAndFlush(sourceApplication);
+        insertedSourceApplicationDao = sourceApplicationRepository.saveAndFlush(sourceApplicationDao);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the sourceApplication using partial update
-        SourceApplication partialUpdatedSourceApplication = new SourceApplication();
-        partialUpdatedSourceApplication.setId(sourceApplication.getId());
+        SourceApplicationDao partialUpdatedSourceApplicationDao = new SourceApplicationDao();
+        partialUpdatedSourceApplicationDao.setId(sourceApplicationDao.getId());
 
-        partialUpdatedSourceApplication.applicationName(UPDATED_APPLICATION_NAME);
+        partialUpdatedSourceApplicationDao.applicationName(UPDATED_APPLICATION_NAME);
 
         restSourceApplicationMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, partialUpdatedSourceApplication.getId())
+                patch(ENTITY_API_URL_ID, partialUpdatedSourceApplicationDao.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedSourceApplication))
+                    .content(om.writeValueAsBytes(partialUpdatedSourceApplicationDao))
             )
             .andExpect(status().isOk());
 
         // Validate the SourceApplication in the database
 
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertSourceApplicationUpdatableFieldsEquals(
-            partialUpdatedSourceApplication,
-            getPersistedSourceApplication(partialUpdatedSourceApplication)
+        assertSourceApplicationDaoUpdatableFieldsEquals(
+            partialUpdatedSourceApplicationDao,
+            getPersistedSourceApplicationDao(partialUpdatedSourceApplicationDao)
         );
     }
 
@@ -370,18 +369,18 @@ class SourceApplicationResourceIT {
     @Transactional
     void patchNonExistingSourceApplication() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        sourceApplication.setId(longCount.incrementAndGet());
+        sourceApplicationDao.setId(UUID.randomUUID());
 
         // Create the SourceApplication
-        SourceApplicationDTO sourceApplicationDTO = sourceApplicationMapper.toDto(sourceApplication);
+        SourceApplicationDto sourceApplicationDto = sourceApplicationMapper.toDto(sourceApplicationDao);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restSourceApplicationMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, sourceApplicationDTO.getId())
+                patch(ENTITY_API_URL_ID, sourceApplicationDto.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(sourceApplicationDTO))
+                    .content(om.writeValueAsBytes(sourceApplicationDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -393,18 +392,18 @@ class SourceApplicationResourceIT {
     @Transactional
     void patchWithIdMismatchSourceApplication() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        sourceApplication.setId(longCount.incrementAndGet());
+        sourceApplicationDao.setId(UUID.randomUUID());
 
         // Create the SourceApplication
-        SourceApplicationDTO sourceApplicationDTO = sourceApplicationMapper.toDto(sourceApplication);
+        SourceApplicationDto sourceApplicationDto = sourceApplicationMapper.toDto(sourceApplicationDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restSourceApplicationMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, longCount.incrementAndGet())
+                patch(ENTITY_API_URL_ID, UUID.randomUUID())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(sourceApplicationDTO))
+                    .content(om.writeValueAsBytes(sourceApplicationDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -416,10 +415,10 @@ class SourceApplicationResourceIT {
     @Transactional
     void patchWithMissingIdPathParamSourceApplication() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        sourceApplication.setId(longCount.incrementAndGet());
+        sourceApplicationDao.setId(UUID.randomUUID());
 
         // Create the SourceApplication
-        SourceApplicationDTO sourceApplicationDTO = sourceApplicationMapper.toDto(sourceApplication);
+        SourceApplicationDto sourceApplicationDto = sourceApplicationMapper.toDto(sourceApplicationDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restSourceApplicationMockMvc
@@ -427,7 +426,7 @@ class SourceApplicationResourceIT {
                 patch(ENTITY_API_URL)
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(sourceApplicationDTO))
+                    .content(om.writeValueAsBytes(sourceApplicationDto))
             )
             .andExpect(status().isMethodNotAllowed());
 
@@ -439,13 +438,13 @@ class SourceApplicationResourceIT {
     @Transactional
     void deleteSourceApplication() throws Exception {
         // Initialize the database
-        insertedSourceApplication = sourceApplicationRepository.saveAndFlush(sourceApplication);
+        insertedSourceApplicationDao = sourceApplicationRepository.saveAndFlush(sourceApplicationDao);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
 
         // Delete the sourceApplication
         restSourceApplicationMockMvc
-            .perform(delete(ENTITY_API_URL_ID, sourceApplication.getId()).with(csrf()).accept(MediaType.APPLICATION_JSON))
+            .perform(delete(ENTITY_API_URL_ID, sourceApplicationDao.getId().toString()).with(csrf()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
@@ -468,18 +467,21 @@ class SourceApplicationResourceIT {
         assertThat(countBefore).isEqualTo(getRepositoryCount());
     }
 
-    protected SourceApplication getPersistedSourceApplication(SourceApplication sourceApplication) {
+    protected SourceApplicationDao getPersistedSourceApplicationDao(SourceApplicationDao sourceApplication) {
         return sourceApplicationRepository.findById(sourceApplication.getId()).orElseThrow();
     }
 
-    protected void assertPersistedSourceApplicationToMatchAllProperties(SourceApplication expectedSourceApplication) {
-        assertSourceApplicationAllPropertiesEquals(expectedSourceApplication, getPersistedSourceApplication(expectedSourceApplication));
+    protected void assertPersistedSourceApplicationDaoToMatchAllProperties(SourceApplicationDao expectedSourceApplicationDao) {
+        assertSourceApplicationDaoAllPropertiesEquals(
+            expectedSourceApplicationDao,
+            getPersistedSourceApplicationDao(expectedSourceApplicationDao)
+        );
     }
 
-    protected void assertPersistedSourceApplicationToMatchUpdatableProperties(SourceApplication expectedSourceApplication) {
-        assertSourceApplicationAllUpdatablePropertiesEquals(
-            expectedSourceApplication,
-            getPersistedSourceApplication(expectedSourceApplication)
+    protected void assertPersistedSourceApplicationDaoToMatchUpdatableProperties(SourceApplicationDao expectedSourceApplicationDao) {
+        assertSourceApplicationDaoAllUpdatablePropertiesEquals(
+            expectedSourceApplicationDao,
+            getPersistedSourceApplicationDao(expectedSourceApplicationDao)
         );
     }
 }

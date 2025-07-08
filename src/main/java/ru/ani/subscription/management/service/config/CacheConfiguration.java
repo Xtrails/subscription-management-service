@@ -45,15 +45,15 @@ public class CacheConfiguration {
     @Bean
     public JCacheManagerCustomizer cacheManagerCustomizer() {
         return cm -> {
-            createCache(cm, ru.ani.subscription.management.service.domain.ExternalUser.class.getName());
-            createCache(cm, ru.ani.subscription.management.service.domain.ClientSubscription.class.getName());
-            createCache(cm, ru.ani.subscription.management.service.domain.SubscriptionDetails.class.getName());
-            createCache(cm, ru.ani.subscription.management.service.domain.ReferralProgram.class.getName());
-            createCache(cm, ru.ani.subscription.management.service.domain.Payment.class.getName());
-            createCache(cm, ru.ani.subscription.management.service.domain.PaymentSystem.class.getName());
-            createCache(cm, ru.ani.subscription.management.service.domain.SourceApplication.class.getName());
-            createCache(cm, ru.ani.subscription.management.service.domain.SourceApplication.class.getName() + ".referralPrograms");
-            createCache(cm, ru.ani.subscription.management.service.domain.SourceApplication.class.getName() + ".subscriptionDetails");
+            createCache(cm, ru.ani.subscription.management.service.domain.ExternalUserDao.class.getName());
+            createCache(cm, ru.ani.subscription.management.service.domain.ClientSubscriptionDao.class.getName());
+            createCache(cm, ru.ani.subscription.management.service.domain.SubscriptionDetailsDao.class.getName());
+            createCache(cm, ru.ani.subscription.management.service.domain.ReferralProgramDao.class.getName());
+            createCache(cm, ru.ani.subscription.management.service.domain.PaymentDao.class.getName());
+            createCache(cm, ru.ani.subscription.management.service.domain.PaymentSystemDao.class.getName());
+            createCache(cm, ru.ani.subscription.management.service.domain.SourceApplicationDao.class.getName());
+            createCache(cm, ru.ani.subscription.management.service.domain.SourceApplicationDao.class.getName() + ".referralPrograms");
+            createCache(cm, ru.ani.subscription.management.service.domain.SourceApplicationDao.class.getName() + ".subscriptionDetails");
             // jhipster-needle-ehcache-add-entry
         };
     }

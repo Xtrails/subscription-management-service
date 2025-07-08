@@ -7,7 +7,7 @@ import { type IClientSubscription } from '@/shared/model/client-subscription.mod
 const baseApiUrl = 'api/client-subscriptions';
 
 export default class ClientSubscriptionService {
-  find(id: number): Promise<IClientSubscription> {
+  find(id: string): Promise<IClientSubscription> {
     return new Promise<IClientSubscription>((resolve, reject) => {
       axios
         .get(`${baseApiUrl}/${id}`)
@@ -33,7 +33,7 @@ export default class ClientSubscriptionService {
     });
   }
 
-  delete(id: number): Promise<any> {
+  delete(id: string): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       axios
         .delete(`${baseApiUrl}/${id}`)

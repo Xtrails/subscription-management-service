@@ -32,7 +32,7 @@ describe('Service Tests', () => {
     beforeEach(() => {
       service = new ClientSubscriptionService();
       currentDate = new Date();
-      elemDefault = new ClientSubscription(123, currentDate, currentDate, 'ACTIVE');
+      elemDefault = new ClientSubscription('9fec3727-3421-4967-b213-ba36557ca194', currentDate, currentDate, 'ACTIVE');
     });
 
     describe('Service methods', () => {
@@ -44,7 +44,7 @@ describe('Service Tests', () => {
         };
         axiosStub.get.resolves({ data: returnedFromService });
 
-        return service.find(123).then(res => {
+        return service.find('9fec3727-3421-4967-b213-ba36557ca194').then(res => {
           expect(res).toMatchObject(elemDefault);
         });
       });
@@ -52,7 +52,7 @@ describe('Service Tests', () => {
       it('should not find an element', async () => {
         axiosStub.get.rejects(error);
         return service
-          .find(123)
+          .find('9fec3727-3421-4967-b213-ba36557ca194')
           .then()
           .catch(err => {
             expect(err).toMatchObject(error);
@@ -61,7 +61,7 @@ describe('Service Tests', () => {
 
       it('should create a ClientSubscription', async () => {
         const returnedFromService = {
-          id: 123,
+          id: '9fec3727-3421-4967-b213-ba36557ca194',
           startDttm: dayjs(currentDate).format(DATE_FORMAT),
           endDttm: dayjs(currentDate).format(DATE_FORMAT),
           ...elemDefault,
@@ -162,7 +162,7 @@ describe('Service Tests', () => {
 
       it('should delete a ClientSubscription', async () => {
         axiosStub.delete.resolves({ ok: true });
-        return service.delete(123).then(res => {
+        return service.delete('9fec3727-3421-4967-b213-ba36557ca194').then(res => {
           expect(res.ok).toBeTruthy();
         });
       });
@@ -171,7 +171,7 @@ describe('Service Tests', () => {
         axiosStub.delete.rejects(error);
 
         return service
-          .delete(123)
+          .delete('9fec3727-3421-4967-b213-ba36557ca194')
           .then()
           .catch(err => {
             expect(err).toMatchObject(error);

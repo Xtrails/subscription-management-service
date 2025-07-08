@@ -17,7 +17,7 @@
       "detail": {
         "title": "Client Subscription"
       },
-      "id": "ID",
+      "id": "Id",
       "startDttm": "Start Dttm",
       "endDttm": "End Dttm",
       "status": "Status",

@@ -55,7 +55,7 @@ describe('Component Tests', () => {
     describe('Mount', () => {
       it('Should call load all on init', async () => {
         // GIVEN
-        externalUserServiceStub.retrieve.resolves({ headers: {}, data: [{ id: 123 }] });
+        externalUserServiceStub.retrieve.resolves({ headers: {}, data: [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }] });
 
         // WHEN
         const wrapper = shallowMount(ExternalUser, { global: mountOptions });
@@ -64,7 +64,7 @@ describe('Component Tests', () => {
 
         // THEN
         expect(externalUserServiceStub.retrieve.calledOnce).toBeTruthy();
-        expect(comp.externalUsers[0]).toEqual(expect.objectContaining({ id: 123 }));
+        expect(comp.externalUsers[0]).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
       });
     });
     describe('Handles', () => {
@@ -83,7 +83,7 @@ describe('Component Tests', () => {
         externalUserServiceStub.delete.resolves({});
 
         // WHEN
-        comp.prepareRemove({ id: 123 });
+        comp.prepareRemove({ id: '9fec3727-3421-4967-b213-ba36557ca194' });
 
         comp.removeExternalUser();
         await comp.$nextTick(); // clear components

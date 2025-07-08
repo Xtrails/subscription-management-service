@@ -24,7 +24,7 @@ export default defineComponent({
 
     const referralPrograms: Ref<IReferralProgram[]> = ref([]);
     const isSaving = ref(false);
-    const currentLanguage = inject('currentLanguage', () => computed(() => navigator.language ?? 'en'), true);
+    const currentLanguage = inject('currentLanguage', () => computed(() => navigator.language ?? 'ru'), true);
 
     const route = useRoute();
     const router = useRouter();

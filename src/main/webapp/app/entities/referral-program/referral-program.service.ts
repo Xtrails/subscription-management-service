@@ -5,7 +5,7 @@ import { type IReferralProgram } from '@/shared/model/referral-program.model';
 const baseApiUrl = 'api/referral-programs';
 
 export default class ReferralProgramService {
-  find(id: number): Promise<IReferralProgram> {
+  find(id: string): Promise<IReferralProgram> {
     return new Promise<IReferralProgram>((resolve, reject) => {
       axios
         .get(`${baseApiUrl}/${id}`)
@@ -31,7 +31,7 @@ export default class ReferralProgramService {
     });
   }
 
-  delete(id: number): Promise<any> {
+  delete(id: string): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       axios
         .delete(`${baseApiUrl}/${id}`)

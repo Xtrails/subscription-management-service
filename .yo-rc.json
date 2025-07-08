@@ -5,6 +5,8 @@
     "baseName": "subscriptionManagementService",
     "buildTool": "gradle",
     "clientFramework": "vue",
+    "clientThemeVariant": "dark",
+    "dtoSuffix": "Dto",
     "entities": [
       "ExternalUser",
       "ClientSubscription",
@@ -14,12 +16,14 @@
       "PaymentSystem",
       "SourceApplication"
     ],
+    "entitySuffix": "Dao",
     "jhipsterVersion": "8.11.0",
-    "languages": ["en", "ru"],
-    "lastLiquibaseTimestamp": 1751023423000,
-    "nativeLanguage": "en",
+    "languages": ["ru", "en"],
+    "lastLiquibaseTimestamp": 1751928722000,
+    "nativeLanguage": "ru",
     "packageName": "ru.ani.subscription.management.service",
     "prodDatabaseType": "postgresql",
+    "reactive": false,
     "skipUserManagement": true
   }
 }

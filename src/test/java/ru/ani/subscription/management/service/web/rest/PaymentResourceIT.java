@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static ru.ani.subscription.management.service.domain.PaymentAsserts.*;
+import static ru.ani.subscription.management.service.domain.PaymentDaoAsserts.*;
 import static ru.ani.subscription.management.service.web.rest.TestUtil.createUpdateProxyForBean;
 import static ru.ani.subscription.management.service.web.rest.TestUtil.sameNumber;
 
@@ -14,8 +14,7 @@ import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,10 +25,10 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ani.subscription.management.service.IntegrationTest;
-import ru.ani.subscription.management.service.domain.Payment;
+import ru.ani.subscription.management.service.domain.PaymentDao;
 import ru.ani.subscription.management.service.domain.enumeration.PaymentStatus;
 import ru.ani.subscription.management.service.repository.PaymentRepository;
-import ru.ani.subscription.management.service.service.dto.PaymentDTO;
+import ru.ani.subscription.management.service.service.dto.PaymentDto;
 import ru.ani.subscription.management.service.service.mapper.PaymentMapper;
 
 /**
@@ -55,9 +54,6 @@ class PaymentResourceIT {
     private static final String ENTITY_API_URL = "/api/payments";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
-    private static Random random = new Random();
-    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
-
     @Autowired
     private ObjectMapper om;
 
@@ -73,9 +69,9 @@ class PaymentResourceIT {
     @Autowired
     private MockMvc restPaymentMockMvc;
 
-    private Payment payment;
+    private PaymentDao paymentDao;
 
-    private Payment insertedPayment;
+    private PaymentDao insertedPaymentDao;
 
     /**
      * Create an entity for this test.
@@ -83,8 +79,8 @@ class PaymentResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static Payment createEntity() {
-        return new Payment().amount(DEFAULT_AMOUNT).status(DEFAULT_STATUS).paymentDttm(DEFAULT_PAYMENT_DTTM).hashSum(DEFAULT_HASH_SUM);
+    public static PaymentDao createEntity() {
+        return new PaymentDao().amount(DEFAULT_AMOUNT).status(DEFAULT_STATUS).paymentDttm(DEFAULT_PAYMENT_DTTM).hashSum(DEFAULT_HASH_SUM);
     }
 
     /**
@@ -93,20 +89,20 @@ class PaymentResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static Payment createUpdatedEntity() {
-        return new Payment().amount(UPDATED_AMOUNT).status(UPDATED_STATUS).paymentDttm(UPDATED_PAYMENT_DTTM).hashSum(UPDATED_HASH_SUM);
+    public static PaymentDao createUpdatedEntity() {
+        return new PaymentDao().amount(UPDATED_AMOUNT).status(UPDATED_STATUS).paymentDttm(UPDATED_PAYMENT_DTTM).hashSum(UPDATED_HASH_SUM);
     }
 
     @BeforeEach
     void initTest() {
-        payment = createEntity();
+        paymentDao = createEntity();
     }
 
     @AfterEach
     void cleanup() {
-        if (insertedPayment != null) {
-            paymentRepository.delete(insertedPayment);
-            insertedPayment = null;
+        if (insertedPaymentDao != null) {
+            paymentRepository.delete(insertedPaymentDao);
+            insertedPaymentDao = null;
         }
     }
 
@@ -115,39 +111,39 @@ class PaymentResourceIT {
     void createPayment() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
         // Create the Payment
-        PaymentDTO paymentDTO = paymentMapper.toDto(payment);
-        var returnedPaymentDTO = om.readValue(
+        PaymentDto paymentDto = paymentMapper.toDto(paymentDao);
+        var returnedPaymentDto = om.readValue(
             restPaymentMockMvc
                 .perform(
-                    post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(paymentDTO))
+                    post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(paymentDto))
                 )
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse()
                 .getContentAsString(),
-            PaymentDTO.class
+            PaymentDto.class
         );
 
         // Validate the Payment in the database
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
-        var returnedPayment = paymentMapper.toEntity(returnedPaymentDTO);
-        assertPaymentUpdatableFieldsEquals(returnedPayment, getPersistedPayment(returnedPayment));
+        var returnedPaymentDao = paymentMapper.toEntity(returnedPaymentDto);
+        assertPaymentDaoUpdatableFieldsEquals(returnedPaymentDao, getPersistedPaymentDao(returnedPaymentDao));
 
-        insertedPayment = returnedPayment;
+        insertedPaymentDao = returnedPaymentDao;
     }
 
     @Test
     @Transactional
     void createPaymentWithExistingId() throws Exception {
         // Create the Payment with an existing ID
-        payment.setId(1L);
-        PaymentDTO paymentDTO = paymentMapper.toDto(payment);
+        insertedPaymentDao = paymentRepository.saveAndFlush(paymentDao);
+        PaymentDto paymentDto = paymentMapper.toDto(paymentDao);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restPaymentMockMvc
-            .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(paymentDTO)))
+            .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(paymentDto)))
             .andExpect(status().isBadRequest());
 
         // Validate the Payment in the database
@@ -159,13 +155,13 @@ class PaymentResourceIT {
     void checkAmountIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        payment.setAmount(null);
+        paymentDao.setAmount(null);
 
         // Create the Payment, which fails.
-        PaymentDTO paymentDTO = paymentMapper.toDto(payment);
+        PaymentDto paymentDto = paymentMapper.toDto(paymentDao);
 
         restPaymentMockMvc
-            .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(paymentDTO)))
+            .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(paymentDto)))
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
@@ -176,13 +172,13 @@ class PaymentResourceIT {
     void checkStatusIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        payment.setStatus(null);
+        paymentDao.setStatus(null);
 
         // Create the Payment, which fails.
-        PaymentDTO paymentDTO = paymentMapper.toDto(payment);
+        PaymentDto paymentDto = paymentMapper.toDto(paymentDao);
 
         restPaymentMockMvc
-            .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(paymentDTO)))
+            .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(paymentDto)))
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
@@ -193,13 +189,13 @@ class PaymentResourceIT {
     void checkPaymentDttmIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        payment.setPaymentDttm(null);
+        paymentDao.setPaymentDttm(null);
 
         // Create the Payment, which fails.
-        PaymentDTO paymentDTO = paymentMapper.toDto(payment);
+        PaymentDto paymentDto = paymentMapper.toDto(paymentDao);
 
         restPaymentMockMvc
-            .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(paymentDTO)))
+            .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(paymentDto)))
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
@@ -210,13 +206,13 @@ class PaymentResourceIT {
     void checkHashSumIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        payment.setHashSum(null);
+        paymentDao.setHashSum(null);
 
         // Create the Payment, which fails.
-        PaymentDTO paymentDTO = paymentMapper.toDto(payment);
+        PaymentDto paymentDto = paymentMapper.toDto(paymentDao);
 
         restPaymentMockMvc
-            .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(paymentDTO)))
+            .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(paymentDto)))
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
@@ -226,14 +222,14 @@ class PaymentResourceIT {
     @Transactional
     void getAllPayments() throws Exception {
         // Initialize the database
-        insertedPayment = paymentRepository.saveAndFlush(payment);
+        insertedPaymentDao = paymentRepository.saveAndFlush(paymentDao);
 
         // Get all the paymentList
         restPaymentMockMvc
             .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(payment.getId().intValue())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(paymentDao.getId().toString())))
             .andExpect(jsonPath("$.[*].amount").value(hasItem(sameNumber(DEFAULT_AMOUNT))))
             .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())))
             .andExpect(jsonPath("$.[*].paymentDttm").value(hasItem(DEFAULT_PAYMENT_DTTM.toString())))
@@ -244,14 +240,14 @@ class PaymentResourceIT {
     @Transactional
     void getPayment() throws Exception {
         // Initialize the database
-        insertedPayment = paymentRepository.saveAndFlush(payment);
+        insertedPaymentDao = paymentRepository.saveAndFlush(paymentDao);
 
         // Get the payment
         restPaymentMockMvc
-            .perform(get(ENTITY_API_URL_ID, payment.getId()))
+            .perform(get(ENTITY_API_URL_ID, paymentDao.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.id").value(payment.getId().intValue()))
+            .andExpect(jsonPath("$.id").value(paymentDao.getId().toString()))
             .andExpect(jsonPath("$.amount").value(sameNumber(DEFAULT_AMOUNT)))
             .andExpect(jsonPath("$.status").value(DEFAULT_STATUS.toString()))
             .andExpect(jsonPath("$.paymentDttm").value(DEFAULT_PAYMENT_DTTM.toString()))
@@ -262,54 +258,54 @@ class PaymentResourceIT {
     @Transactional
     void getNonExistingPayment() throws Exception {
         // Get the payment
-        restPaymentMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
+        restPaymentMockMvc.perform(get(ENTITY_API_URL_ID, UUID.randomUUID().toString())).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
     void putExistingPayment() throws Exception {
         // Initialize the database
-        insertedPayment = paymentRepository.saveAndFlush(payment);
+        insertedPaymentDao = paymentRepository.saveAndFlush(paymentDao);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the payment
-        Payment updatedPayment = paymentRepository.findById(payment.getId()).orElseThrow();
-        // Disconnect from session so that the updates on updatedPayment are not directly saved in db
-        em.detach(updatedPayment);
-        updatedPayment.amount(UPDATED_AMOUNT).status(UPDATED_STATUS).paymentDttm(UPDATED_PAYMENT_DTTM).hashSum(UPDATED_HASH_SUM);
-        PaymentDTO paymentDTO = paymentMapper.toDto(updatedPayment);
+        PaymentDao updatedPaymentDao = paymentRepository.findById(paymentDao.getId()).orElseThrow();
+        // Disconnect from session so that the updates on updatedPaymentDao are not directly saved in db
+        em.detach(updatedPaymentDao);
+        updatedPaymentDao.amount(UPDATED_AMOUNT).status(UPDATED_STATUS).paymentDttm(UPDATED_PAYMENT_DTTM).hashSum(UPDATED_HASH_SUM);
+        PaymentDto paymentDto = paymentMapper.toDto(updatedPaymentDao);
 
         restPaymentMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, paymentDTO.getId())
+                put(ENTITY_API_URL_ID, paymentDto.getId())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(paymentDTO))
+                    .content(om.writeValueAsBytes(paymentDto))
             )
             .andExpect(status().isOk());
 
         // Validate the Payment in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertPersistedPaymentToMatchAllProperties(updatedPayment);
+        assertPersistedPaymentDaoToMatchAllProperties(updatedPaymentDao);
     }
 
     @Test
     @Transactional
     void putNonExistingPayment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        payment.setId(longCount.incrementAndGet());
+        paymentDao.setId(UUID.randomUUID());
 
         // Create the Payment
-        PaymentDTO paymentDTO = paymentMapper.toDto(payment);
+        PaymentDto paymentDto = paymentMapper.toDto(paymentDao);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restPaymentMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, paymentDTO.getId())
+                put(ENTITY_API_URL_ID, paymentDto.getId())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(paymentDTO))
+                    .content(om.writeValueAsBytes(paymentDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -321,18 +317,18 @@ class PaymentResourceIT {
     @Transactional
     void putWithIdMismatchPayment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        payment.setId(longCount.incrementAndGet());
+        paymentDao.setId(UUID.randomUUID());
 
         // Create the Payment
-        PaymentDTO paymentDTO = paymentMapper.toDto(payment);
+        PaymentDto paymentDto = paymentMapper.toDto(paymentDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restPaymentMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, longCount.incrementAndGet())
+                put(ENTITY_API_URL_ID, UUID.randomUUID())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(paymentDTO))
+                    .content(om.writeValueAsBytes(paymentDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -344,14 +340,14 @@ class PaymentResourceIT {
     @Transactional
     void putWithMissingIdPathParamPayment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        payment.setId(longCount.incrementAndGet());
+        paymentDao.setId(UUID.randomUUID());
 
         // Create the Payment
-        PaymentDTO paymentDTO = paymentMapper.toDto(payment);
+        PaymentDto paymentDto = paymentMapper.toDto(paymentDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restPaymentMockMvc
-            .perform(put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(paymentDTO)))
+            .perform(put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(paymentDto)))
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the Payment in the database
@@ -362,76 +358,79 @@ class PaymentResourceIT {
     @Transactional
     void partialUpdatePaymentWithPatch() throws Exception {
         // Initialize the database
-        insertedPayment = paymentRepository.saveAndFlush(payment);
+        insertedPaymentDao = paymentRepository.saveAndFlush(paymentDao);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the payment using partial update
-        Payment partialUpdatedPayment = new Payment();
-        partialUpdatedPayment.setId(payment.getId());
+        PaymentDao partialUpdatedPaymentDao = new PaymentDao();
+        partialUpdatedPaymentDao.setId(paymentDao.getId());
 
-        partialUpdatedPayment.amount(UPDATED_AMOUNT).paymentDttm(UPDATED_PAYMENT_DTTM).hashSum(UPDATED_HASH_SUM);
+        partialUpdatedPaymentDao.amount(UPDATED_AMOUNT).paymentDttm(UPDATED_PAYMENT_DTTM).hashSum(UPDATED_HASH_SUM);
 
         restPaymentMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, partialUpdatedPayment.getId())
+                patch(ENTITY_API_URL_ID, partialUpdatedPaymentDao.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedPayment))
+                    .content(om.writeValueAsBytes(partialUpdatedPaymentDao))
             )
             .andExpect(status().isOk());
 
         // Validate the Payment in the database
 
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertPaymentUpdatableFieldsEquals(createUpdateProxyForBean(partialUpdatedPayment, payment), getPersistedPayment(payment));
+        assertPaymentDaoUpdatableFieldsEquals(
+            createUpdateProxyForBean(partialUpdatedPaymentDao, paymentDao),
+            getPersistedPaymentDao(paymentDao)
+        );
     }
 
     @Test
     @Transactional
     void fullUpdatePaymentWithPatch() throws Exception {
         // Initialize the database
-        insertedPayment = paymentRepository.saveAndFlush(payment);
+        insertedPaymentDao = paymentRepository.saveAndFlush(paymentDao);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the payment using partial update
-        Payment partialUpdatedPayment = new Payment();
-        partialUpdatedPayment.setId(payment.getId());
+        PaymentDao partialUpdatedPaymentDao = new PaymentDao();
+        partialUpdatedPaymentDao.setId(paymentDao.getId());
 
-        partialUpdatedPayment.amount(UPDATED_AMOUNT).status(UPDATED_STATUS).paymentDttm(UPDATED_PAYMENT_DTTM).hashSum(UPDATED_HASH_SUM);
+        partialUpdatedPaymentDao.amount(UPDATED_AMOUNT).status(UPDATED_STATUS).paymentDttm(UPDATED_PAYMENT_DTTM).hashSum(UPDATED_HASH_SUM);
 
         restPaymentMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, partialUpdatedPayment.getId())
+                patch(ENTITY_API_URL_ID, partialUpdatedPaymentDao.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedPayment))
+                    .content(om.writeValueAsBytes(partialUpdatedPaymentDao))
             )
             .andExpect(status().isOk());
 
         // Validate the Payment in the database
 
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertPaymentUpdatableFieldsEquals(partialUpdatedPayment, getPersistedPayment(partialUpdatedPayment));
+        assertPaymentDaoUpdatableFieldsEquals(partialUpdatedPaymentDao, getPersistedPaymentDao(partialUpdatedPaymentDao));
     }
 
     @Test
     @Transactional
     void patchNonExistingPayment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        payment.setId(longCount.incrementAndGet());
+        paymentDao.setId(UUID.randomUUID());
 
         // Create the Payment
-        PaymentDTO paymentDTO = paymentMapper.toDto(payment);
+        PaymentDto paymentDto = paymentMapper.toDto(paymentDao);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restPaymentMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, paymentDTO.getId())
+                patch(ENTITY_API_URL_ID, paymentDto.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(paymentDTO))
+                    .content(om.writeValueAsBytes(paymentDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -443,18 +442,18 @@ class PaymentResourceIT {
     @Transactional
     void patchWithIdMismatchPayment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        payment.setId(longCount.incrementAndGet());
+        paymentDao.setId(UUID.randomUUID());
 
         // Create the Payment
-        PaymentDTO paymentDTO = paymentMapper.toDto(payment);
+        PaymentDto paymentDto = paymentMapper.toDto(paymentDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restPaymentMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, longCount.incrementAndGet())
+                patch(ENTITY_API_URL_ID, UUID.randomUUID())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(paymentDTO))
+                    .content(om.writeValueAsBytes(paymentDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -466,15 +465,15 @@ class PaymentResourceIT {
     @Transactional
     void patchWithMissingIdPathParamPayment() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        payment.setId(longCount.incrementAndGet());
+        paymentDao.setId(UUID.randomUUID());
 
         // Create the Payment
-        PaymentDTO paymentDTO = paymentMapper.toDto(payment);
+        PaymentDto paymentDto = paymentMapper.toDto(paymentDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restPaymentMockMvc
             .perform(
-                patch(ENTITY_API_URL).with(csrf()).contentType("application/merge-patch+json").content(om.writeValueAsBytes(paymentDTO))
+                patch(ENTITY_API_URL).with(csrf()).contentType("application/merge-patch+json").content(om.writeValueAsBytes(paymentDto))
             )
             .andExpect(status().isMethodNotAllowed());
 
@@ -486,13 +485,13 @@ class PaymentResourceIT {
     @Transactional
     void deletePayment() throws Exception {
         // Initialize the database
-        insertedPayment = paymentRepository.saveAndFlush(payment);
+        insertedPaymentDao = paymentRepository.saveAndFlush(paymentDao);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
 
         // Delete the payment
         restPaymentMockMvc
-            .perform(delete(ENTITY_API_URL_ID, payment.getId()).with(csrf()).accept(MediaType.APPLICATION_JSON))
+            .perform(delete(ENTITY_API_URL_ID, paymentDao.getId().toString()).with(csrf()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
@@ -515,15 +514,15 @@ class PaymentResourceIT {
         assertThat(countBefore).isEqualTo(getRepositoryCount());
     }
 
-    protected Payment getPersistedPayment(Payment payment) {
+    protected PaymentDao getPersistedPaymentDao(PaymentDao payment) {
         return paymentRepository.findById(payment.getId()).orElseThrow();
     }
 
-    protected void assertPersistedPaymentToMatchAllProperties(Payment expectedPayment) {
-        assertPaymentAllPropertiesEquals(expectedPayment, getPersistedPayment(expectedPayment));
+    protected void assertPersistedPaymentDaoToMatchAllProperties(PaymentDao expectedPaymentDao) {
+        assertPaymentDaoAllPropertiesEquals(expectedPaymentDao, getPersistedPaymentDao(expectedPaymentDao));
     }
 
-    protected void assertPersistedPaymentToMatchUpdatableProperties(Payment expectedPayment) {
-        assertPaymentAllUpdatablePropertiesEquals(expectedPayment, getPersistedPayment(expectedPayment));
+    protected void assertPersistedPaymentDaoToMatchUpdatableProperties(PaymentDao expectedPaymentDao) {
+        assertPaymentDaoAllUpdatablePropertiesEquals(expectedPaymentDao, getPersistedPaymentDao(expectedPaymentDao));
     }
 }

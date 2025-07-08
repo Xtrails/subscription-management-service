@@ -1,7 +1,7 @@
 import { type ISourceApplication } from '@/shared/model/source-application.model';
 
 export interface ISubscriptionDetails {
-  id?: number;
+  id?: string;
   name?: string;
   description?: string | null;
   price?: number;
@@ -11,7 +11,7 @@ export interface ISubscriptionDetails {
 
 export class SubscriptionDetails implements ISubscriptionDetails {
   constructor(
-    public id?: number,
+    public id?: string,
     public name?: string,
     public description?: string | null,
     public price?: number,

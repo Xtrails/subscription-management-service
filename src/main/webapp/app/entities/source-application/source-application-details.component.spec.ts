@@ -17,7 +17,7 @@ vitest.mock('vue-router', () => ({
   useRouter: () => ({ go: routerGoMock }),
 }));
 
-const sourceApplicationSample = { id: 123 };
+const sourceApplicationSample = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
 
 describe('Component Tests', () => {
   let alertService: AlertService;
@@ -59,7 +59,7 @@ describe('Component Tests', () => {
         sourceApplicationServiceStub.find.resolves(sourceApplicationSample);
         route = {
           params: {
-            sourceApplicationId: `${123}`,
+            sourceApplicationId: '' + '9fec3727-3421-4967-b213-ba36557ca194',
           },
         };
         const wrapper = shallowMount(SourceApplicationDetails, { global: mountOptions });

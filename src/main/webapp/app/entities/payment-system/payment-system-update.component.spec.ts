@@ -17,7 +17,7 @@ vitest.mock('vue-router', () => ({
   useRouter: () => ({ go: routerGoMock }),
 }));
 
-const paymentSystemSample = { id: 123 };
+const paymentSystemSample = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
 
 describe('Component Tests', () => {
   let mountOptions: MountingOptions<PaymentSystemUpdateComponentType>['global'];

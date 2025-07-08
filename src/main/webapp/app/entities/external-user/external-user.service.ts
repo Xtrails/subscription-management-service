@@ -5,7 +5,7 @@ import { type IExternalUser } from '@/shared/model/external-user.model';
 const baseApiUrl = 'api/external-users';
 
 export default class ExternalUserService {
-  find(id: number): Promise<IExternalUser> {
+  find(id: string): Promise<IExternalUser> {
     return new Promise<IExternalUser>((resolve, reject) => {
       axios
         .get(`${baseApiUrl}/${id}`)
@@ -31,7 +31,7 @@ export default class ExternalUserService {
     });
   }
 
-  delete(id: number): Promise<any> {
+  delete(id: string): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       axios
         .delete(`${baseApiUrl}/${id}`)

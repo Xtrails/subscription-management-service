@@ -3,7 +3,7 @@ import { type ISubscriptionDetails } from '@/shared/model/subscription-details.m
 
 import { type SubscriptionStatus } from '@/shared/model/enumerations/subscription-status.model';
 export interface IClientSubscription {
-  id?: number;
+  id?: string;
   startDttm?: Date;
   endDttm?: Date;
   status?: keyof typeof SubscriptionStatus;
@@ -13,7 +13,7 @@ export interface IClientSubscription {
 
 export class ClientSubscription implements IClientSubscription {
   constructor(
-    public id?: number,
+    public id?: string,
     public startDttm?: Date,
     public endDttm?: Date,
     public status?: keyof typeof SubscriptionStatus,

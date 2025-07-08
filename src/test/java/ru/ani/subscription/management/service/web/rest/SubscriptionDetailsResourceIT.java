@@ -5,15 +5,14 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static ru.ani.subscription.management.service.domain.SubscriptionDetailsAsserts.*;
+import static ru.ani.subscription.management.service.domain.SubscriptionDetailsDaoAsserts.*;
 import static ru.ani.subscription.management.service.web.rest.TestUtil.createUpdateProxyForBean;
 import static ru.ani.subscription.management.service.web.rest.TestUtil.sameNumber;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,9 +23,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ani.subscription.management.service.IntegrationTest;
-import ru.ani.subscription.management.service.domain.SubscriptionDetails;
+import ru.ani.subscription.management.service.domain.SubscriptionDetailsDao;
 import ru.ani.subscription.management.service.repository.SubscriptionDetailsRepository;
-import ru.ani.subscription.management.service.service.dto.SubscriptionDetailsDTO;
+import ru.ani.subscription.management.service.service.dto.SubscriptionDetailsDto;
 import ru.ani.subscription.management.service.service.mapper.SubscriptionDetailsMapper;
 
 /**
@@ -52,9 +51,6 @@ class SubscriptionDetailsResourceIT {
     private static final String ENTITY_API_URL = "/api/subscription-details";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
-    private static Random random = new Random();
-    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
-
     @Autowired
     private ObjectMapper om;
 
@@ -70,9 +66,9 @@ class SubscriptionDetailsResourceIT {
     @Autowired
     private MockMvc restSubscriptionDetailsMockMvc;
 
-    private SubscriptionDetails subscriptionDetails;
+    private SubscriptionDetailsDao subscriptionDetailsDao;
 
-    private SubscriptionDetails insertedSubscriptionDetails;
+    private SubscriptionDetailsDao insertedSubscriptionDetailsDao;
 
     /**
      * Create an entity for this test.
@@ -80,8 +76,8 @@ class SubscriptionDetailsResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static SubscriptionDetails createEntity() {
-        return new SubscriptionDetails()
+    public static SubscriptionDetailsDao createEntity() {
+        return new SubscriptionDetailsDao()
             .name(DEFAULT_NAME)
             .description(DEFAULT_DESCRIPTION)
             .price(DEFAULT_PRICE)
@@ -94,8 +90,8 @@ class SubscriptionDetailsResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static SubscriptionDetails createUpdatedEntity() {
-        return new SubscriptionDetails()
+    public static SubscriptionDetailsDao createUpdatedEntity() {
+        return new SubscriptionDetailsDao()
             .name(UPDATED_NAME)
             .description(UPDATED_DESCRIPTION)
             .price(UPDATED_PRICE)
@@ -104,14 +100,14 @@ class SubscriptionDetailsResourceIT {
 
     @BeforeEach
     void initTest() {
-        subscriptionDetails = createEntity();
+        subscriptionDetailsDao = createEntity();
     }
 
     @AfterEach
     void cleanup() {
-        if (insertedSubscriptionDetails != null) {
-            subscriptionDetailsRepository.delete(insertedSubscriptionDetails);
-            insertedSubscriptionDetails = null;
+        if (insertedSubscriptionDetailsDao != null) {
+            subscriptionDetailsRepository.delete(insertedSubscriptionDetailsDao);
+            insertedSubscriptionDetailsDao = null;
         }
     }
 
@@ -120,39 +116,39 @@ class SubscriptionDetailsResourceIT {
     void createSubscriptionDetails() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
         // Create the SubscriptionDetails
-        SubscriptionDetailsDTO subscriptionDetailsDTO = subscriptionDetailsMapper.toDto(subscriptionDetails);
-        var returnedSubscriptionDetailsDTO = om.readValue(
+        SubscriptionDetailsDto subscriptionDetailsDto = subscriptionDetailsMapper.toDto(subscriptionDetailsDao);
+        var returnedSubscriptionDetailsDto = om.readValue(
             restSubscriptionDetailsMockMvc
                 .perform(
                     post(ENTITY_API_URL)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(om.writeValueAsBytes(subscriptionDetailsDTO))
+                        .content(om.writeValueAsBytes(subscriptionDetailsDto))
                 )
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse()
                 .getContentAsString(),
-            SubscriptionDetailsDTO.class
+            SubscriptionDetailsDto.class
         );
 
         // Validate the SubscriptionDetails in the database
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
-        var returnedSubscriptionDetails = subscriptionDetailsMapper.toEntity(returnedSubscriptionDetailsDTO);
-        assertSubscriptionDetailsUpdatableFieldsEquals(
-            returnedSubscriptionDetails,
-            getPersistedSubscriptionDetails(returnedSubscriptionDetails)
+        var returnedSubscriptionDetailsDao = subscriptionDetailsMapper.toEntity(returnedSubscriptionDetailsDto);
+        assertSubscriptionDetailsDaoUpdatableFieldsEquals(
+            returnedSubscriptionDetailsDao,
+            getPersistedSubscriptionDetailsDao(returnedSubscriptionDetailsDao)
         );
 
-        insertedSubscriptionDetails = returnedSubscriptionDetails;
+        insertedSubscriptionDetailsDao = returnedSubscriptionDetailsDao;
     }
 
     @Test
     @Transactional
     void createSubscriptionDetailsWithExistingId() throws Exception {
         // Create the SubscriptionDetails with an existing ID
-        subscriptionDetails.setId(1L);
-        SubscriptionDetailsDTO subscriptionDetailsDTO = subscriptionDetailsMapper.toDto(subscriptionDetails);
+        insertedSubscriptionDetailsDao = subscriptionDetailsRepository.saveAndFlush(subscriptionDetailsDao);
+        SubscriptionDetailsDto subscriptionDetailsDto = subscriptionDetailsMapper.toDto(subscriptionDetailsDao);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
 
@@ -162,7 +158,7 @@ class SubscriptionDetailsResourceIT {
                 post(ENTITY_API_URL)
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(subscriptionDetailsDTO))
+                    .content(om.writeValueAsBytes(subscriptionDetailsDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -175,17 +171,17 @@ class SubscriptionDetailsResourceIT {
     void checkNameIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        subscriptionDetails.setName(null);
+        subscriptionDetailsDao.setName(null);
 
         // Create the SubscriptionDetails, which fails.
-        SubscriptionDetailsDTO subscriptionDetailsDTO = subscriptionDetailsMapper.toDto(subscriptionDetails);
+        SubscriptionDetailsDto subscriptionDetailsDto = subscriptionDetailsMapper.toDto(subscriptionDetailsDao);
 
         restSubscriptionDetailsMockMvc
             .perform(
                 post(ENTITY_API_URL)
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(subscriptionDetailsDTO))
+                    .content(om.writeValueAsBytes(subscriptionDetailsDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -197,17 +193,17 @@ class SubscriptionDetailsResourceIT {
     void checkPriceIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        subscriptionDetails.setPrice(null);
+        subscriptionDetailsDao.setPrice(null);
 
         // Create the SubscriptionDetails, which fails.
-        SubscriptionDetailsDTO subscriptionDetailsDTO = subscriptionDetailsMapper.toDto(subscriptionDetails);
+        SubscriptionDetailsDto subscriptionDetailsDto = subscriptionDetailsMapper.toDto(subscriptionDetailsDao);
 
         restSubscriptionDetailsMockMvc
             .perform(
                 post(ENTITY_API_URL)
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(subscriptionDetailsDTO))
+                    .content(om.writeValueAsBytes(subscriptionDetailsDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -219,17 +215,17 @@ class SubscriptionDetailsResourceIT {
     void checkDurationIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        subscriptionDetails.setDuration(null);
+        subscriptionDetailsDao.setDuration(null);
 
         // Create the SubscriptionDetails, which fails.
-        SubscriptionDetailsDTO subscriptionDetailsDTO = subscriptionDetailsMapper.toDto(subscriptionDetails);
+        SubscriptionDetailsDto subscriptionDetailsDto = subscriptionDetailsMapper.toDto(subscriptionDetailsDao);
 
         restSubscriptionDetailsMockMvc
             .perform(
                 post(ENTITY_API_URL)
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(subscriptionDetailsDTO))
+                    .content(om.writeValueAsBytes(subscriptionDetailsDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -240,14 +236,14 @@ class SubscriptionDetailsResourceIT {
     @Transactional
     void getAllSubscriptionDetails() throws Exception {
         // Initialize the database
-        insertedSubscriptionDetails = subscriptionDetailsRepository.saveAndFlush(subscriptionDetails);
+        insertedSubscriptionDetailsDao = subscriptionDetailsRepository.saveAndFlush(subscriptionDetailsDao);
 
         // Get all the subscriptionDetailsList
         restSubscriptionDetailsMockMvc
             .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(subscriptionDetails.getId().intValue())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(subscriptionDetailsDao.getId().toString())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
             .andExpect(jsonPath("$.[*].price").value(hasItem(sameNumber(DEFAULT_PRICE))))
@@ -258,14 +254,14 @@ class SubscriptionDetailsResourceIT {
     @Transactional
     void getSubscriptionDetails() throws Exception {
         // Initialize the database
-        insertedSubscriptionDetails = subscriptionDetailsRepository.saveAndFlush(subscriptionDetails);
+        insertedSubscriptionDetailsDao = subscriptionDetailsRepository.saveAndFlush(subscriptionDetailsDao);
 
         // Get the subscriptionDetails
         restSubscriptionDetailsMockMvc
-            .perform(get(ENTITY_API_URL_ID, subscriptionDetails.getId()))
+            .perform(get(ENTITY_API_URL_ID, subscriptionDetailsDao.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.id").value(subscriptionDetails.getId().intValue()))
+            .andExpect(jsonPath("$.id").value(subscriptionDetailsDao.getId().toString()))
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION))
             .andExpect(jsonPath("$.price").value(sameNumber(DEFAULT_PRICE)))
@@ -276,54 +272,56 @@ class SubscriptionDetailsResourceIT {
     @Transactional
     void getNonExistingSubscriptionDetails() throws Exception {
         // Get the subscriptionDetails
-        restSubscriptionDetailsMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
+        restSubscriptionDetailsMockMvc.perform(get(ENTITY_API_URL_ID, UUID.randomUUID().toString())).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
     void putExistingSubscriptionDetails() throws Exception {
         // Initialize the database
-        insertedSubscriptionDetails = subscriptionDetailsRepository.saveAndFlush(subscriptionDetails);
+        insertedSubscriptionDetailsDao = subscriptionDetailsRepository.saveAndFlush(subscriptionDetailsDao);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the subscriptionDetails
-        SubscriptionDetails updatedSubscriptionDetails = subscriptionDetailsRepository.findById(subscriptionDetails.getId()).orElseThrow();
-        // Disconnect from session so that the updates on updatedSubscriptionDetails are not directly saved in db
-        em.detach(updatedSubscriptionDetails);
-        updatedSubscriptionDetails.name(UPDATED_NAME).description(UPDATED_DESCRIPTION).price(UPDATED_PRICE).duration(UPDATED_DURATION);
-        SubscriptionDetailsDTO subscriptionDetailsDTO = subscriptionDetailsMapper.toDto(updatedSubscriptionDetails);
+        SubscriptionDetailsDao updatedSubscriptionDetailsDao = subscriptionDetailsRepository
+            .findById(subscriptionDetailsDao.getId())
+            .orElseThrow();
+        // Disconnect from session so that the updates on updatedSubscriptionDetailsDao are not directly saved in db
+        em.detach(updatedSubscriptionDetailsDao);
+        updatedSubscriptionDetailsDao.name(UPDATED_NAME).description(UPDATED_DESCRIPTION).price(UPDATED_PRICE).duration(UPDATED_DURATION);
+        SubscriptionDetailsDto subscriptionDetailsDto = subscriptionDetailsMapper.toDto(updatedSubscriptionDetailsDao);
 
         restSubscriptionDetailsMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, subscriptionDetailsDTO.getId())
+                put(ENTITY_API_URL_ID, subscriptionDetailsDto.getId())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(subscriptionDetailsDTO))
+                    .content(om.writeValueAsBytes(subscriptionDetailsDto))
             )
             .andExpect(status().isOk());
 
         // Validate the SubscriptionDetails in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertPersistedSubscriptionDetailsToMatchAllProperties(updatedSubscriptionDetails);
+        assertPersistedSubscriptionDetailsDaoToMatchAllProperties(updatedSubscriptionDetailsDao);
     }
 
     @Test
     @Transactional
     void putNonExistingSubscriptionDetails() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        subscriptionDetails.setId(longCount.incrementAndGet());
+        subscriptionDetailsDao.setId(UUID.randomUUID());
 
         // Create the SubscriptionDetails
-        SubscriptionDetailsDTO subscriptionDetailsDTO = subscriptionDetailsMapper.toDto(subscriptionDetails);
+        SubscriptionDetailsDto subscriptionDetailsDto = subscriptionDetailsMapper.toDto(subscriptionDetailsDao);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restSubscriptionDetailsMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, subscriptionDetailsDTO.getId())
+                put(ENTITY_API_URL_ID, subscriptionDetailsDto.getId())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(subscriptionDetailsDTO))
+                    .content(om.writeValueAsBytes(subscriptionDetailsDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -335,18 +333,18 @@ class SubscriptionDetailsResourceIT {
     @Transactional
     void putWithIdMismatchSubscriptionDetails() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        subscriptionDetails.setId(longCount.incrementAndGet());
+        subscriptionDetailsDao.setId(UUID.randomUUID());
 
         // Create the SubscriptionDetails
-        SubscriptionDetailsDTO subscriptionDetailsDTO = subscriptionDetailsMapper.toDto(subscriptionDetails);
+        SubscriptionDetailsDto subscriptionDetailsDto = subscriptionDetailsMapper.toDto(subscriptionDetailsDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restSubscriptionDetailsMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, longCount.incrementAndGet())
+                put(ENTITY_API_URL_ID, UUID.randomUUID())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(subscriptionDetailsDTO))
+                    .content(om.writeValueAsBytes(subscriptionDetailsDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -358,10 +356,10 @@ class SubscriptionDetailsResourceIT {
     @Transactional
     void putWithMissingIdPathParamSubscriptionDetails() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        subscriptionDetails.setId(longCount.incrementAndGet());
+        subscriptionDetailsDao.setId(UUID.randomUUID());
 
         // Create the SubscriptionDetails
-        SubscriptionDetailsDTO subscriptionDetailsDTO = subscriptionDetailsMapper.toDto(subscriptionDetails);
+        SubscriptionDetailsDto subscriptionDetailsDto = subscriptionDetailsMapper.toDto(subscriptionDetailsDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restSubscriptionDetailsMockMvc
@@ -369,7 +367,7 @@ class SubscriptionDetailsResourceIT {
                 put(ENTITY_API_URL)
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(subscriptionDetailsDTO))
+                    .content(om.writeValueAsBytes(subscriptionDetailsDto))
             )
             .andExpect(status().isMethodNotAllowed());
 
@@ -381,31 +379,31 @@ class SubscriptionDetailsResourceIT {
     @Transactional
     void partialUpdateSubscriptionDetailsWithPatch() throws Exception {
         // Initialize the database
-        insertedSubscriptionDetails = subscriptionDetailsRepository.saveAndFlush(subscriptionDetails);
+        insertedSubscriptionDetailsDao = subscriptionDetailsRepository.saveAndFlush(subscriptionDetailsDao);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the subscriptionDetails using partial update
-        SubscriptionDetails partialUpdatedSubscriptionDetails = new SubscriptionDetails();
-        partialUpdatedSubscriptionDetails.setId(subscriptionDetails.getId());
+        SubscriptionDetailsDao partialUpdatedSubscriptionDetailsDao = new SubscriptionDetailsDao();
+        partialUpdatedSubscriptionDetailsDao.setId(subscriptionDetailsDao.getId());
 
-        partialUpdatedSubscriptionDetails.name(UPDATED_NAME);
+        partialUpdatedSubscriptionDetailsDao.name(UPDATED_NAME);
 
         restSubscriptionDetailsMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, partialUpdatedSubscriptionDetails.getId())
+                patch(ENTITY_API_URL_ID, partialUpdatedSubscriptionDetailsDao.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedSubscriptionDetails))
+                    .content(om.writeValueAsBytes(partialUpdatedSubscriptionDetailsDao))
             )
             .andExpect(status().isOk());
 
         // Validate the SubscriptionDetails in the database
 
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertSubscriptionDetailsUpdatableFieldsEquals(
-            createUpdateProxyForBean(partialUpdatedSubscriptionDetails, subscriptionDetails),
-            getPersistedSubscriptionDetails(subscriptionDetails)
+        assertSubscriptionDetailsDaoUpdatableFieldsEquals(
+            createUpdateProxyForBean(partialUpdatedSubscriptionDetailsDao, subscriptionDetailsDao),
+            getPersistedSubscriptionDetailsDao(subscriptionDetailsDao)
         );
     }
 
@@ -413,15 +411,15 @@ class SubscriptionDetailsResourceIT {
     @Transactional
     void fullUpdateSubscriptionDetailsWithPatch() throws Exception {
         // Initialize the database
-        insertedSubscriptionDetails = subscriptionDetailsRepository.saveAndFlush(subscriptionDetails);
+        insertedSubscriptionDetailsDao = subscriptionDetailsRepository.saveAndFlush(subscriptionDetailsDao);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the subscriptionDetails using partial update
-        SubscriptionDetails partialUpdatedSubscriptionDetails = new SubscriptionDetails();
-        partialUpdatedSubscriptionDetails.setId(subscriptionDetails.getId());
+        SubscriptionDetailsDao partialUpdatedSubscriptionDetailsDao = new SubscriptionDetailsDao();
+        partialUpdatedSubscriptionDetailsDao.setId(subscriptionDetailsDao.getId());
 
-        partialUpdatedSubscriptionDetails
+        partialUpdatedSubscriptionDetailsDao
             .name(UPDATED_NAME)
             .description(UPDATED_DESCRIPTION)
             .price(UPDATED_PRICE)
@@ -429,19 +427,19 @@ class SubscriptionDetailsResourceIT {
 
         restSubscriptionDetailsMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, partialUpdatedSubscriptionDetails.getId())
+                patch(ENTITY_API_URL_ID, partialUpdatedSubscriptionDetailsDao.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedSubscriptionDetails))
+                    .content(om.writeValueAsBytes(partialUpdatedSubscriptionDetailsDao))
             )
             .andExpect(status().isOk());
 
         // Validate the SubscriptionDetails in the database
 
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertSubscriptionDetailsUpdatableFieldsEquals(
-            partialUpdatedSubscriptionDetails,
-            getPersistedSubscriptionDetails(partialUpdatedSubscriptionDetails)
+        assertSubscriptionDetailsDaoUpdatableFieldsEquals(
+            partialUpdatedSubscriptionDetailsDao,
+            getPersistedSubscriptionDetailsDao(partialUpdatedSubscriptionDetailsDao)
         );
     }
 
@@ -449,18 +447,18 @@ class SubscriptionDetailsResourceIT {
     @Transactional
     void patchNonExistingSubscriptionDetails() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        subscriptionDetails.setId(longCount.incrementAndGet());
+        subscriptionDetailsDao.setId(UUID.randomUUID());
 
         // Create the SubscriptionDetails
-        SubscriptionDetailsDTO subscriptionDetailsDTO = subscriptionDetailsMapper.toDto(subscriptionDetails);
+        SubscriptionDetailsDto subscriptionDetailsDto = subscriptionDetailsMapper.toDto(subscriptionDetailsDao);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restSubscriptionDetailsMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, subscriptionDetailsDTO.getId())
+                patch(ENTITY_API_URL_ID, subscriptionDetailsDto.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(subscriptionDetailsDTO))
+                    .content(om.writeValueAsBytes(subscriptionDetailsDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -472,18 +470,18 @@ class SubscriptionDetailsResourceIT {
     @Transactional
     void patchWithIdMismatchSubscriptionDetails() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        subscriptionDetails.setId(longCount.incrementAndGet());
+        subscriptionDetailsDao.setId(UUID.randomUUID());
 
         // Create the SubscriptionDetails
-        SubscriptionDetailsDTO subscriptionDetailsDTO = subscriptionDetailsMapper.toDto(subscriptionDetails);
+        SubscriptionDetailsDto subscriptionDetailsDto = subscriptionDetailsMapper.toDto(subscriptionDetailsDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restSubscriptionDetailsMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, longCount.incrementAndGet())
+                patch(ENTITY_API_URL_ID, UUID.randomUUID())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(subscriptionDetailsDTO))
+                    .content(om.writeValueAsBytes(subscriptionDetailsDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -495,10 +493,10 @@ class SubscriptionDetailsResourceIT {
     @Transactional
     void patchWithMissingIdPathParamSubscriptionDetails() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        subscriptionDetails.setId(longCount.incrementAndGet());
+        subscriptionDetailsDao.setId(UUID.randomUUID());
 
         // Create the SubscriptionDetails
-        SubscriptionDetailsDTO subscriptionDetailsDTO = subscriptionDetailsMapper.toDto(subscriptionDetails);
+        SubscriptionDetailsDto subscriptionDetailsDto = subscriptionDetailsMapper.toDto(subscriptionDetailsDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restSubscriptionDetailsMockMvc
@@ -506,7 +504,7 @@ class SubscriptionDetailsResourceIT {
                 patch(ENTITY_API_URL)
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(subscriptionDetailsDTO))
+                    .content(om.writeValueAsBytes(subscriptionDetailsDto))
             )
             .andExpect(status().isMethodNotAllowed());
 
@@ -518,13 +516,13 @@ class SubscriptionDetailsResourceIT {
     @Transactional
     void deleteSubscriptionDetails() throws Exception {
         // Initialize the database
-        insertedSubscriptionDetails = subscriptionDetailsRepository.saveAndFlush(subscriptionDetails);
+        insertedSubscriptionDetailsDao = subscriptionDetailsRepository.saveAndFlush(subscriptionDetailsDao);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
 
         // Delete the subscriptionDetails
         restSubscriptionDetailsMockMvc
-            .perform(delete(ENTITY_API_URL_ID, subscriptionDetails.getId()).with(csrf()).accept(MediaType.APPLICATION_JSON))
+            .perform(delete(ENTITY_API_URL_ID, subscriptionDetailsDao.getId().toString()).with(csrf()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
@@ -547,21 +545,21 @@ class SubscriptionDetailsResourceIT {
         assertThat(countBefore).isEqualTo(getRepositoryCount());
     }
 
-    protected SubscriptionDetails getPersistedSubscriptionDetails(SubscriptionDetails subscriptionDetails) {
+    protected SubscriptionDetailsDao getPersistedSubscriptionDetailsDao(SubscriptionDetailsDao subscriptionDetails) {
         return subscriptionDetailsRepository.findById(subscriptionDetails.getId()).orElseThrow();
     }
 
-    protected void assertPersistedSubscriptionDetailsToMatchAllProperties(SubscriptionDetails expectedSubscriptionDetails) {
-        assertSubscriptionDetailsAllPropertiesEquals(
-            expectedSubscriptionDetails,
-            getPersistedSubscriptionDetails(expectedSubscriptionDetails)
+    protected void assertPersistedSubscriptionDetailsDaoToMatchAllProperties(SubscriptionDetailsDao expectedSubscriptionDetailsDao) {
+        assertSubscriptionDetailsDaoAllPropertiesEquals(
+            expectedSubscriptionDetailsDao,
+            getPersistedSubscriptionDetailsDao(expectedSubscriptionDetailsDao)
         );
     }
 
-    protected void assertPersistedSubscriptionDetailsToMatchUpdatableProperties(SubscriptionDetails expectedSubscriptionDetails) {
-        assertSubscriptionDetailsAllUpdatablePropertiesEquals(
-            expectedSubscriptionDetails,
-            getPersistedSubscriptionDetails(expectedSubscriptionDetails)
+    protected void assertPersistedSubscriptionDetailsDaoToMatchUpdatableProperties(SubscriptionDetailsDao expectedSubscriptionDetailsDao) {
+        assertSubscriptionDetailsDaoAllUpdatablePropertiesEquals(
+            expectedSubscriptionDetailsDao,
+            getPersistedSubscriptionDetailsDao(expectedSubscriptionDetailsDao)
         );
     }
 }

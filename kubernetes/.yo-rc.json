@@ -1,18 +1,21 @@
 {
   "generator-jhipster": {
-    "deploymentType": "kubernetes",
-    "appsFolders": ["subscriptionManagementService"],
-    "directoryPath": "../",
-    "kubernetesServiceType": "LoadBalancer",
-    "istio": false,
-    "ingressDomain": "",
-    "monitoring": "no",
+    "appsFolders": [],
     "clusteredDbApps": [],
-    "serviceDiscoveryType": "consul",
-    "dockerRepositoryName": "subscriptionManagementService",
+    "dbRandomPassword": "c32062dd0944ff13d067b4389df1e79ae7dd915d1c8f9df6ac3d955b76fc",
+    "deploymentType": "kubernetes",
+    "directoryPath": "../",
     "dockerPushCommand": "docker push",
+    "dockerRepositoryName": "subscriptionManagementService",
+    "ingressDomain": "",
+    "istio": false,
+    "jhipsterVersion": "8.11.0",
+    "jwtSecretKey": "OTNhN2UwZjk2NDRlZjVhNjI5NWFjOGJjOWRlMDFkZTU2Nzc2NDUxOWFlNGY2ZTE1M2U3YjY0ZWRhMDA0YzVhYjI5NTUxYzVhMDk0MTQ2MWEyODY5ODlkM2ZhOGQ4YTdmYjc2Mg==",
     "kubernetesNamespace": "default",
+    "kubernetesServiceType": "LoadBalancer",
+    "kubernetesStorageClassName": "",
     "kubernetesUseDynamicStorage": false,
-    "kubernetesStorageClassName": ""
+    "monitoring": "prometheus",
+    "serviceDiscoveryType": "consul"
   }
 }

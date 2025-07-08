@@ -5,7 +5,7 @@ import { type ISubscriptionDetails } from '@/shared/model/subscription-details.m
 const baseApiUrl = 'api/subscription-details';
 
 export default class SubscriptionDetailsService {
-  find(id: number): Promise<ISubscriptionDetails> {
+  find(id: string): Promise<ISubscriptionDetails> {
     return new Promise<ISubscriptionDetails>((resolve, reject) => {
       axios
         .get(`${baseApiUrl}/${id}`)
@@ -31,7 +31,7 @@ export default class SubscriptionDetailsService {
     });
   }
 
-  delete(id: number): Promise<any> {
+  delete(id: string): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       axios
         .delete(`${baseApiUrl}/${id}`)

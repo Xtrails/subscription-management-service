@@ -5,7 +5,7 @@ import { type ISourceApplication } from '@/shared/model/source-application.model
 const baseApiUrl = 'api/source-applications';
 
 export default class SourceApplicationService {
-  find(id: number): Promise<ISourceApplication> {
+  find(id: string): Promise<ISourceApplication> {
     return new Promise<ISourceApplication>((resolve, reject) => {
       axios
         .get(`${baseApiUrl}/${id}`)
@@ -31,7 +31,7 @@ export default class SourceApplicationService {
     });
   }
 
-  delete(id: number): Promise<any> {
+  delete(id: string): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       axios
         .delete(`${baseApiUrl}/${id}`)

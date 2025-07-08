@@ -96,7 +96,7 @@ const app = createApp({
     );
 
     onMounted(async () => {
-      const lang = [translationService.getLocalStoreLanguage(), store.account?.langKey, navigator.language, 'en'].find(
+      const lang = [translationService.getLocalStoreLanguage(), store.account?.langKey, navigator.language, 'ru'].find(
         lang => lang && translationService.isLanguageSupported(lang),
       );
       await changeLanguage(lang);

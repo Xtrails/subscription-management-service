@@ -1,22 +1,28 @@
 package ru.ani.subscription.management.service.service.mapper;
 
+import java.util.Objects;
+import java.util.UUID;
 import org.mapstruct.*;
-import ru.ani.subscription.management.service.domain.ExternalUser;
-import ru.ani.subscription.management.service.domain.ReferralProgram;
-import ru.ani.subscription.management.service.service.dto.ExternalUserDTO;
-import ru.ani.subscription.management.service.service.dto.ReferralProgramDTO;
+import ru.ani.subscription.management.service.domain.ExternalUserDao;
+import ru.ani.subscription.management.service.domain.ReferralProgramDao;
+import ru.ani.subscription.management.service.service.dto.ExternalUserDto;
+import ru.ani.subscription.management.service.service.dto.ReferralProgramDto;
 
 /**
- * Mapper for the entity {@link ExternalUser} and its DTO {@link ExternalUserDTO}.
+ * Mapper for the entity {@link ExternalUserDao} and its DTO {@link ExternalUserDto}.
  */
 @Mapper(componentModel = "spring")
-public interface ExternalUserMapper extends EntityMapper<ExternalUserDTO, ExternalUser> {
+public interface ExternalUserMapper extends EntityMapper<ExternalUserDto, ExternalUserDao> {
     @Mapping(target = "referralCreator", source = "referralCreator", qualifiedByName = "referralProgramId")
     @Mapping(target = "referralProgram", source = "referralProgram", qualifiedByName = "referralProgramId")
-    ExternalUserDTO toDto(ExternalUser s);
+    ExternalUserDto toDto(ExternalUserDao s);
 
     @Named("referralProgramId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
-    ReferralProgramDTO toDtoReferralProgramId(ReferralProgram referralProgram);
+    ReferralProgramDto toDtoReferralProgramId(ReferralProgramDao referralProgramDao);
+
+    default String map(UUID value) {
+        return Objects.toString(value, null);
+    }
 }

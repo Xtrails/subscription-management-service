@@ -3,18 +3,19 @@ package ru.ani.subscription.management.service.service;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.ani.subscription.management.service.domain.PaymentSystem;
+import ru.ani.subscription.management.service.domain.PaymentSystemDao;
 import ru.ani.subscription.management.service.repository.PaymentSystemRepository;
-import ru.ani.subscription.management.service.service.dto.PaymentSystemDTO;
+import ru.ani.subscription.management.service.service.dto.PaymentSystemDto;
 import ru.ani.subscription.management.service.service.mapper.PaymentSystemMapper;
 
 /**
- * Service Implementation for managing {@link ru.ani.subscription.management.service.domain.PaymentSystem}.
+ * Service Implementation for managing {@link ru.ani.subscription.management.service.domain.PaymentSystemDao}.
  */
 @Service
 @Transactional
@@ -34,42 +35,42 @@ public class PaymentSystemService {
     /**
      * Save a paymentSystem.
      *
-     * @param paymentSystemDTO the entity to save.
+     * @param paymentSystemDto the entity to save.
      * @return the persisted entity.
      */
-    public PaymentSystemDTO save(PaymentSystemDTO paymentSystemDTO) {
-        LOG.debug("Request to save PaymentSystem : {}", paymentSystemDTO);
-        PaymentSystem paymentSystem = paymentSystemMapper.toEntity(paymentSystemDTO);
-        paymentSystem = paymentSystemRepository.save(paymentSystem);
-        return paymentSystemMapper.toDto(paymentSystem);
+    public PaymentSystemDto save(PaymentSystemDto paymentSystemDto) {
+        LOG.debug("Request to save PaymentSystem : {}", paymentSystemDto);
+        PaymentSystemDao paymentSystemDao = paymentSystemMapper.toEntity(paymentSystemDto);
+        paymentSystemDao = paymentSystemRepository.save(paymentSystemDao);
+        return paymentSystemMapper.toDto(paymentSystemDao);
     }
 
     /**
      * Update a paymentSystem.
      *
-     * @param paymentSystemDTO the entity to save.
+     * @param paymentSystemDto the entity to save.
      * @return the persisted entity.
      */
-    public PaymentSystemDTO update(PaymentSystemDTO paymentSystemDTO) {
-        LOG.debug("Request to update PaymentSystem : {}", paymentSystemDTO);
-        PaymentSystem paymentSystem = paymentSystemMapper.toEntity(paymentSystemDTO);
-        paymentSystem = paymentSystemRepository.save(paymentSystem);
-        return paymentSystemMapper.toDto(paymentSystem);
+    public PaymentSystemDto update(PaymentSystemDto paymentSystemDto) {
+        LOG.debug("Request to update PaymentSystem : {}", paymentSystemDto);
+        PaymentSystemDao paymentSystemDao = paymentSystemMapper.toEntity(paymentSystemDto);
+        paymentSystemDao = paymentSystemRepository.save(paymentSystemDao);
+        return paymentSystemMapper.toDto(paymentSystemDao);
     }
 
     /**
      * Partially update a paymentSystem.
      *
-     * @param paymentSystemDTO the entity to update partially.
+     * @param paymentSystemDto the entity to update partially.
      * @return the persisted entity.
      */
-    public Optional<PaymentSystemDTO> partialUpdate(PaymentSystemDTO paymentSystemDTO) {
-        LOG.debug("Request to partially update PaymentSystem : {}", paymentSystemDTO);
+    public Optional<PaymentSystemDto> partialUpdate(PaymentSystemDto paymentSystemDto) {
+        LOG.debug("Request to partially update PaymentSystem : {}", paymentSystemDto);
 
         return paymentSystemRepository
-            .findById(paymentSystemDTO.getId())
+            .findById(paymentSystemDto.getId())
             .map(existingPaymentSystem -> {
-                paymentSystemMapper.partialUpdate(existingPaymentSystem, paymentSystemDTO);
+                paymentSystemMapper.partialUpdate(existingPaymentSystem, paymentSystemDto);
 
                 return existingPaymentSystem;
             })
@@ -83,7 +84,7 @@ public class PaymentSystemService {
      * @return the list of entities.
      */
     @Transactional(readOnly = true)
-    public List<PaymentSystemDTO> findAll() {
+    public List<PaymentSystemDto> findAll() {
         LOG.debug("Request to get all PaymentSystems");
         return paymentSystemRepository.findAll().stream().map(paymentSystemMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
@@ -95,7 +96,7 @@ public class PaymentSystemService {
      * @return the entity.
      */
     @Transactional(readOnly = true)
-    public Optional<PaymentSystemDTO> findOne(Long id) {
+    public Optional<PaymentSystemDto> findOne(UUID id) {
         LOG.debug("Request to get PaymentSystem : {}", id);
         return paymentSystemRepository.findById(id).map(paymentSystemMapper::toDto);
     }
@@ -105,7 +106,7 @@ public class PaymentSystemService {
      *
      * @param id the id of the entity.
      */
-    public void delete(Long id) {
+    public void delete(UUID id) {
         LOG.debug("Request to delete PaymentSystem : {}", id);
         paymentSystemRepository.deleteById(id);
     }

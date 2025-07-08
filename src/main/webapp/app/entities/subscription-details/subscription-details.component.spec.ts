@@ -55,7 +55,7 @@ describe('Component Tests', () => {
     describe('Mount', () => {
       it('Should call load all on init', async () => {
         // GIVEN
-        subscriptionDetailsServiceStub.retrieve.resolves({ headers: {}, data: [{ id: 123 }] });
+        subscriptionDetailsServiceStub.retrieve.resolves({ headers: {}, data: [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }] });
 
         // WHEN
         const wrapper = shallowMount(SubscriptionDetails, { global: mountOptions });
@@ -64,7 +64,7 @@ describe('Component Tests', () => {
 
         // THEN
         expect(subscriptionDetailsServiceStub.retrieve.calledOnce).toBeTruthy();
-        expect(comp.subscriptionDetails[0]).toEqual(expect.objectContaining({ id: 123 }));
+        expect(comp.subscriptionDetails[0]).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
       });
     });
     describe('Handles', () => {
@@ -83,7 +83,7 @@ describe('Component Tests', () => {
         subscriptionDetailsServiceStub.delete.resolves({});
 
         // WHEN
-        comp.prepareRemove({ id: 123 });
+        comp.prepareRemove({ id: '9fec3727-3421-4967-b213-ba36557ca194' });
 
         comp.removeSubscriptionDetails();
         await comp.$nextTick(); // clear components

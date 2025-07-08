@@ -1,19 +1,20 @@
 package ru.ani.subscription.management.service.service;
 
 import java.util.Optional;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.ani.subscription.management.service.domain.Payment;
+import ru.ani.subscription.management.service.domain.PaymentDao;
 import ru.ani.subscription.management.service.repository.PaymentRepository;
-import ru.ani.subscription.management.service.service.dto.PaymentDTO;
+import ru.ani.subscription.management.service.service.dto.PaymentDto;
 import ru.ani.subscription.management.service.service.mapper.PaymentMapper;
 
 /**
- * Service Implementation for managing {@link ru.ani.subscription.management.service.domain.Payment}.
+ * Service Implementation for managing {@link ru.ani.subscription.management.service.domain.PaymentDao}.
  */
 @Service
 @Transactional
@@ -33,42 +34,42 @@ public class PaymentService {
     /**
      * Save a payment.
      *
-     * @param paymentDTO the entity to save.
+     * @param paymentDto the entity to save.
      * @return the persisted entity.
      */
-    public PaymentDTO save(PaymentDTO paymentDTO) {
-        LOG.debug("Request to save Payment : {}", paymentDTO);
-        Payment payment = paymentMapper.toEntity(paymentDTO);
-        payment = paymentRepository.save(payment);
-        return paymentMapper.toDto(payment);
+    public PaymentDto save(PaymentDto paymentDto) {
+        LOG.debug("Request to save Payment : {}", paymentDto);
+        PaymentDao paymentDao = paymentMapper.toEntity(paymentDto);
+        paymentDao = paymentRepository.save(paymentDao);
+        return paymentMapper.toDto(paymentDao);
     }
 
     /**
      * Update a payment.
      *
-     * @param paymentDTO the entity to save.
+     * @param paymentDto the entity to save.
      * @return the persisted entity.
      */
-    public PaymentDTO update(PaymentDTO paymentDTO) {
-        LOG.debug("Request to update Payment : {}", paymentDTO);
-        Payment payment = paymentMapper.toEntity(paymentDTO);
-        payment = paymentRepository.save(payment);
-        return paymentMapper.toDto(payment);
+    public PaymentDto update(PaymentDto paymentDto) {
+        LOG.debug("Request to update Payment : {}", paymentDto);
+        PaymentDao paymentDao = paymentMapper.toEntity(paymentDto);
+        paymentDao = paymentRepository.save(paymentDao);
+        return paymentMapper.toDto(paymentDao);
     }
 
     /**
      * Partially update a payment.
      *
-     * @param paymentDTO the entity to update partially.
+     * @param paymentDto the entity to update partially.
      * @return the persisted entity.
      */
-    public Optional<PaymentDTO> partialUpdate(PaymentDTO paymentDTO) {
-        LOG.debug("Request to partially update Payment : {}", paymentDTO);
+    public Optional<PaymentDto> partialUpdate(PaymentDto paymentDto) {
+        LOG.debug("Request to partially update Payment : {}", paymentDto);
 
         return paymentRepository
-            .findById(paymentDTO.getId())
+            .findById(paymentDto.getId())
             .map(existingPayment -> {
-                paymentMapper.partialUpdate(existingPayment, paymentDTO);
+                paymentMapper.partialUpdate(existingPayment, paymentDto);
 
                 return existingPayment;
             })
@@ -83,7 +84,7 @@ public class PaymentService {
      * @return the list of entities.
      */
     @Transactional(readOnly = true)
-    public Page<PaymentDTO> findAll(Pageable pageable) {
+    public Page<PaymentDto> findAll(Pageable pageable) {
         LOG.debug("Request to get all Payments");
         return paymentRepository.findAll(pageable).map(paymentMapper::toDto);
     }
@@ -95,7 +96,7 @@ public class PaymentService {
      * @return the entity.
      */
     @Transactional(readOnly = true)
-    public Optional<PaymentDTO> findOne(Long id) {
+    public Optional<PaymentDto> findOne(UUID id) {
         LOG.debug("Request to get Payment : {}", id);
         return paymentRepository.findById(id).map(paymentMapper::toDto);
     }
@@ -105,7 +106,7 @@ public class PaymentService {
      *
      * @param id the id of the entity.
      */
-    public void delete(Long id) {
+    public void delete(UUID id) {
         LOG.debug("Request to delete Payment : {}", id);
         paymentRepository.deleteById(id);
     }

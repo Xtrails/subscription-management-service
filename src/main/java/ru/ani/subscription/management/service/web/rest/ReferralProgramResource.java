@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,13 +15,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.ani.subscription.management.service.repository.ReferralProgramRepository;
 import ru.ani.subscription.management.service.service.ReferralProgramService;
-import ru.ani.subscription.management.service.service.dto.ReferralProgramDTO;
+import ru.ani.subscription.management.service.service.dto.ReferralProgramDto;
 import ru.ani.subscription.management.service.web.rest.errors.BadRequestAlertException;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
 /**
- * REST controller for managing {@link ru.ani.subscription.management.service.domain.ReferralProgram}.
+ * REST controller for managing {@link ru.ani.subscription.management.service.domain.ReferralProgramDao}.
  */
 @RestController
 @RequestMapping("/api/referral-programs")
@@ -45,43 +46,43 @@ public class ReferralProgramResource {
     /**
      * {@code POST  /referral-programs} : Create a new referralProgram.
      *
-     * @param referralProgramDTO the referralProgramDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new referralProgramDTO, or with status {@code 400 (Bad Request)} if the referralProgram has already an ID.
+     * @param referralProgramDto the referralProgramDto to create.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new referralProgramDto, or with status {@code 400 (Bad Request)} if the referralProgram has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
-    public ResponseEntity<ReferralProgramDTO> createReferralProgram(@Valid @RequestBody ReferralProgramDTO referralProgramDTO)
+    public ResponseEntity<ReferralProgramDto> createReferralProgram(@Valid @RequestBody ReferralProgramDto referralProgramDto)
         throws URISyntaxException {
-        LOG.debug("REST request to save ReferralProgram : {}", referralProgramDTO);
-        if (referralProgramDTO.getId() != null) {
+        LOG.debug("REST request to save ReferralProgram : {}", referralProgramDto);
+        if (referralProgramDto.getId() != null) {
             throw new BadRequestAlertException("A new referralProgram cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        referralProgramDTO = referralProgramService.save(referralProgramDTO);
-        return ResponseEntity.created(new URI("/api/referral-programs/" + referralProgramDTO.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, referralProgramDTO.getId().toString()))
-            .body(referralProgramDTO);
+        referralProgramDto = referralProgramService.save(referralProgramDto);
+        return ResponseEntity.created(new URI("/api/referral-programs/" + referralProgramDto.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, referralProgramDto.getId().toString()))
+            .body(referralProgramDto);
     }
 
     /**
      * {@code PUT  /referral-programs/:id} : Updates an existing referralProgram.
      *
-     * @param id the id of the referralProgramDTO to save.
-     * @param referralProgramDTO the referralProgramDTO to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated referralProgramDTO,
-     * or with status {@code 400 (Bad Request)} if the referralProgramDTO is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the referralProgramDTO couldn't be updated.
+     * @param id the id of the referralProgramDto to save.
+     * @param referralProgramDto the referralProgramDto to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated referralProgramDto,
+     * or with status {@code 400 (Bad Request)} if the referralProgramDto is not valid,
+     * or with status {@code 500 (Internal Server Error)} if the referralProgramDto couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<ReferralProgramDTO> updateReferralProgram(
-        @PathVariable(value = "id", required = false) final Long id,
-        @Valid @RequestBody ReferralProgramDTO referralProgramDTO
+    public ResponseEntity<ReferralProgramDto> updateReferralProgram(
+        @PathVariable(value = "id", required = false) final UUID id,
+        @Valid @RequestBody ReferralProgramDto referralProgramDto
     ) throws URISyntaxException {
-        LOG.debug("REST request to update ReferralProgram : {}, {}", id, referralProgramDTO);
-        if (referralProgramDTO.getId() == null) {
+        LOG.debug("REST request to update ReferralProgram : {}, {}", id, referralProgramDto);
+        if (referralProgramDto.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(id, referralProgramDTO.getId())) {
+        if (!Objects.equals(id, referralProgramDto.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
@@ -89,33 +90,33 @@ public class ReferralProgramResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        referralProgramDTO = referralProgramService.update(referralProgramDTO);
+        referralProgramDto = referralProgramService.update(referralProgramDto);
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, referralProgramDTO.getId().toString()))
-            .body(referralProgramDTO);
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, referralProgramDto.getId().toString()))
+            .body(referralProgramDto);
     }
 
     /**
      * {@code PATCH  /referral-programs/:id} : Partial updates given fields of an existing referralProgram, field will ignore if it is null
      *
-     * @param id the id of the referralProgramDTO to save.
-     * @param referralProgramDTO the referralProgramDTO to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated referralProgramDTO,
-     * or with status {@code 400 (Bad Request)} if the referralProgramDTO is not valid,
-     * or with status {@code 404 (Not Found)} if the referralProgramDTO is not found,
-     * or with status {@code 500 (Internal Server Error)} if the referralProgramDTO couldn't be updated.
+     * @param id the id of the referralProgramDto to save.
+     * @param referralProgramDto the referralProgramDto to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated referralProgramDto,
+     * or with status {@code 400 (Bad Request)} if the referralProgramDto is not valid,
+     * or with status {@code 404 (Not Found)} if the referralProgramDto is not found,
+     * or with status {@code 500 (Internal Server Error)} if the referralProgramDto couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<ReferralProgramDTO> partialUpdateReferralProgram(
-        @PathVariable(value = "id", required = false) final Long id,
-        @NotNull @RequestBody ReferralProgramDTO referralProgramDTO
+    public ResponseEntity<ReferralProgramDto> partialUpdateReferralProgram(
+        @PathVariable(value = "id", required = false) final UUID id,
+        @NotNull @RequestBody ReferralProgramDto referralProgramDto
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update ReferralProgram partially : {}, {}", id, referralProgramDTO);
-        if (referralProgramDTO.getId() == null) {
+        LOG.debug("REST request to partial update ReferralProgram partially : {}, {}", id, referralProgramDto);
+        if (referralProgramDto.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(id, referralProgramDTO.getId())) {
+        if (!Objects.equals(id, referralProgramDto.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
@@ -123,11 +124,11 @@ public class ReferralProgramResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        Optional<ReferralProgramDTO> result = referralProgramService.partialUpdate(referralProgramDTO);
+        Optional<ReferralProgramDto> result = referralProgramService.partialUpdate(referralProgramDto);
 
         return ResponseUtil.wrapOrNotFound(
             result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, referralProgramDTO.getId().toString())
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, referralProgramDto.getId().toString())
         );
     }
 
@@ -138,7 +139,7 @@ public class ReferralProgramResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of referralPrograms in body.
      */
     @GetMapping("")
-    public List<ReferralProgramDTO> getAllReferralPrograms(@RequestParam(name = "filter", required = false) String filter) {
+    public List<ReferralProgramDto> getAllReferralPrograms(@RequestParam(name = "filter", required = false) String filter) {
         if ("externaluser-is-null".equals(filter)) {
             LOG.debug("REST request to get all ReferralPrograms where externalUser is null");
             return referralProgramService.findAllWhereExternalUserIsNull();
@@ -150,24 +151,24 @@ public class ReferralProgramResource {
     /**
      * {@code GET  /referral-programs/:id} : get the "id" referralProgram.
      *
-     * @param id the id of the referralProgramDTO to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the referralProgramDTO, or with status {@code 404 (Not Found)}.
+     * @param id the id of the referralProgramDto to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the referralProgramDto, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ReferralProgramDTO> getReferralProgram(@PathVariable("id") Long id) {
+    public ResponseEntity<ReferralProgramDto> getReferralProgram(@PathVariable("id") UUID id) {
         LOG.debug("REST request to get ReferralProgram : {}", id);
-        Optional<ReferralProgramDTO> referralProgramDTO = referralProgramService.findOne(id);
-        return ResponseUtil.wrapOrNotFound(referralProgramDTO);
+        Optional<ReferralProgramDto> referralProgramDto = referralProgramService.findOne(id);
+        return ResponseUtil.wrapOrNotFound(referralProgramDto);
     }
 
     /**
      * {@code DELETE  /referral-programs/:id} : delete the "id" referralProgram.
      *
-     * @param id the id of the referralProgramDTO to delete.
+     * @param id the id of the referralProgramDto to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReferralProgram(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteReferralProgram(@PathVariable("id") UUID id) {
         LOG.debug("REST request to delete ReferralProgram : {}", id);
         referralProgramService.delete(id);
         return ResponseEntity.noContent()

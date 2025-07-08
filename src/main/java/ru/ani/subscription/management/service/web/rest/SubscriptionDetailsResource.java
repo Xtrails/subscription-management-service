@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,13 +15,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.ani.subscription.management.service.repository.SubscriptionDetailsRepository;
 import ru.ani.subscription.management.service.service.SubscriptionDetailsService;
-import ru.ani.subscription.management.service.service.dto.SubscriptionDetailsDTO;
+import ru.ani.subscription.management.service.service.dto.SubscriptionDetailsDto;
 import ru.ani.subscription.management.service.web.rest.errors.BadRequestAlertException;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
 /**
- * REST controller for managing {@link ru.ani.subscription.management.service.domain.SubscriptionDetails}.
+ * REST controller for managing {@link ru.ani.subscription.management.service.domain.SubscriptionDetailsDao}.
  */
 @RestController
 @RequestMapping("/api/subscription-details")
@@ -48,44 +49,44 @@ public class SubscriptionDetailsResource {
     /**
      * {@code POST  /subscription-details} : Create a new subscriptionDetails.
      *
-     * @param subscriptionDetailsDTO the subscriptionDetailsDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new subscriptionDetailsDTO, or with status {@code 400 (Bad Request)} if the subscriptionDetails has already an ID.
+     * @param subscriptionDetailsDto the subscriptionDetailsDto to create.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new subscriptionDetailsDto, or with status {@code 400 (Bad Request)} if the subscriptionDetails has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
-    public ResponseEntity<SubscriptionDetailsDTO> createSubscriptionDetails(
-        @Valid @RequestBody SubscriptionDetailsDTO subscriptionDetailsDTO
+    public ResponseEntity<SubscriptionDetailsDto> createSubscriptionDetails(
+        @Valid @RequestBody SubscriptionDetailsDto subscriptionDetailsDto
     ) throws URISyntaxException {
-        LOG.debug("REST request to save SubscriptionDetails : {}", subscriptionDetailsDTO);
-        if (subscriptionDetailsDTO.getId() != null) {
+        LOG.debug("REST request to save SubscriptionDetails : {}", subscriptionDetailsDto);
+        if (subscriptionDetailsDto.getId() != null) {
             throw new BadRequestAlertException("A new subscriptionDetails cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        subscriptionDetailsDTO = subscriptionDetailsService.save(subscriptionDetailsDTO);
-        return ResponseEntity.created(new URI("/api/subscription-details/" + subscriptionDetailsDTO.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, subscriptionDetailsDTO.getId().toString()))
-            .body(subscriptionDetailsDTO);
+        subscriptionDetailsDto = subscriptionDetailsService.save(subscriptionDetailsDto);
+        return ResponseEntity.created(new URI("/api/subscription-details/" + subscriptionDetailsDto.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, subscriptionDetailsDto.getId().toString()))
+            .body(subscriptionDetailsDto);
     }
 
     /**
      * {@code PUT  /subscription-details/:id} : Updates an existing subscriptionDetails.
      *
-     * @param id the id of the subscriptionDetailsDTO to save.
-     * @param subscriptionDetailsDTO the subscriptionDetailsDTO to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated subscriptionDetailsDTO,
-     * or with status {@code 400 (Bad Request)} if the subscriptionDetailsDTO is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the subscriptionDetailsDTO couldn't be updated.
+     * @param id the id of the subscriptionDetailsDto to save.
+     * @param subscriptionDetailsDto the subscriptionDetailsDto to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated subscriptionDetailsDto,
+     * or with status {@code 400 (Bad Request)} if the subscriptionDetailsDto is not valid,
+     * or with status {@code 500 (Internal Server Error)} if the subscriptionDetailsDto couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<SubscriptionDetailsDTO> updateSubscriptionDetails(
-        @PathVariable(value = "id", required = false) final Long id,
-        @Valid @RequestBody SubscriptionDetailsDTO subscriptionDetailsDTO
+    public ResponseEntity<SubscriptionDetailsDto> updateSubscriptionDetails(
+        @PathVariable(value = "id", required = false) final UUID id,
+        @Valid @RequestBody SubscriptionDetailsDto subscriptionDetailsDto
     ) throws URISyntaxException {
-        LOG.debug("REST request to update SubscriptionDetails : {}, {}", id, subscriptionDetailsDTO);
-        if (subscriptionDetailsDTO.getId() == null) {
+        LOG.debug("REST request to update SubscriptionDetails : {}, {}", id, subscriptionDetailsDto);
+        if (subscriptionDetailsDto.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(id, subscriptionDetailsDTO.getId())) {
+        if (!Objects.equals(id, subscriptionDetailsDto.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
@@ -93,33 +94,33 @@ public class SubscriptionDetailsResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        subscriptionDetailsDTO = subscriptionDetailsService.update(subscriptionDetailsDTO);
+        subscriptionDetailsDto = subscriptionDetailsService.update(subscriptionDetailsDto);
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, subscriptionDetailsDTO.getId().toString()))
-            .body(subscriptionDetailsDTO);
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, subscriptionDetailsDto.getId().toString()))
+            .body(subscriptionDetailsDto);
     }
 
     /**
      * {@code PATCH  /subscription-details/:id} : Partial updates given fields of an existing subscriptionDetails, field will ignore if it is null
      *
-     * @param id the id of the subscriptionDetailsDTO to save.
-     * @param subscriptionDetailsDTO the subscriptionDetailsDTO to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated subscriptionDetailsDTO,
-     * or with status {@code 400 (Bad Request)} if the subscriptionDetailsDTO is not valid,
-     * or with status {@code 404 (Not Found)} if the subscriptionDetailsDTO is not found,
-     * or with status {@code 500 (Internal Server Error)} if the subscriptionDetailsDTO couldn't be updated.
+     * @param id the id of the subscriptionDetailsDto to save.
+     * @param subscriptionDetailsDto the subscriptionDetailsDto to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated subscriptionDetailsDto,
+     * or with status {@code 400 (Bad Request)} if the subscriptionDetailsDto is not valid,
+     * or with status {@code 404 (Not Found)} if the subscriptionDetailsDto is not found,
+     * or with status {@code 500 (Internal Server Error)} if the subscriptionDetailsDto couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<SubscriptionDetailsDTO> partialUpdateSubscriptionDetails(
-        @PathVariable(value = "id", required = false) final Long id,
-        @NotNull @RequestBody SubscriptionDetailsDTO subscriptionDetailsDTO
+    public ResponseEntity<SubscriptionDetailsDto> partialUpdateSubscriptionDetails(
+        @PathVariable(value = "id", required = false) final UUID id,
+        @NotNull @RequestBody SubscriptionDetailsDto subscriptionDetailsDto
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update SubscriptionDetails partially : {}, {}", id, subscriptionDetailsDTO);
-        if (subscriptionDetailsDTO.getId() == null) {
+        LOG.debug("REST request to partial update SubscriptionDetails partially : {}, {}", id, subscriptionDetailsDto);
+        if (subscriptionDetailsDto.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(id, subscriptionDetailsDTO.getId())) {
+        if (!Objects.equals(id, subscriptionDetailsDto.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
@@ -127,11 +128,11 @@ public class SubscriptionDetailsResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        Optional<SubscriptionDetailsDTO> result = subscriptionDetailsService.partialUpdate(subscriptionDetailsDTO);
+        Optional<SubscriptionDetailsDto> result = subscriptionDetailsService.partialUpdate(subscriptionDetailsDto);
 
         return ResponseUtil.wrapOrNotFound(
             result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, subscriptionDetailsDTO.getId().toString())
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, subscriptionDetailsDto.getId().toString())
         );
     }
 
@@ -141,7 +142,7 @@ public class SubscriptionDetailsResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of subscriptionDetails in body.
      */
     @GetMapping("")
-    public List<SubscriptionDetailsDTO> getAllSubscriptionDetails() {
+    public List<SubscriptionDetailsDto> getAllSubscriptionDetails() {
         LOG.debug("REST request to get all SubscriptionDetails");
         return subscriptionDetailsService.findAll();
     }
@@ -149,24 +150,24 @@ public class SubscriptionDetailsResource {
     /**
      * {@code GET  /subscription-details/:id} : get the "id" subscriptionDetails.
      *
-     * @param id the id of the subscriptionDetailsDTO to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the subscriptionDetailsDTO, or with status {@code 404 (Not Found)}.
+     * @param id the id of the subscriptionDetailsDto to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the subscriptionDetailsDto, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<SubscriptionDetailsDTO> getSubscriptionDetails(@PathVariable("id") Long id) {
+    public ResponseEntity<SubscriptionDetailsDto> getSubscriptionDetails(@PathVariable("id") UUID id) {
         LOG.debug("REST request to get SubscriptionDetails : {}", id);
-        Optional<SubscriptionDetailsDTO> subscriptionDetailsDTO = subscriptionDetailsService.findOne(id);
-        return ResponseUtil.wrapOrNotFound(subscriptionDetailsDTO);
+        Optional<SubscriptionDetailsDto> subscriptionDetailsDto = subscriptionDetailsService.findOne(id);
+        return ResponseUtil.wrapOrNotFound(subscriptionDetailsDto);
     }
 
     /**
      * {@code DELETE  /subscription-details/:id} : delete the "id" subscriptionDetails.
      *
-     * @param id the id of the subscriptionDetailsDTO to delete.
+     * @param id the id of the subscriptionDetailsDto to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSubscriptionDetails(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteSubscriptionDetails(@PathVariable("id") UUID id) {
         LOG.debug("REST request to delete SubscriptionDetails : {}", id);
         subscriptionDetailsService.delete(id);
         return ResponseEntity.noContent()

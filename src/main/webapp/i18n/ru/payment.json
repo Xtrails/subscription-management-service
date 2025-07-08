@@ -17,7 +17,7 @@
       "detail": {
         "title": "Payment"
       },
-      "id": "ID",
+      "id": "Id",
       "amount": "Amount",
       "status": "Status",
       "paymentDttm": "Payment Dttm",

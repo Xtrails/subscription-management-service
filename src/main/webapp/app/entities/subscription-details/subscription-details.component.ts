@@ -39,7 +39,7 @@ export default defineComponent({
       await retrieveSubscriptionDetailss();
     });
 
-    const removeId: Ref<number> = ref(null);
+    const removeId: Ref<string> = ref(null);
     const removeEntity = ref<any>(null);
     const prepareRemove = (instance: ISubscriptionDetails) => {
       removeId.value = instance.id;

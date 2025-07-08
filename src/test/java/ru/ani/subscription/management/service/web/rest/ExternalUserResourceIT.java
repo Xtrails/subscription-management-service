@@ -5,13 +5,12 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static ru.ani.subscription.management.service.domain.ExternalUserAsserts.*;
+import static ru.ani.subscription.management.service.domain.ExternalUserDaoAsserts.*;
 import static ru.ani.subscription.management.service.web.rest.TestUtil.createUpdateProxyForBean;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,9 +21,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ani.subscription.management.service.IntegrationTest;
-import ru.ani.subscription.management.service.domain.ExternalUser;
+import ru.ani.subscription.management.service.domain.ExternalUserDao;
 import ru.ani.subscription.management.service.repository.ExternalUserRepository;
-import ru.ani.subscription.management.service.service.dto.ExternalUserDTO;
+import ru.ani.subscription.management.service.service.dto.ExternalUserDto;
 import ru.ani.subscription.management.service.service.mapper.ExternalUserMapper;
 
 /**
@@ -41,9 +40,6 @@ class ExternalUserResourceIT {
     private static final String ENTITY_API_URL = "/api/external-users";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
-    private static Random random = new Random();
-    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
-
     @Autowired
     private ObjectMapper om;
 
@@ -59,9 +55,9 @@ class ExternalUserResourceIT {
     @Autowired
     private MockMvc restExternalUserMockMvc;
 
-    private ExternalUser externalUser;
+    private ExternalUserDao externalUserDao;
 
-    private ExternalUser insertedExternalUser;
+    private ExternalUserDao insertedExternalUserDao;
 
     /**
      * Create an entity for this test.
@@ -69,8 +65,8 @@ class ExternalUserResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static ExternalUser createEntity() {
-        return new ExternalUser().externalUserId(DEFAULT_EXTERNAL_USER_ID);
+    public static ExternalUserDao createEntity() {
+        return new ExternalUserDao().externalUserId(DEFAULT_EXTERNAL_USER_ID);
     }
 
     /**
@@ -79,20 +75,20 @@ class ExternalUserResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static ExternalUser createUpdatedEntity() {
-        return new ExternalUser().externalUserId(UPDATED_EXTERNAL_USER_ID);
+    public static ExternalUserDao createUpdatedEntity() {
+        return new ExternalUserDao().externalUserId(UPDATED_EXTERNAL_USER_ID);
     }
 
     @BeforeEach
     void initTest() {
-        externalUser = createEntity();
+        externalUserDao = createEntity();
     }
 
     @AfterEach
     void cleanup() {
-        if (insertedExternalUser != null) {
-            externalUserRepository.delete(insertedExternalUser);
-            insertedExternalUser = null;
+        if (insertedExternalUserDao != null) {
+            externalUserRepository.delete(insertedExternalUserDao);
+            insertedExternalUserDao = null;
         }
     }
 
@@ -101,40 +97,40 @@ class ExternalUserResourceIT {
     void createExternalUser() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
         // Create the ExternalUser
-        ExternalUserDTO externalUserDTO = externalUserMapper.toDto(externalUser);
-        var returnedExternalUserDTO = om.readValue(
+        ExternalUserDto externalUserDto = externalUserMapper.toDto(externalUserDao);
+        var returnedExternalUserDto = om.readValue(
             restExternalUserMockMvc
                 .perform(
-                    post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(externalUserDTO))
+                    post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(externalUserDto))
                 )
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse()
                 .getContentAsString(),
-            ExternalUserDTO.class
+            ExternalUserDto.class
         );
 
         // Validate the ExternalUser in the database
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
-        var returnedExternalUser = externalUserMapper.toEntity(returnedExternalUserDTO);
-        assertExternalUserUpdatableFieldsEquals(returnedExternalUser, getPersistedExternalUser(returnedExternalUser));
+        var returnedExternalUserDao = externalUserMapper.toEntity(returnedExternalUserDto);
+        assertExternalUserDaoUpdatableFieldsEquals(returnedExternalUserDao, getPersistedExternalUserDao(returnedExternalUserDao));
 
-        insertedExternalUser = returnedExternalUser;
+        insertedExternalUserDao = returnedExternalUserDao;
     }
 
     @Test
     @Transactional
     void createExternalUserWithExistingId() throws Exception {
         // Create the ExternalUser with an existing ID
-        externalUser.setId(1L);
-        ExternalUserDTO externalUserDTO = externalUserMapper.toDto(externalUser);
+        insertedExternalUserDao = externalUserRepository.saveAndFlush(externalUserDao);
+        ExternalUserDto externalUserDto = externalUserMapper.toDto(externalUserDao);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restExternalUserMockMvc
             .perform(
-                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(externalUserDTO))
+                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(externalUserDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -147,14 +143,14 @@ class ExternalUserResourceIT {
     void checkExternalUserIdIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        externalUser.setExternalUserId(null);
+        externalUserDao.setExternalUserId(null);
 
         // Create the ExternalUser, which fails.
-        ExternalUserDTO externalUserDTO = externalUserMapper.toDto(externalUser);
+        ExternalUserDto externalUserDto = externalUserMapper.toDto(externalUserDao);
 
         restExternalUserMockMvc
             .perform(
-                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(externalUserDTO))
+                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(externalUserDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -165,14 +161,14 @@ class ExternalUserResourceIT {
     @Transactional
     void getAllExternalUsers() throws Exception {
         // Initialize the database
-        insertedExternalUser = externalUserRepository.saveAndFlush(externalUser);
+        insertedExternalUserDao = externalUserRepository.saveAndFlush(externalUserDao);
 
         // Get all the externalUserList
         restExternalUserMockMvc
             .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(externalUser.getId().intValue())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(externalUserDao.getId().toString())))
             .andExpect(jsonPath("$.[*].externalUserId").value(hasItem(DEFAULT_EXTERNAL_USER_ID)));
     }
 
@@ -180,14 +176,14 @@ class ExternalUserResourceIT {
     @Transactional
     void getExternalUser() throws Exception {
         // Initialize the database
-        insertedExternalUser = externalUserRepository.saveAndFlush(externalUser);
+        insertedExternalUserDao = externalUserRepository.saveAndFlush(externalUserDao);
 
         // Get the externalUser
         restExternalUserMockMvc
-            .perform(get(ENTITY_API_URL_ID, externalUser.getId()))
+            .perform(get(ENTITY_API_URL_ID, externalUserDao.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.id").value(externalUser.getId().intValue()))
+            .andExpect(jsonPath("$.id").value(externalUserDao.getId().toString()))
             .andExpect(jsonPath("$.externalUserId").value(DEFAULT_EXTERNAL_USER_ID));
     }
 
@@ -195,54 +191,54 @@ class ExternalUserResourceIT {
     @Transactional
     void getNonExistingExternalUser() throws Exception {
         // Get the externalUser
-        restExternalUserMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
+        restExternalUserMockMvc.perform(get(ENTITY_API_URL_ID, UUID.randomUUID().toString())).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
     void putExistingExternalUser() throws Exception {
         // Initialize the database
-        insertedExternalUser = externalUserRepository.saveAndFlush(externalUser);
+        insertedExternalUserDao = externalUserRepository.saveAndFlush(externalUserDao);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the externalUser
-        ExternalUser updatedExternalUser = externalUserRepository.findById(externalUser.getId()).orElseThrow();
-        // Disconnect from session so that the updates on updatedExternalUser are not directly saved in db
-        em.detach(updatedExternalUser);
-        updatedExternalUser.externalUserId(UPDATED_EXTERNAL_USER_ID);
-        ExternalUserDTO externalUserDTO = externalUserMapper.toDto(updatedExternalUser);
+        ExternalUserDao updatedExternalUserDao = externalUserRepository.findById(externalUserDao.getId()).orElseThrow();
+        // Disconnect from session so that the updates on updatedExternalUserDao are not directly saved in db
+        em.detach(updatedExternalUserDao);
+        updatedExternalUserDao.externalUserId(UPDATED_EXTERNAL_USER_ID);
+        ExternalUserDto externalUserDto = externalUserMapper.toDto(updatedExternalUserDao);
 
         restExternalUserMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, externalUserDTO.getId())
+                put(ENTITY_API_URL_ID, externalUserDto.getId())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(externalUserDTO))
+                    .content(om.writeValueAsBytes(externalUserDto))
             )
             .andExpect(status().isOk());
 
         // Validate the ExternalUser in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertPersistedExternalUserToMatchAllProperties(updatedExternalUser);
+        assertPersistedExternalUserDaoToMatchAllProperties(updatedExternalUserDao);
     }
 
     @Test
     @Transactional
     void putNonExistingExternalUser() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        externalUser.setId(longCount.incrementAndGet());
+        externalUserDao.setId(UUID.randomUUID());
 
         // Create the ExternalUser
-        ExternalUserDTO externalUserDTO = externalUserMapper.toDto(externalUser);
+        ExternalUserDto externalUserDto = externalUserMapper.toDto(externalUserDao);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restExternalUserMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, externalUserDTO.getId())
+                put(ENTITY_API_URL_ID, externalUserDto.getId())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(externalUserDTO))
+                    .content(om.writeValueAsBytes(externalUserDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -254,18 +250,18 @@ class ExternalUserResourceIT {
     @Transactional
     void putWithIdMismatchExternalUser() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        externalUser.setId(longCount.incrementAndGet());
+        externalUserDao.setId(UUID.randomUUID());
 
         // Create the ExternalUser
-        ExternalUserDTO externalUserDTO = externalUserMapper.toDto(externalUser);
+        ExternalUserDto externalUserDto = externalUserMapper.toDto(externalUserDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restExternalUserMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, longCount.incrementAndGet())
+                put(ENTITY_API_URL_ID, UUID.randomUUID())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(externalUserDTO))
+                    .content(om.writeValueAsBytes(externalUserDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -277,15 +273,15 @@ class ExternalUserResourceIT {
     @Transactional
     void putWithMissingIdPathParamExternalUser() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        externalUser.setId(longCount.incrementAndGet());
+        externalUserDao.setId(UUID.randomUUID());
 
         // Create the ExternalUser
-        ExternalUserDTO externalUserDTO = externalUserMapper.toDto(externalUser);
+        ExternalUserDto externalUserDto = externalUserMapper.toDto(externalUserDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restExternalUserMockMvc
             .perform(
-                put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(externalUserDTO))
+                put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(externalUserDto))
             )
             .andExpect(status().isMethodNotAllowed());
 
@@ -297,29 +293,29 @@ class ExternalUserResourceIT {
     @Transactional
     void partialUpdateExternalUserWithPatch() throws Exception {
         // Initialize the database
-        insertedExternalUser = externalUserRepository.saveAndFlush(externalUser);
+        insertedExternalUserDao = externalUserRepository.saveAndFlush(externalUserDao);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the externalUser using partial update
-        ExternalUser partialUpdatedExternalUser = new ExternalUser();
-        partialUpdatedExternalUser.setId(externalUser.getId());
+        ExternalUserDao partialUpdatedExternalUserDao = new ExternalUserDao();
+        partialUpdatedExternalUserDao.setId(externalUserDao.getId());
 
         restExternalUserMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, partialUpdatedExternalUser.getId())
+                patch(ENTITY_API_URL_ID, partialUpdatedExternalUserDao.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedExternalUser))
+                    .content(om.writeValueAsBytes(partialUpdatedExternalUserDao))
             )
             .andExpect(status().isOk());
 
         // Validate the ExternalUser in the database
 
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertExternalUserUpdatableFieldsEquals(
-            createUpdateProxyForBean(partialUpdatedExternalUser, externalUser),
-            getPersistedExternalUser(externalUser)
+        assertExternalUserDaoUpdatableFieldsEquals(
+            createUpdateProxyForBean(partialUpdatedExternalUserDao, externalUserDao),
+            getPersistedExternalUserDao(externalUserDao)
         );
     }
 
@@ -327,47 +323,50 @@ class ExternalUserResourceIT {
     @Transactional
     void fullUpdateExternalUserWithPatch() throws Exception {
         // Initialize the database
-        insertedExternalUser = externalUserRepository.saveAndFlush(externalUser);
+        insertedExternalUserDao = externalUserRepository.saveAndFlush(externalUserDao);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the externalUser using partial update
-        ExternalUser partialUpdatedExternalUser = new ExternalUser();
-        partialUpdatedExternalUser.setId(externalUser.getId());
+        ExternalUserDao partialUpdatedExternalUserDao = new ExternalUserDao();
+        partialUpdatedExternalUserDao.setId(externalUserDao.getId());
 
-        partialUpdatedExternalUser.externalUserId(UPDATED_EXTERNAL_USER_ID);
+        partialUpdatedExternalUserDao.externalUserId(UPDATED_EXTERNAL_USER_ID);
 
         restExternalUserMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, partialUpdatedExternalUser.getId())
+                patch(ENTITY_API_URL_ID, partialUpdatedExternalUserDao.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedExternalUser))
+                    .content(om.writeValueAsBytes(partialUpdatedExternalUserDao))
             )
             .andExpect(status().isOk());
 
         // Validate the ExternalUser in the database
 
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertExternalUserUpdatableFieldsEquals(partialUpdatedExternalUser, getPersistedExternalUser(partialUpdatedExternalUser));
+        assertExternalUserDaoUpdatableFieldsEquals(
+            partialUpdatedExternalUserDao,
+            getPersistedExternalUserDao(partialUpdatedExternalUserDao)
+        );
     }
 
     @Test
     @Transactional
     void patchNonExistingExternalUser() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        externalUser.setId(longCount.incrementAndGet());
+        externalUserDao.setId(UUID.randomUUID());
 
         // Create the ExternalUser
-        ExternalUserDTO externalUserDTO = externalUserMapper.toDto(externalUser);
+        ExternalUserDto externalUserDto = externalUserMapper.toDto(externalUserDao);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restExternalUserMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, externalUserDTO.getId())
+                patch(ENTITY_API_URL_ID, externalUserDto.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(externalUserDTO))
+                    .content(om.writeValueAsBytes(externalUserDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -379,18 +378,18 @@ class ExternalUserResourceIT {
     @Transactional
     void patchWithIdMismatchExternalUser() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        externalUser.setId(longCount.incrementAndGet());
+        externalUserDao.setId(UUID.randomUUID());
 
         // Create the ExternalUser
-        ExternalUserDTO externalUserDTO = externalUserMapper.toDto(externalUser);
+        ExternalUserDto externalUserDto = externalUserMapper.toDto(externalUserDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restExternalUserMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, longCount.incrementAndGet())
+                patch(ENTITY_API_URL_ID, UUID.randomUUID())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(externalUserDTO))
+                    .content(om.writeValueAsBytes(externalUserDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -402,10 +401,10 @@ class ExternalUserResourceIT {
     @Transactional
     void patchWithMissingIdPathParamExternalUser() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        externalUser.setId(longCount.incrementAndGet());
+        externalUserDao.setId(UUID.randomUUID());
 
         // Create the ExternalUser
-        ExternalUserDTO externalUserDTO = externalUserMapper.toDto(externalUser);
+        ExternalUserDto externalUserDto = externalUserMapper.toDto(externalUserDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restExternalUserMockMvc
@@ -413,7 +412,7 @@ class ExternalUserResourceIT {
                 patch(ENTITY_API_URL)
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(externalUserDTO))
+                    .content(om.writeValueAsBytes(externalUserDto))
             )
             .andExpect(status().isMethodNotAllowed());
 
@@ -425,13 +424,13 @@ class ExternalUserResourceIT {
     @Transactional
     void deleteExternalUser() throws Exception {
         // Initialize the database
-        insertedExternalUser = externalUserRepository.saveAndFlush(externalUser);
+        insertedExternalUserDao = externalUserRepository.saveAndFlush(externalUserDao);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
 
         // Delete the externalUser
         restExternalUserMockMvc
-            .perform(delete(ENTITY_API_URL_ID, externalUser.getId()).with(csrf()).accept(MediaType.APPLICATION_JSON))
+            .perform(delete(ENTITY_API_URL_ID, externalUserDao.getId().toString()).with(csrf()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
@@ -454,15 +453,15 @@ class ExternalUserResourceIT {
         assertThat(countBefore).isEqualTo(getRepositoryCount());
     }
 
-    protected ExternalUser getPersistedExternalUser(ExternalUser externalUser) {
+    protected ExternalUserDao getPersistedExternalUserDao(ExternalUserDao externalUser) {
         return externalUserRepository.findById(externalUser.getId()).orElseThrow();
     }
 
-    protected void assertPersistedExternalUserToMatchAllProperties(ExternalUser expectedExternalUser) {
-        assertExternalUserAllPropertiesEquals(expectedExternalUser, getPersistedExternalUser(expectedExternalUser));
+    protected void assertPersistedExternalUserDaoToMatchAllProperties(ExternalUserDao expectedExternalUserDao) {
+        assertExternalUserDaoAllPropertiesEquals(expectedExternalUserDao, getPersistedExternalUserDao(expectedExternalUserDao));
     }
 
-    protected void assertPersistedExternalUserToMatchUpdatableProperties(ExternalUser expectedExternalUser) {
-        assertExternalUserAllUpdatablePropertiesEquals(expectedExternalUser, getPersistedExternalUser(expectedExternalUser));
+    protected void assertPersistedExternalUserDaoToMatchUpdatableProperties(ExternalUserDao expectedExternalUserDao) {
+        assertExternalUserDaoAllUpdatablePropertiesEquals(expectedExternalUserDao, getPersistedExternalUserDao(expectedExternalUserDao));
     }
 }

@@ -2,7 +2,7 @@ import { type ISourceApplication } from '@/shared/model/source-application.model
 
 import { type ReferralStatus } from '@/shared/model/enumerations/referral-status.model';
 export interface IReferralProgram {
-  id?: number;
+  id?: string;
   name?: string;
   referralCode?: string;
   description?: string | null;
@@ -15,7 +15,7 @@ export interface IReferralProgram {
 
 export class ReferralProgram implements IReferralProgram {
   constructor(
-    public id?: number,
+    public id?: string,
     public name?: string,
     public referralCode?: string,
     public description?: string | null,

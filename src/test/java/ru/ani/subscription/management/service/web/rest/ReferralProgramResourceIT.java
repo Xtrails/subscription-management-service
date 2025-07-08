@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static ru.ani.subscription.management.service.domain.ReferralProgramAsserts.*;
+import static ru.ani.subscription.management.service.domain.ReferralProgramDaoAsserts.*;
 import static ru.ani.subscription.management.service.web.rest.TestUtil.createUpdateProxyForBean;
 import static ru.ani.subscription.management.service.web.rest.TestUtil.sameNumber;
 
@@ -14,8 +14,7 @@ import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,10 +25,10 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ani.subscription.management.service.IntegrationTest;
-import ru.ani.subscription.management.service.domain.ReferralProgram;
+import ru.ani.subscription.management.service.domain.ReferralProgramDao;
 import ru.ani.subscription.management.service.domain.enumeration.ReferralStatus;
 import ru.ani.subscription.management.service.repository.ReferralProgramRepository;
-import ru.ani.subscription.management.service.service.dto.ReferralProgramDTO;
+import ru.ani.subscription.management.service.service.dto.ReferralProgramDto;
 import ru.ani.subscription.management.service.service.mapper.ReferralProgramMapper;
 
 /**
@@ -64,9 +63,6 @@ class ReferralProgramResourceIT {
     private static final String ENTITY_API_URL = "/api/referral-programs";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
-    private static Random random = new Random();
-    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
-
     @Autowired
     private ObjectMapper om;
 
@@ -82,9 +78,9 @@ class ReferralProgramResourceIT {
     @Autowired
     private MockMvc restReferralProgramMockMvc;
 
-    private ReferralProgram referralProgram;
+    private ReferralProgramDao referralProgramDao;
 
-    private ReferralProgram insertedReferralProgram;
+    private ReferralProgramDao insertedReferralProgramDao;
 
     /**
      * Create an entity for this test.
@@ -92,8 +88,8 @@ class ReferralProgramResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static ReferralProgram createEntity() {
-        return new ReferralProgram()
+    public static ReferralProgramDao createEntity() {
+        return new ReferralProgramDao()
             .name(DEFAULT_NAME)
             .referralCode(DEFAULT_REFERRAL_CODE)
             .description(DEFAULT_DESCRIPTION)
@@ -109,8 +105,8 @@ class ReferralProgramResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static ReferralProgram createUpdatedEntity() {
-        return new ReferralProgram()
+    public static ReferralProgramDao createUpdatedEntity() {
+        return new ReferralProgramDao()
             .name(UPDATED_NAME)
             .referralCode(UPDATED_REFERRAL_CODE)
             .description(UPDATED_DESCRIPTION)
@@ -122,14 +118,14 @@ class ReferralProgramResourceIT {
 
     @BeforeEach
     void initTest() {
-        referralProgram = createEntity();
+        referralProgramDao = createEntity();
     }
 
     @AfterEach
     void cleanup() {
-        if (insertedReferralProgram != null) {
-            referralProgramRepository.delete(insertedReferralProgram);
-            insertedReferralProgram = null;
+        if (insertedReferralProgramDao != null) {
+            referralProgramRepository.delete(insertedReferralProgramDao);
+            insertedReferralProgramDao = null;
         }
     }
 
@@ -138,43 +134,46 @@ class ReferralProgramResourceIT {
     void createReferralProgram() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
         // Create the ReferralProgram
-        ReferralProgramDTO referralProgramDTO = referralProgramMapper.toDto(referralProgram);
-        var returnedReferralProgramDTO = om.readValue(
+        ReferralProgramDto referralProgramDto = referralProgramMapper.toDto(referralProgramDao);
+        var returnedReferralProgramDto = om.readValue(
             restReferralProgramMockMvc
                 .perform(
                     post(ENTITY_API_URL)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(om.writeValueAsBytes(referralProgramDTO))
+                        .content(om.writeValueAsBytes(referralProgramDto))
                 )
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse()
                 .getContentAsString(),
-            ReferralProgramDTO.class
+            ReferralProgramDto.class
         );
 
         // Validate the ReferralProgram in the database
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
-        var returnedReferralProgram = referralProgramMapper.toEntity(returnedReferralProgramDTO);
-        assertReferralProgramUpdatableFieldsEquals(returnedReferralProgram, getPersistedReferralProgram(returnedReferralProgram));
+        var returnedReferralProgramDao = referralProgramMapper.toEntity(returnedReferralProgramDto);
+        assertReferralProgramDaoUpdatableFieldsEquals(
+            returnedReferralProgramDao,
+            getPersistedReferralProgramDao(returnedReferralProgramDao)
+        );
 
-        insertedReferralProgram = returnedReferralProgram;
+        insertedReferralProgramDao = returnedReferralProgramDao;
     }
 
     @Test
     @Transactional
     void createReferralProgramWithExistingId() throws Exception {
         // Create the ReferralProgram with an existing ID
-        referralProgram.setId(1L);
-        ReferralProgramDTO referralProgramDTO = referralProgramMapper.toDto(referralProgram);
+        insertedReferralProgramDao = referralProgramRepository.saveAndFlush(referralProgramDao);
+        ReferralProgramDto referralProgramDto = referralProgramMapper.toDto(referralProgramDao);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restReferralProgramMockMvc
             .perform(
-                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(referralProgramDTO))
+                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(referralProgramDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -187,14 +186,14 @@ class ReferralProgramResourceIT {
     void checkNameIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        referralProgram.setName(null);
+        referralProgramDao.setName(null);
 
         // Create the ReferralProgram, which fails.
-        ReferralProgramDTO referralProgramDTO = referralProgramMapper.toDto(referralProgram);
+        ReferralProgramDto referralProgramDto = referralProgramMapper.toDto(referralProgramDao);
 
         restReferralProgramMockMvc
             .perform(
-                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(referralProgramDTO))
+                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(referralProgramDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -206,14 +205,14 @@ class ReferralProgramResourceIT {
     void checkReferralCodeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        referralProgram.setReferralCode(null);
+        referralProgramDao.setReferralCode(null);
 
         // Create the ReferralProgram, which fails.
-        ReferralProgramDTO referralProgramDTO = referralProgramMapper.toDto(referralProgram);
+        ReferralProgramDto referralProgramDto = referralProgramMapper.toDto(referralProgramDao);
 
         restReferralProgramMockMvc
             .perform(
-                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(referralProgramDTO))
+                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(referralProgramDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -225,14 +224,14 @@ class ReferralProgramResourceIT {
     void checkStartDttmIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        referralProgram.setStartDttm(null);
+        referralProgramDao.setStartDttm(null);
 
         // Create the ReferralProgram, which fails.
-        ReferralProgramDTO referralProgramDTO = referralProgramMapper.toDto(referralProgram);
+        ReferralProgramDto referralProgramDto = referralProgramMapper.toDto(referralProgramDao);
 
         restReferralProgramMockMvc
             .perform(
-                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(referralProgramDTO))
+                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(referralProgramDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -244,14 +243,14 @@ class ReferralProgramResourceIT {
     void checkEndDttmIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        referralProgram.setEndDttm(null);
+        referralProgramDao.setEndDttm(null);
 
         // Create the ReferralProgram, which fails.
-        ReferralProgramDTO referralProgramDTO = referralProgramMapper.toDto(referralProgram);
+        ReferralProgramDto referralProgramDto = referralProgramMapper.toDto(referralProgramDao);
 
         restReferralProgramMockMvc
             .perform(
-                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(referralProgramDTO))
+                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(referralProgramDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -263,14 +262,14 @@ class ReferralProgramResourceIT {
     void checkRewardAmountIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        referralProgram.setRewardAmount(null);
+        referralProgramDao.setRewardAmount(null);
 
         // Create the ReferralProgram, which fails.
-        ReferralProgramDTO referralProgramDTO = referralProgramMapper.toDto(referralProgram);
+        ReferralProgramDto referralProgramDto = referralProgramMapper.toDto(referralProgramDao);
 
         restReferralProgramMockMvc
             .perform(
-                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(referralProgramDTO))
+                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(referralProgramDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -282,14 +281,14 @@ class ReferralProgramResourceIT {
     void checkStatusIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        referralProgram.setStatus(null);
+        referralProgramDao.setStatus(null);
 
         // Create the ReferralProgram, which fails.
-        ReferralProgramDTO referralProgramDTO = referralProgramMapper.toDto(referralProgram);
+        ReferralProgramDto referralProgramDto = referralProgramMapper.toDto(referralProgramDao);
 
         restReferralProgramMockMvc
             .perform(
-                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(referralProgramDTO))
+                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(referralProgramDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -300,14 +299,14 @@ class ReferralProgramResourceIT {
     @Transactional
     void getAllReferralPrograms() throws Exception {
         // Initialize the database
-        insertedReferralProgram = referralProgramRepository.saveAndFlush(referralProgram);
+        insertedReferralProgramDao = referralProgramRepository.saveAndFlush(referralProgramDao);
 
         // Get all the referralProgramList
         restReferralProgramMockMvc
             .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(referralProgram.getId().intValue())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(referralProgramDao.getId().toString())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
             .andExpect(jsonPath("$.[*].referralCode").value(hasItem(DEFAULT_REFERRAL_CODE)))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
@@ -321,14 +320,14 @@ class ReferralProgramResourceIT {
     @Transactional
     void getReferralProgram() throws Exception {
         // Initialize the database
-        insertedReferralProgram = referralProgramRepository.saveAndFlush(referralProgram);
+        insertedReferralProgramDao = referralProgramRepository.saveAndFlush(referralProgramDao);
 
         // Get the referralProgram
         restReferralProgramMockMvc
-            .perform(get(ENTITY_API_URL_ID, referralProgram.getId()))
+            .perform(get(ENTITY_API_URL_ID, referralProgramDao.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.id").value(referralProgram.getId().intValue()))
+            .andExpect(jsonPath("$.id").value(referralProgramDao.getId().toString()))
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
             .andExpect(jsonPath("$.referralCode").value(DEFAULT_REFERRAL_CODE))
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION))
@@ -342,22 +341,22 @@ class ReferralProgramResourceIT {
     @Transactional
     void getNonExistingReferralProgram() throws Exception {
         // Get the referralProgram
-        restReferralProgramMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
+        restReferralProgramMockMvc.perform(get(ENTITY_API_URL_ID, UUID.randomUUID().toString())).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
     void putExistingReferralProgram() throws Exception {
         // Initialize the database
-        insertedReferralProgram = referralProgramRepository.saveAndFlush(referralProgram);
+        insertedReferralProgramDao = referralProgramRepository.saveAndFlush(referralProgramDao);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the referralProgram
-        ReferralProgram updatedReferralProgram = referralProgramRepository.findById(referralProgram.getId()).orElseThrow();
-        // Disconnect from session so that the updates on updatedReferralProgram are not directly saved in db
-        em.detach(updatedReferralProgram);
-        updatedReferralProgram
+        ReferralProgramDao updatedReferralProgramDao = referralProgramRepository.findById(referralProgramDao.getId()).orElseThrow();
+        // Disconnect from session so that the updates on updatedReferralProgramDao are not directly saved in db
+        em.detach(updatedReferralProgramDao);
+        updatedReferralProgramDao
             .name(UPDATED_NAME)
             .referralCode(UPDATED_REFERRAL_CODE)
             .description(UPDATED_DESCRIPTION)
@@ -365,38 +364,38 @@ class ReferralProgramResourceIT {
             .endDttm(UPDATED_END_DTTM)
             .rewardAmount(UPDATED_REWARD_AMOUNT)
             .status(UPDATED_STATUS);
-        ReferralProgramDTO referralProgramDTO = referralProgramMapper.toDto(updatedReferralProgram);
+        ReferralProgramDto referralProgramDto = referralProgramMapper.toDto(updatedReferralProgramDao);
 
         restReferralProgramMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, referralProgramDTO.getId())
+                put(ENTITY_API_URL_ID, referralProgramDto.getId())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(referralProgramDTO))
+                    .content(om.writeValueAsBytes(referralProgramDto))
             )
             .andExpect(status().isOk());
 
         // Validate the ReferralProgram in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertPersistedReferralProgramToMatchAllProperties(updatedReferralProgram);
+        assertPersistedReferralProgramDaoToMatchAllProperties(updatedReferralProgramDao);
     }
 
     @Test
     @Transactional
     void putNonExistingReferralProgram() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        referralProgram.setId(longCount.incrementAndGet());
+        referralProgramDao.setId(UUID.randomUUID());
 
         // Create the ReferralProgram
-        ReferralProgramDTO referralProgramDTO = referralProgramMapper.toDto(referralProgram);
+        ReferralProgramDto referralProgramDto = referralProgramMapper.toDto(referralProgramDao);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restReferralProgramMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, referralProgramDTO.getId())
+                put(ENTITY_API_URL_ID, referralProgramDto.getId())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(referralProgramDTO))
+                    .content(om.writeValueAsBytes(referralProgramDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -408,18 +407,18 @@ class ReferralProgramResourceIT {
     @Transactional
     void putWithIdMismatchReferralProgram() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        referralProgram.setId(longCount.incrementAndGet());
+        referralProgramDao.setId(UUID.randomUUID());
 
         // Create the ReferralProgram
-        ReferralProgramDTO referralProgramDTO = referralProgramMapper.toDto(referralProgram);
+        ReferralProgramDto referralProgramDto = referralProgramMapper.toDto(referralProgramDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restReferralProgramMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, longCount.incrementAndGet())
+                put(ENTITY_API_URL_ID, UUID.randomUUID())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(referralProgramDTO))
+                    .content(om.writeValueAsBytes(referralProgramDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -431,15 +430,15 @@ class ReferralProgramResourceIT {
     @Transactional
     void putWithMissingIdPathParamReferralProgram() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        referralProgram.setId(longCount.incrementAndGet());
+        referralProgramDao.setId(UUID.randomUUID());
 
         // Create the ReferralProgram
-        ReferralProgramDTO referralProgramDTO = referralProgramMapper.toDto(referralProgram);
+        ReferralProgramDto referralProgramDto = referralProgramMapper.toDto(referralProgramDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restReferralProgramMockMvc
             .perform(
-                put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(referralProgramDTO))
+                put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(referralProgramDto))
             )
             .andExpect(status().isMethodNotAllowed());
 
@@ -451,31 +450,31 @@ class ReferralProgramResourceIT {
     @Transactional
     void partialUpdateReferralProgramWithPatch() throws Exception {
         // Initialize the database
-        insertedReferralProgram = referralProgramRepository.saveAndFlush(referralProgram);
+        insertedReferralProgramDao = referralProgramRepository.saveAndFlush(referralProgramDao);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the referralProgram using partial update
-        ReferralProgram partialUpdatedReferralProgram = new ReferralProgram();
-        partialUpdatedReferralProgram.setId(referralProgram.getId());
+        ReferralProgramDao partialUpdatedReferralProgramDao = new ReferralProgramDao();
+        partialUpdatedReferralProgramDao.setId(referralProgramDao.getId());
 
-        partialUpdatedReferralProgram.referralCode(UPDATED_REFERRAL_CODE);
+        partialUpdatedReferralProgramDao.referralCode(UPDATED_REFERRAL_CODE);
 
         restReferralProgramMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, partialUpdatedReferralProgram.getId())
+                patch(ENTITY_API_URL_ID, partialUpdatedReferralProgramDao.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedReferralProgram))
+                    .content(om.writeValueAsBytes(partialUpdatedReferralProgramDao))
             )
             .andExpect(status().isOk());
 
         // Validate the ReferralProgram in the database
 
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertReferralProgramUpdatableFieldsEquals(
-            createUpdateProxyForBean(partialUpdatedReferralProgram, referralProgram),
-            getPersistedReferralProgram(referralProgram)
+        assertReferralProgramDaoUpdatableFieldsEquals(
+            createUpdateProxyForBean(partialUpdatedReferralProgramDao, referralProgramDao),
+            getPersistedReferralProgramDao(referralProgramDao)
         );
     }
 
@@ -483,15 +482,15 @@ class ReferralProgramResourceIT {
     @Transactional
     void fullUpdateReferralProgramWithPatch() throws Exception {
         // Initialize the database
-        insertedReferralProgram = referralProgramRepository.saveAndFlush(referralProgram);
+        insertedReferralProgramDao = referralProgramRepository.saveAndFlush(referralProgramDao);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the referralProgram using partial update
-        ReferralProgram partialUpdatedReferralProgram = new ReferralProgram();
-        partialUpdatedReferralProgram.setId(referralProgram.getId());
+        ReferralProgramDao partialUpdatedReferralProgramDao = new ReferralProgramDao();
+        partialUpdatedReferralProgramDao.setId(referralProgramDao.getId());
 
-        partialUpdatedReferralProgram
+        partialUpdatedReferralProgramDao
             .name(UPDATED_NAME)
             .referralCode(UPDATED_REFERRAL_CODE)
             .description(UPDATED_DESCRIPTION)
@@ -502,19 +501,19 @@ class ReferralProgramResourceIT {
 
         restReferralProgramMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, partialUpdatedReferralProgram.getId())
+                patch(ENTITY_API_URL_ID, partialUpdatedReferralProgramDao.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedReferralProgram))
+                    .content(om.writeValueAsBytes(partialUpdatedReferralProgramDao))
             )
             .andExpect(status().isOk());
 
         // Validate the ReferralProgram in the database
 
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertReferralProgramUpdatableFieldsEquals(
-            partialUpdatedReferralProgram,
-            getPersistedReferralProgram(partialUpdatedReferralProgram)
+        assertReferralProgramDaoUpdatableFieldsEquals(
+            partialUpdatedReferralProgramDao,
+            getPersistedReferralProgramDao(partialUpdatedReferralProgramDao)
         );
     }
 
@@ -522,18 +521,18 @@ class ReferralProgramResourceIT {
     @Transactional
     void patchNonExistingReferralProgram() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        referralProgram.setId(longCount.incrementAndGet());
+        referralProgramDao.setId(UUID.randomUUID());
 
         // Create the ReferralProgram
-        ReferralProgramDTO referralProgramDTO = referralProgramMapper.toDto(referralProgram);
+        ReferralProgramDto referralProgramDto = referralProgramMapper.toDto(referralProgramDao);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restReferralProgramMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, referralProgramDTO.getId())
+                patch(ENTITY_API_URL_ID, referralProgramDto.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(referralProgramDTO))
+                    .content(om.writeValueAsBytes(referralProgramDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -545,18 +544,18 @@ class ReferralProgramResourceIT {
     @Transactional
     void patchWithIdMismatchReferralProgram() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        referralProgram.setId(longCount.incrementAndGet());
+        referralProgramDao.setId(UUID.randomUUID());
 
         // Create the ReferralProgram
-        ReferralProgramDTO referralProgramDTO = referralProgramMapper.toDto(referralProgram);
+        ReferralProgramDto referralProgramDto = referralProgramMapper.toDto(referralProgramDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restReferralProgramMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, longCount.incrementAndGet())
+                patch(ENTITY_API_URL_ID, UUID.randomUUID())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(referralProgramDTO))
+                    .content(om.writeValueAsBytes(referralProgramDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -568,10 +567,10 @@ class ReferralProgramResourceIT {
     @Transactional
     void patchWithMissingIdPathParamReferralProgram() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        referralProgram.setId(longCount.incrementAndGet());
+        referralProgramDao.setId(UUID.randomUUID());
 
         // Create the ReferralProgram
-        ReferralProgramDTO referralProgramDTO = referralProgramMapper.toDto(referralProgram);
+        ReferralProgramDto referralProgramDto = referralProgramMapper.toDto(referralProgramDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restReferralProgramMockMvc
@@ -579,7 +578,7 @@ class ReferralProgramResourceIT {
                 patch(ENTITY_API_URL)
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(referralProgramDTO))
+                    .content(om.writeValueAsBytes(referralProgramDto))
             )
             .andExpect(status().isMethodNotAllowed());
 
@@ -591,13 +590,13 @@ class ReferralProgramResourceIT {
     @Transactional
     void deleteReferralProgram() throws Exception {
         // Initialize the database
-        insertedReferralProgram = referralProgramRepository.saveAndFlush(referralProgram);
+        insertedReferralProgramDao = referralProgramRepository.saveAndFlush(referralProgramDao);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
 
         // Delete the referralProgram
         restReferralProgramMockMvc
-            .perform(delete(ENTITY_API_URL_ID, referralProgram.getId()).with(csrf()).accept(MediaType.APPLICATION_JSON))
+            .perform(delete(ENTITY_API_URL_ID, referralProgramDao.getId().toString()).with(csrf()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
@@ -620,15 +619,18 @@ class ReferralProgramResourceIT {
         assertThat(countBefore).isEqualTo(getRepositoryCount());
     }
 
-    protected ReferralProgram getPersistedReferralProgram(ReferralProgram referralProgram) {
+    protected ReferralProgramDao getPersistedReferralProgramDao(ReferralProgramDao referralProgram) {
         return referralProgramRepository.findById(referralProgram.getId()).orElseThrow();
     }
 
-    protected void assertPersistedReferralProgramToMatchAllProperties(ReferralProgram expectedReferralProgram) {
-        assertReferralProgramAllPropertiesEquals(expectedReferralProgram, getPersistedReferralProgram(expectedReferralProgram));
+    protected void assertPersistedReferralProgramDaoToMatchAllProperties(ReferralProgramDao expectedReferralProgramDao) {
+        assertReferralProgramDaoAllPropertiesEquals(expectedReferralProgramDao, getPersistedReferralProgramDao(expectedReferralProgramDao));
     }
 
-    protected void assertPersistedReferralProgramToMatchUpdatableProperties(ReferralProgram expectedReferralProgram) {
-        assertReferralProgramAllUpdatablePropertiesEquals(expectedReferralProgram, getPersistedReferralProgram(expectedReferralProgram));
+    protected void assertPersistedReferralProgramDaoToMatchUpdatableProperties(ReferralProgramDao expectedReferralProgramDao) {
+        assertReferralProgramDaoAllUpdatablePropertiesEquals(
+            expectedReferralProgramDao,
+            getPersistedReferralProgramDao(expectedReferralProgramDao)
+        );
     }
 }

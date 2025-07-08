@@ -3,18 +3,19 @@ package ru.ani.subscription.management.service.service;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.ani.subscription.management.service.domain.ExternalUser;
+import ru.ani.subscription.management.service.domain.ExternalUserDao;
 import ru.ani.subscription.management.service.repository.ExternalUserRepository;
-import ru.ani.subscription.management.service.service.dto.ExternalUserDTO;
+import ru.ani.subscription.management.service.service.dto.ExternalUserDto;
 import ru.ani.subscription.management.service.service.mapper.ExternalUserMapper;
 
 /**
- * Service Implementation for managing {@link ru.ani.subscription.management.service.domain.ExternalUser}.
+ * Service Implementation for managing {@link ru.ani.subscription.management.service.domain.ExternalUserDao}.
  */
 @Service
 @Transactional
@@ -34,42 +35,42 @@ public class ExternalUserService {
     /**
      * Save a externalUser.
      *
-     * @param externalUserDTO the entity to save.
+     * @param externalUserDto the entity to save.
      * @return the persisted entity.
      */
-    public ExternalUserDTO save(ExternalUserDTO externalUserDTO) {
-        LOG.debug("Request to save ExternalUser : {}", externalUserDTO);
-        ExternalUser externalUser = externalUserMapper.toEntity(externalUserDTO);
-        externalUser = externalUserRepository.save(externalUser);
-        return externalUserMapper.toDto(externalUser);
+    public ExternalUserDto save(ExternalUserDto externalUserDto) {
+        LOG.debug("Request to save ExternalUser : {}", externalUserDto);
+        ExternalUserDao externalUserDao = externalUserMapper.toEntity(externalUserDto);
+        externalUserDao = externalUserRepository.save(externalUserDao);
+        return externalUserMapper.toDto(externalUserDao);
     }
 
     /**
      * Update a externalUser.
      *
-     * @param externalUserDTO the entity to save.
+     * @param externalUserDto the entity to save.
      * @return the persisted entity.
      */
-    public ExternalUserDTO update(ExternalUserDTO externalUserDTO) {
-        LOG.debug("Request to update ExternalUser : {}", externalUserDTO);
-        ExternalUser externalUser = externalUserMapper.toEntity(externalUserDTO);
-        externalUser = externalUserRepository.save(externalUser);
-        return externalUserMapper.toDto(externalUser);
+    public ExternalUserDto update(ExternalUserDto externalUserDto) {
+        LOG.debug("Request to update ExternalUser : {}", externalUserDto);
+        ExternalUserDao externalUserDao = externalUserMapper.toEntity(externalUserDto);
+        externalUserDao = externalUserRepository.save(externalUserDao);
+        return externalUserMapper.toDto(externalUserDao);
     }
 
     /**
      * Partially update a externalUser.
      *
-     * @param externalUserDTO the entity to update partially.
+     * @param externalUserDto the entity to update partially.
      * @return the persisted entity.
      */
-    public Optional<ExternalUserDTO> partialUpdate(ExternalUserDTO externalUserDTO) {
-        LOG.debug("Request to partially update ExternalUser : {}", externalUserDTO);
+    public Optional<ExternalUserDto> partialUpdate(ExternalUserDto externalUserDto) {
+        LOG.debug("Request to partially update ExternalUser : {}", externalUserDto);
 
         return externalUserRepository
-            .findById(externalUserDTO.getId())
+            .findById(externalUserDto.getId())
             .map(existingExternalUser -> {
-                externalUserMapper.partialUpdate(existingExternalUser, externalUserDTO);
+                externalUserMapper.partialUpdate(existingExternalUser, externalUserDto);
 
                 return existingExternalUser;
             })
@@ -83,7 +84,7 @@ public class ExternalUserService {
      * @return the list of entities.
      */
     @Transactional(readOnly = true)
-    public List<ExternalUserDTO> findAll() {
+    public List<ExternalUserDto> findAll() {
         LOG.debug("Request to get all ExternalUsers");
         return externalUserRepository.findAll().stream().map(externalUserMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
@@ -95,7 +96,7 @@ public class ExternalUserService {
      * @return the entity.
      */
     @Transactional(readOnly = true)
-    public Optional<ExternalUserDTO> findOne(Long id) {
+    public Optional<ExternalUserDto> findOne(UUID id) {
         LOG.debug("Request to get ExternalUser : {}", id);
         return externalUserRepository.findById(id).map(externalUserMapper::toDto);
     }
@@ -105,7 +106,7 @@ public class ExternalUserService {
      *
      * @param id the id of the entity.
      */
-    public void delete(Long id) {
+    public void delete(UUID id) {
         LOG.debug("Request to delete ExternalUser : {}", id);
         externalUserRepository.deleteById(id);
     }

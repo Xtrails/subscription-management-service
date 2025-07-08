@@ -32,7 +32,7 @@ describe('Service Tests', () => {
     beforeEach(() => {
       service = new PaymentService();
       currentDate = new Date();
-      elemDefault = new Payment(123, 0, 'PENDING', currentDate, 'AAAAAAA');
+      elemDefault = new Payment('9fec3727-3421-4967-b213-ba36557ca194', 0, 'PENDING', currentDate, 'AAAAAAA');
     });
 
     describe('Service methods', () => {
@@ -40,7 +40,7 @@ describe('Service Tests', () => {
         const returnedFromService = { paymentDttm: dayjs(currentDate).format(DATE_FORMAT), ...elemDefault };
         axiosStub.get.resolves({ data: returnedFromService });
 
-        return service.find(123).then(res => {
+        return service.find('9fec3727-3421-4967-b213-ba36557ca194').then(res => {
           expect(res).toMatchObject(elemDefault);
         });
       });
@@ -48,7 +48,7 @@ describe('Service Tests', () => {
       it('should not find an element', async () => {
         axiosStub.get.rejects(error);
         return service
-          .find(123)
+          .find('9fec3727-3421-4967-b213-ba36557ca194')
           .then()
           .catch(err => {
             expect(err).toMatchObject(error);
@@ -56,7 +56,11 @@ describe('Service Tests', () => {
       });
 
       it('should create a Payment', async () => {
-        const returnedFromService = { id: 123, paymentDttm: dayjs(currentDate).format(DATE_FORMAT), ...elemDefault };
+        const returnedFromService = {
+          id: '9fec3727-3421-4967-b213-ba36557ca194',
+          paymentDttm: dayjs(currentDate).format(DATE_FORMAT),
+          ...elemDefault,
+        };
         const expected = { paymentDttm: currentDate, ...returnedFromService };
 
         axiosStub.post.resolves({ data: returnedFromService });
@@ -155,7 +159,7 @@ describe('Service Tests', () => {
 
       it('should delete a Payment', async () => {
         axiosStub.delete.resolves({ ok: true });
-        return service.delete(123).then(res => {
+        return service.delete('9fec3727-3421-4967-b213-ba36557ca194').then(res => {
           expect(res.ok).toBeTruthy();
         });
       });
@@ -164,7 +168,7 @@ describe('Service Tests', () => {
         axiosStub.delete.rejects(error);
 
         return service
-          .delete(123)
+          .delete('9fec3727-3421-4967-b213-ba36557ca194')
           .then()
           .catch(err => {
             expect(err).toMatchObject(error);

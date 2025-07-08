@@ -4,7 +4,7 @@ import { type IPaymentSystem } from '@/shared/model/payment-system.model';
 
 import { type PaymentStatus } from '@/shared/model/enumerations/payment-status.model';
 export interface IPayment {
-  id?: number;
+  id?: string;
   amount?: number;
   status?: keyof typeof PaymentStatus;
   paymentDttm?: Date;
@@ -17,7 +17,7 @@ export interface IPayment {
 
 export class Payment implements IPayment {
   constructor(
-    public id?: number,
+    public id?: string,
     public amount?: number,
     public status?: keyof typeof PaymentStatus,
     public paymentDttm?: Date,

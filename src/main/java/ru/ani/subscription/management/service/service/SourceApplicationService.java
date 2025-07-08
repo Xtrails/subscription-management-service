@@ -3,18 +3,19 @@ package ru.ani.subscription.management.service.service;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.ani.subscription.management.service.domain.SourceApplication;
+import ru.ani.subscription.management.service.domain.SourceApplicationDao;
 import ru.ani.subscription.management.service.repository.SourceApplicationRepository;
-import ru.ani.subscription.management.service.service.dto.SourceApplicationDTO;
+import ru.ani.subscription.management.service.service.dto.SourceApplicationDto;
 import ru.ani.subscription.management.service.service.mapper.SourceApplicationMapper;
 
 /**
- * Service Implementation for managing {@link ru.ani.subscription.management.service.domain.SourceApplication}.
+ * Service Implementation for managing {@link ru.ani.subscription.management.service.domain.SourceApplicationDao}.
  */
 @Service
 @Transactional
@@ -37,42 +38,42 @@ public class SourceApplicationService {
     /**
      * Save a sourceApplication.
      *
-     * @param sourceApplicationDTO the entity to save.
+     * @param sourceApplicationDto the entity to save.
      * @return the persisted entity.
      */
-    public SourceApplicationDTO save(SourceApplicationDTO sourceApplicationDTO) {
-        LOG.debug("Request to save SourceApplication : {}", sourceApplicationDTO);
-        SourceApplication sourceApplication = sourceApplicationMapper.toEntity(sourceApplicationDTO);
-        sourceApplication = sourceApplicationRepository.save(sourceApplication);
-        return sourceApplicationMapper.toDto(sourceApplication);
+    public SourceApplicationDto save(SourceApplicationDto sourceApplicationDto) {
+        LOG.debug("Request to save SourceApplication : {}", sourceApplicationDto);
+        SourceApplicationDao sourceApplicationDao = sourceApplicationMapper.toEntity(sourceApplicationDto);
+        sourceApplicationDao = sourceApplicationRepository.save(sourceApplicationDao);
+        return sourceApplicationMapper.toDto(sourceApplicationDao);
     }
 
     /**
      * Update a sourceApplication.
      *
-     * @param sourceApplicationDTO the entity to save.
+     * @param sourceApplicationDto the entity to save.
      * @return the persisted entity.
      */
-    public SourceApplicationDTO update(SourceApplicationDTO sourceApplicationDTO) {
-        LOG.debug("Request to update SourceApplication : {}", sourceApplicationDTO);
-        SourceApplication sourceApplication = sourceApplicationMapper.toEntity(sourceApplicationDTO);
-        sourceApplication = sourceApplicationRepository.save(sourceApplication);
-        return sourceApplicationMapper.toDto(sourceApplication);
+    public SourceApplicationDto update(SourceApplicationDto sourceApplicationDto) {
+        LOG.debug("Request to update SourceApplication : {}", sourceApplicationDto);
+        SourceApplicationDao sourceApplicationDao = sourceApplicationMapper.toEntity(sourceApplicationDto);
+        sourceApplicationDao = sourceApplicationRepository.save(sourceApplicationDao);
+        return sourceApplicationMapper.toDto(sourceApplicationDao);
     }
 
     /**
      * Partially update a sourceApplication.
      *
-     * @param sourceApplicationDTO the entity to update partially.
+     * @param sourceApplicationDto the entity to update partially.
      * @return the persisted entity.
      */
-    public Optional<SourceApplicationDTO> partialUpdate(SourceApplicationDTO sourceApplicationDTO) {
-        LOG.debug("Request to partially update SourceApplication : {}", sourceApplicationDTO);
+    public Optional<SourceApplicationDto> partialUpdate(SourceApplicationDto sourceApplicationDto) {
+        LOG.debug("Request to partially update SourceApplication : {}", sourceApplicationDto);
 
         return sourceApplicationRepository
-            .findById(sourceApplicationDTO.getId())
+            .findById(sourceApplicationDto.getId())
             .map(existingSourceApplication -> {
-                sourceApplicationMapper.partialUpdate(existingSourceApplication, sourceApplicationDTO);
+                sourceApplicationMapper.partialUpdate(existingSourceApplication, sourceApplicationDto);
 
                 return existingSourceApplication;
             })
@@ -86,7 +87,7 @@ public class SourceApplicationService {
      * @return the list of entities.
      */
     @Transactional(readOnly = true)
-    public List<SourceApplicationDTO> findAll() {
+    public List<SourceApplicationDto> findAll() {
         LOG.debug("Request to get all SourceApplications");
         return sourceApplicationRepository
             .findAll()
@@ -102,7 +103,7 @@ public class SourceApplicationService {
      * @return the entity.
      */
     @Transactional(readOnly = true)
-    public Optional<SourceApplicationDTO> findOne(Long id) {
+    public Optional<SourceApplicationDto> findOne(UUID id) {
         LOG.debug("Request to get SourceApplication : {}", id);
         return sourceApplicationRepository.findById(id).map(sourceApplicationMapper::toDto);
     }
@@ -112,7 +113,7 @@ public class SourceApplicationService {
      *
      * @param id the id of the entity.
      */
-    public void delete(Long id) {
+    public void delete(UUID id) {
         LOG.debug("Request to delete SourceApplication : {}", id);
         sourceApplicationRepository.deleteById(id);
     }

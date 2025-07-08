@@ -1,14 +1,14 @@
 import { type IExternalUser } from '@/shared/model/external-user.model';
 
 export interface ISourceApplication {
-  id?: number;
+  id?: string;
   applicationName?: string;
   user?: IExternalUser | null;
 }
 
 export class SourceApplication implements ISourceApplication {
   constructor(
-    public id?: number,
+    public id?: string,
     public applicationName?: string,
     public user?: IExternalUser | null,
   ) {}

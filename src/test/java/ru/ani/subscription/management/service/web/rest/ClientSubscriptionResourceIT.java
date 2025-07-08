@@ -5,15 +5,14 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static ru.ani.subscription.management.service.domain.ClientSubscriptionAsserts.*;
+import static ru.ani.subscription.management.service.domain.ClientSubscriptionDaoAsserts.*;
 import static ru.ani.subscription.management.service.web.rest.TestUtil.createUpdateProxyForBean;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,10 +23,10 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ani.subscription.management.service.IntegrationTest;
-import ru.ani.subscription.management.service.domain.ClientSubscription;
+import ru.ani.subscription.management.service.domain.ClientSubscriptionDao;
 import ru.ani.subscription.management.service.domain.enumeration.SubscriptionStatus;
 import ru.ani.subscription.management.service.repository.ClientSubscriptionRepository;
-import ru.ani.subscription.management.service.service.dto.ClientSubscriptionDTO;
+import ru.ani.subscription.management.service.service.dto.ClientSubscriptionDto;
 import ru.ani.subscription.management.service.service.mapper.ClientSubscriptionMapper;
 
 /**
@@ -50,9 +49,6 @@ class ClientSubscriptionResourceIT {
     private static final String ENTITY_API_URL = "/api/client-subscriptions";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
-    private static Random random = new Random();
-    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
-
     @Autowired
     private ObjectMapper om;
 
@@ -68,9 +64,9 @@ class ClientSubscriptionResourceIT {
     @Autowired
     private MockMvc restClientSubscriptionMockMvc;
 
-    private ClientSubscription clientSubscription;
+    private ClientSubscriptionDao clientSubscriptionDao;
 
-    private ClientSubscription insertedClientSubscription;
+    private ClientSubscriptionDao insertedClientSubscriptionDao;
 
     /**
      * Create an entity for this test.
@@ -78,8 +74,8 @@ class ClientSubscriptionResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static ClientSubscription createEntity() {
-        return new ClientSubscription().startDttm(DEFAULT_START_DTTM).endDttm(DEFAULT_END_DTTM).status(DEFAULT_STATUS);
+    public static ClientSubscriptionDao createEntity() {
+        return new ClientSubscriptionDao().startDttm(DEFAULT_START_DTTM).endDttm(DEFAULT_END_DTTM).status(DEFAULT_STATUS);
     }
 
     /**
@@ -88,20 +84,20 @@ class ClientSubscriptionResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static ClientSubscription createUpdatedEntity() {
-        return new ClientSubscription().startDttm(UPDATED_START_DTTM).endDttm(UPDATED_END_DTTM).status(UPDATED_STATUS);
+    public static ClientSubscriptionDao createUpdatedEntity() {
+        return new ClientSubscriptionDao().startDttm(UPDATED_START_DTTM).endDttm(UPDATED_END_DTTM).status(UPDATED_STATUS);
     }
 
     @BeforeEach
     void initTest() {
-        clientSubscription = createEntity();
+        clientSubscriptionDao = createEntity();
     }
 
     @AfterEach
     void cleanup() {
-        if (insertedClientSubscription != null) {
-            clientSubscriptionRepository.delete(insertedClientSubscription);
-            insertedClientSubscription = null;
+        if (insertedClientSubscriptionDao != null) {
+            clientSubscriptionRepository.delete(insertedClientSubscriptionDao);
+            insertedClientSubscriptionDao = null;
         }
     }
 
@@ -110,39 +106,39 @@ class ClientSubscriptionResourceIT {
     void createClientSubscription() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
         // Create the ClientSubscription
-        ClientSubscriptionDTO clientSubscriptionDTO = clientSubscriptionMapper.toDto(clientSubscription);
-        var returnedClientSubscriptionDTO = om.readValue(
+        ClientSubscriptionDto clientSubscriptionDto = clientSubscriptionMapper.toDto(clientSubscriptionDao);
+        var returnedClientSubscriptionDto = om.readValue(
             restClientSubscriptionMockMvc
                 .perform(
                     post(ENTITY_API_URL)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(om.writeValueAsBytes(clientSubscriptionDTO))
+                        .content(om.writeValueAsBytes(clientSubscriptionDto))
                 )
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse()
                 .getContentAsString(),
-            ClientSubscriptionDTO.class
+            ClientSubscriptionDto.class
         );
 
         // Validate the ClientSubscription in the database
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
-        var returnedClientSubscription = clientSubscriptionMapper.toEntity(returnedClientSubscriptionDTO);
-        assertClientSubscriptionUpdatableFieldsEquals(
-            returnedClientSubscription,
-            getPersistedClientSubscription(returnedClientSubscription)
+        var returnedClientSubscriptionDao = clientSubscriptionMapper.toEntity(returnedClientSubscriptionDto);
+        assertClientSubscriptionDaoUpdatableFieldsEquals(
+            returnedClientSubscriptionDao,
+            getPersistedClientSubscriptionDao(returnedClientSubscriptionDao)
         );
 
-        insertedClientSubscription = returnedClientSubscription;
+        insertedClientSubscriptionDao = returnedClientSubscriptionDao;
     }
 
     @Test
     @Transactional
     void createClientSubscriptionWithExistingId() throws Exception {
         // Create the ClientSubscription with an existing ID
-        clientSubscription.setId(1L);
-        ClientSubscriptionDTO clientSubscriptionDTO = clientSubscriptionMapper.toDto(clientSubscription);
+        insertedClientSubscriptionDao = clientSubscriptionRepository.saveAndFlush(clientSubscriptionDao);
+        ClientSubscriptionDto clientSubscriptionDto = clientSubscriptionMapper.toDto(clientSubscriptionDao);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
 
@@ -152,7 +148,7 @@ class ClientSubscriptionResourceIT {
                 post(ENTITY_API_URL)
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(clientSubscriptionDTO))
+                    .content(om.writeValueAsBytes(clientSubscriptionDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -165,17 +161,17 @@ class ClientSubscriptionResourceIT {
     void checkStartDttmIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        clientSubscription.setStartDttm(null);
+        clientSubscriptionDao.setStartDttm(null);
 
         // Create the ClientSubscription, which fails.
-        ClientSubscriptionDTO clientSubscriptionDTO = clientSubscriptionMapper.toDto(clientSubscription);
+        ClientSubscriptionDto clientSubscriptionDto = clientSubscriptionMapper.toDto(clientSubscriptionDao);
 
         restClientSubscriptionMockMvc
             .perform(
                 post(ENTITY_API_URL)
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(clientSubscriptionDTO))
+                    .content(om.writeValueAsBytes(clientSubscriptionDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -187,17 +183,17 @@ class ClientSubscriptionResourceIT {
     void checkEndDttmIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        clientSubscription.setEndDttm(null);
+        clientSubscriptionDao.setEndDttm(null);
 
         // Create the ClientSubscription, which fails.
-        ClientSubscriptionDTO clientSubscriptionDTO = clientSubscriptionMapper.toDto(clientSubscription);
+        ClientSubscriptionDto clientSubscriptionDto = clientSubscriptionMapper.toDto(clientSubscriptionDao);
 
         restClientSubscriptionMockMvc
             .perform(
                 post(ENTITY_API_URL)
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(clientSubscriptionDTO))
+                    .content(om.writeValueAsBytes(clientSubscriptionDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -209,17 +205,17 @@ class ClientSubscriptionResourceIT {
     void checkStatusIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        clientSubscription.setStatus(null);
+        clientSubscriptionDao.setStatus(null);
 
         // Create the ClientSubscription, which fails.
-        ClientSubscriptionDTO clientSubscriptionDTO = clientSubscriptionMapper.toDto(clientSubscription);
+        ClientSubscriptionDto clientSubscriptionDto = clientSubscriptionMapper.toDto(clientSubscriptionDao);
 
         restClientSubscriptionMockMvc
             .perform(
                 post(ENTITY_API_URL)
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(clientSubscriptionDTO))
+                    .content(om.writeValueAsBytes(clientSubscriptionDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -230,14 +226,14 @@ class ClientSubscriptionResourceIT {
     @Transactional
     void getAllClientSubscriptions() throws Exception {
         // Initialize the database
-        insertedClientSubscription = clientSubscriptionRepository.saveAndFlush(clientSubscription);
+        insertedClientSubscriptionDao = clientSubscriptionRepository.saveAndFlush(clientSubscriptionDao);
 
         // Get all the clientSubscriptionList
         restClientSubscriptionMockMvc
             .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(clientSubscription.getId().intValue())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(clientSubscriptionDao.getId().toString())))
             .andExpect(jsonPath("$.[*].startDttm").value(hasItem(DEFAULT_START_DTTM.toString())))
             .andExpect(jsonPath("$.[*].endDttm").value(hasItem(DEFAULT_END_DTTM.toString())))
             .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())));
@@ -247,14 +243,14 @@ class ClientSubscriptionResourceIT {
     @Transactional
     void getClientSubscription() throws Exception {
         // Initialize the database
-        insertedClientSubscription = clientSubscriptionRepository.saveAndFlush(clientSubscription);
+        insertedClientSubscriptionDao = clientSubscriptionRepository.saveAndFlush(clientSubscriptionDao);
 
         // Get the clientSubscription
         restClientSubscriptionMockMvc
-            .perform(get(ENTITY_API_URL_ID, clientSubscription.getId()))
+            .perform(get(ENTITY_API_URL_ID, clientSubscriptionDao.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.id").value(clientSubscription.getId().intValue()))
+            .andExpect(jsonPath("$.id").value(clientSubscriptionDao.getId().toString()))
             .andExpect(jsonPath("$.startDttm").value(DEFAULT_START_DTTM.toString()))
             .andExpect(jsonPath("$.endDttm").value(DEFAULT_END_DTTM.toString()))
             .andExpect(jsonPath("$.status").value(DEFAULT_STATUS.toString()));
@@ -264,54 +260,56 @@ class ClientSubscriptionResourceIT {
     @Transactional
     void getNonExistingClientSubscription() throws Exception {
         // Get the clientSubscription
-        restClientSubscriptionMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
+        restClientSubscriptionMockMvc.perform(get(ENTITY_API_URL_ID, UUID.randomUUID().toString())).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
     void putExistingClientSubscription() throws Exception {
         // Initialize the database
-        insertedClientSubscription = clientSubscriptionRepository.saveAndFlush(clientSubscription);
+        insertedClientSubscriptionDao = clientSubscriptionRepository.saveAndFlush(clientSubscriptionDao);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the clientSubscription
-        ClientSubscription updatedClientSubscription = clientSubscriptionRepository.findById(clientSubscription.getId()).orElseThrow();
-        // Disconnect from session so that the updates on updatedClientSubscription are not directly saved in db
-        em.detach(updatedClientSubscription);
-        updatedClientSubscription.startDttm(UPDATED_START_DTTM).endDttm(UPDATED_END_DTTM).status(UPDATED_STATUS);
-        ClientSubscriptionDTO clientSubscriptionDTO = clientSubscriptionMapper.toDto(updatedClientSubscription);
+        ClientSubscriptionDao updatedClientSubscriptionDao = clientSubscriptionRepository
+            .findById(clientSubscriptionDao.getId())
+            .orElseThrow();
+        // Disconnect from session so that the updates on updatedClientSubscriptionDao are not directly saved in db
+        em.detach(updatedClientSubscriptionDao);
+        updatedClientSubscriptionDao.startDttm(UPDATED_START_DTTM).endDttm(UPDATED_END_DTTM).status(UPDATED_STATUS);
+        ClientSubscriptionDto clientSubscriptionDto = clientSubscriptionMapper.toDto(updatedClientSubscriptionDao);
 
         restClientSubscriptionMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, clientSubscriptionDTO.getId())
+                put(ENTITY_API_URL_ID, clientSubscriptionDto.getId())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(clientSubscriptionDTO))
+                    .content(om.writeValueAsBytes(clientSubscriptionDto))
             )
             .andExpect(status().isOk());
 
         // Validate the ClientSubscription in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertPersistedClientSubscriptionToMatchAllProperties(updatedClientSubscription);
+        assertPersistedClientSubscriptionDaoToMatchAllProperties(updatedClientSubscriptionDao);
     }
 
     @Test
     @Transactional
     void putNonExistingClientSubscription() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        clientSubscription.setId(longCount.incrementAndGet());
+        clientSubscriptionDao.setId(UUID.randomUUID());
 
         // Create the ClientSubscription
-        ClientSubscriptionDTO clientSubscriptionDTO = clientSubscriptionMapper.toDto(clientSubscription);
+        ClientSubscriptionDto clientSubscriptionDto = clientSubscriptionMapper.toDto(clientSubscriptionDao);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restClientSubscriptionMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, clientSubscriptionDTO.getId())
+                put(ENTITY_API_URL_ID, clientSubscriptionDto.getId())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(clientSubscriptionDTO))
+                    .content(om.writeValueAsBytes(clientSubscriptionDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -323,18 +321,18 @@ class ClientSubscriptionResourceIT {
     @Transactional
     void putWithIdMismatchClientSubscription() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        clientSubscription.setId(longCount.incrementAndGet());
+        clientSubscriptionDao.setId(UUID.randomUUID());
 
         // Create the ClientSubscription
-        ClientSubscriptionDTO clientSubscriptionDTO = clientSubscriptionMapper.toDto(clientSubscription);
+        ClientSubscriptionDto clientSubscriptionDto = clientSubscriptionMapper.toDto(clientSubscriptionDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restClientSubscriptionMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, longCount.incrementAndGet())
+                put(ENTITY_API_URL_ID, UUID.randomUUID())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(clientSubscriptionDTO))
+                    .content(om.writeValueAsBytes(clientSubscriptionDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -346,10 +344,10 @@ class ClientSubscriptionResourceIT {
     @Transactional
     void putWithMissingIdPathParamClientSubscription() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        clientSubscription.setId(longCount.incrementAndGet());
+        clientSubscriptionDao.setId(UUID.randomUUID());
 
         // Create the ClientSubscription
-        ClientSubscriptionDTO clientSubscriptionDTO = clientSubscriptionMapper.toDto(clientSubscription);
+        ClientSubscriptionDto clientSubscriptionDto = clientSubscriptionMapper.toDto(clientSubscriptionDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restClientSubscriptionMockMvc
@@ -357,7 +355,7 @@ class ClientSubscriptionResourceIT {
                 put(ENTITY_API_URL)
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(clientSubscriptionDTO))
+                    .content(om.writeValueAsBytes(clientSubscriptionDto))
             )
             .andExpect(status().isMethodNotAllowed());
 
@@ -369,31 +367,31 @@ class ClientSubscriptionResourceIT {
     @Transactional
     void partialUpdateClientSubscriptionWithPatch() throws Exception {
         // Initialize the database
-        insertedClientSubscription = clientSubscriptionRepository.saveAndFlush(clientSubscription);
+        insertedClientSubscriptionDao = clientSubscriptionRepository.saveAndFlush(clientSubscriptionDao);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the clientSubscription using partial update
-        ClientSubscription partialUpdatedClientSubscription = new ClientSubscription();
-        partialUpdatedClientSubscription.setId(clientSubscription.getId());
+        ClientSubscriptionDao partialUpdatedClientSubscriptionDao = new ClientSubscriptionDao();
+        partialUpdatedClientSubscriptionDao.setId(clientSubscriptionDao.getId());
 
-        partialUpdatedClientSubscription.startDttm(UPDATED_START_DTTM);
+        partialUpdatedClientSubscriptionDao.startDttm(UPDATED_START_DTTM);
 
         restClientSubscriptionMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, partialUpdatedClientSubscription.getId())
+                patch(ENTITY_API_URL_ID, partialUpdatedClientSubscriptionDao.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedClientSubscription))
+                    .content(om.writeValueAsBytes(partialUpdatedClientSubscriptionDao))
             )
             .andExpect(status().isOk());
 
         // Validate the ClientSubscription in the database
 
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertClientSubscriptionUpdatableFieldsEquals(
-            createUpdateProxyForBean(partialUpdatedClientSubscription, clientSubscription),
-            getPersistedClientSubscription(clientSubscription)
+        assertClientSubscriptionDaoUpdatableFieldsEquals(
+            createUpdateProxyForBean(partialUpdatedClientSubscriptionDao, clientSubscriptionDao),
+            getPersistedClientSubscriptionDao(clientSubscriptionDao)
         );
     }
 
@@ -401,31 +399,31 @@ class ClientSubscriptionResourceIT {
     @Transactional
     void fullUpdateClientSubscriptionWithPatch() throws Exception {
         // Initialize the database
-        insertedClientSubscription = clientSubscriptionRepository.saveAndFlush(clientSubscription);
+        insertedClientSubscriptionDao = clientSubscriptionRepository.saveAndFlush(clientSubscriptionDao);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the clientSubscription using partial update
-        ClientSubscription partialUpdatedClientSubscription = new ClientSubscription();
-        partialUpdatedClientSubscription.setId(clientSubscription.getId());
+        ClientSubscriptionDao partialUpdatedClientSubscriptionDao = new ClientSubscriptionDao();
+        partialUpdatedClientSubscriptionDao.setId(clientSubscriptionDao.getId());
 
-        partialUpdatedClientSubscription.startDttm(UPDATED_START_DTTM).endDttm(UPDATED_END_DTTM).status(UPDATED_STATUS);
+        partialUpdatedClientSubscriptionDao.startDttm(UPDATED_START_DTTM).endDttm(UPDATED_END_DTTM).status(UPDATED_STATUS);
 
         restClientSubscriptionMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, partialUpdatedClientSubscription.getId())
+                patch(ENTITY_API_URL_ID, partialUpdatedClientSubscriptionDao.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedClientSubscription))
+                    .content(om.writeValueAsBytes(partialUpdatedClientSubscriptionDao))
             )
             .andExpect(status().isOk());
 
         // Validate the ClientSubscription in the database
 
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertClientSubscriptionUpdatableFieldsEquals(
-            partialUpdatedClientSubscription,
-            getPersistedClientSubscription(partialUpdatedClientSubscription)
+        assertClientSubscriptionDaoUpdatableFieldsEquals(
+            partialUpdatedClientSubscriptionDao,
+            getPersistedClientSubscriptionDao(partialUpdatedClientSubscriptionDao)
         );
     }
 
@@ -433,18 +431,18 @@ class ClientSubscriptionResourceIT {
     @Transactional
     void patchNonExistingClientSubscription() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        clientSubscription.setId(longCount.incrementAndGet());
+        clientSubscriptionDao.setId(UUID.randomUUID());
 
         // Create the ClientSubscription
-        ClientSubscriptionDTO clientSubscriptionDTO = clientSubscriptionMapper.toDto(clientSubscription);
+        ClientSubscriptionDto clientSubscriptionDto = clientSubscriptionMapper.toDto(clientSubscriptionDao);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restClientSubscriptionMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, clientSubscriptionDTO.getId())
+                patch(ENTITY_API_URL_ID, clientSubscriptionDto.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(clientSubscriptionDTO))
+                    .content(om.writeValueAsBytes(clientSubscriptionDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -456,18 +454,18 @@ class ClientSubscriptionResourceIT {
     @Transactional
     void patchWithIdMismatchClientSubscription() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        clientSubscription.setId(longCount.incrementAndGet());
+        clientSubscriptionDao.setId(UUID.randomUUID());
 
         // Create the ClientSubscription
-        ClientSubscriptionDTO clientSubscriptionDTO = clientSubscriptionMapper.toDto(clientSubscription);
+        ClientSubscriptionDto clientSubscriptionDto = clientSubscriptionMapper.toDto(clientSubscriptionDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restClientSubscriptionMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, longCount.incrementAndGet())
+                patch(ENTITY_API_URL_ID, UUID.randomUUID())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(clientSubscriptionDTO))
+                    .content(om.writeValueAsBytes(clientSubscriptionDto))
             )
             .andExpect(status().isBadRequest());
 
@@ -479,10 +477,10 @@ class ClientSubscriptionResourceIT {
     @Transactional
     void patchWithMissingIdPathParamClientSubscription() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        clientSubscription.setId(longCount.incrementAndGet());
+        clientSubscriptionDao.setId(UUID.randomUUID());
 
         // Create the ClientSubscription
-        ClientSubscriptionDTO clientSubscriptionDTO = clientSubscriptionMapper.toDto(clientSubscription);
+        ClientSubscriptionDto clientSubscriptionDto = clientSubscriptionMapper.toDto(clientSubscriptionDao);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restClientSubscriptionMockMvc
@@ -490,7 +488,7 @@ class ClientSubscriptionResourceIT {
                 patch(ENTITY_API_URL)
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(clientSubscriptionDTO))
+                    .content(om.writeValueAsBytes(clientSubscriptionDto))
             )
             .andExpect(status().isMethodNotAllowed());
 
@@ -502,13 +500,13 @@ class ClientSubscriptionResourceIT {
     @Transactional
     void deleteClientSubscription() throws Exception {
         // Initialize the database
-        insertedClientSubscription = clientSubscriptionRepository.saveAndFlush(clientSubscription);
+        insertedClientSubscriptionDao = clientSubscriptionRepository.saveAndFlush(clientSubscriptionDao);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
 
         // Delete the clientSubscription
         restClientSubscriptionMockMvc
-            .perform(delete(ENTITY_API_URL_ID, clientSubscription.getId()).with(csrf()).accept(MediaType.APPLICATION_JSON))
+            .perform(delete(ENTITY_API_URL_ID, clientSubscriptionDao.getId().toString()).with(csrf()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
@@ -531,18 +529,21 @@ class ClientSubscriptionResourceIT {
         assertThat(countBefore).isEqualTo(getRepositoryCount());
     }
 
-    protected ClientSubscription getPersistedClientSubscription(ClientSubscription clientSubscription) {
+    protected ClientSubscriptionDao getPersistedClientSubscriptionDao(ClientSubscriptionDao clientSubscription) {
         return clientSubscriptionRepository.findById(clientSubscription.getId()).orElseThrow();
     }
 
-    protected void assertPersistedClientSubscriptionToMatchAllProperties(ClientSubscription expectedClientSubscription) {
-        assertClientSubscriptionAllPropertiesEquals(expectedClientSubscription, getPersistedClientSubscription(expectedClientSubscription));
+    protected void assertPersistedClientSubscriptionDaoToMatchAllProperties(ClientSubscriptionDao expectedClientSubscriptionDao) {
+        assertClientSubscriptionDaoAllPropertiesEquals(
+            expectedClientSubscriptionDao,
+            getPersistedClientSubscriptionDao(expectedClientSubscriptionDao)
+        );
     }
 
-    protected void assertPersistedClientSubscriptionToMatchUpdatableProperties(ClientSubscription expectedClientSubscription) {
-        assertClientSubscriptionAllUpdatablePropertiesEquals(
-            expectedClientSubscription,
-            getPersistedClientSubscription(expectedClientSubscription)
+    protected void assertPersistedClientSubscriptionDaoToMatchUpdatableProperties(ClientSubscriptionDao expectedClientSubscriptionDao) {
+        assertClientSubscriptionDaoAllUpdatablePropertiesEquals(
+            expectedClientSubscriptionDao,
+            getPersistedClientSubscriptionDao(expectedClientSubscriptionDao)
         );
     }
 }

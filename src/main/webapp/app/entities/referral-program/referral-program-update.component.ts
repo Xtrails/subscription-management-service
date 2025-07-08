@@ -26,7 +26,7 @@ export default defineComponent({
     const sourceApplications: Ref<ISourceApplication[]> = ref([]);
     const referralStatusValues: Ref<string[]> = ref(Object.keys(ReferralStatus));
     const isSaving = ref(false);
-    const currentLanguage = inject('currentLanguage', () => computed(() => navigator.language ?? 'en'), true);
+    const currentLanguage = inject('currentLanguage', () => computed(() => navigator.language ?? 'ru'), true);
 
     const route = useRoute();
     const router = useRouter();

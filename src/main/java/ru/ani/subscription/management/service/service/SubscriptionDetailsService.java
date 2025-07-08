@@ -3,18 +3,19 @@ package ru.ani.subscription.management.service.service;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.ani.subscription.management.service.domain.SubscriptionDetails;
+import ru.ani.subscription.management.service.domain.SubscriptionDetailsDao;
 import ru.ani.subscription.management.service.repository.SubscriptionDetailsRepository;
-import ru.ani.subscription.management.service.service.dto.SubscriptionDetailsDTO;
+import ru.ani.subscription.management.service.service.dto.SubscriptionDetailsDto;
 import ru.ani.subscription.management.service.service.mapper.SubscriptionDetailsMapper;
 
 /**
- * Service Implementation for managing {@link ru.ani.subscription.management.service.domain.SubscriptionDetails}.
+ * Service Implementation for managing {@link ru.ani.subscription.management.service.domain.SubscriptionDetailsDao}.
  */
 @Service
 @Transactional
@@ -37,42 +38,42 @@ public class SubscriptionDetailsService {
     /**
      * Save a subscriptionDetails.
      *
-     * @param subscriptionDetailsDTO the entity to save.
+     * @param subscriptionDetailsDto the entity to save.
      * @return the persisted entity.
      */
-    public SubscriptionDetailsDTO save(SubscriptionDetailsDTO subscriptionDetailsDTO) {
-        LOG.debug("Request to save SubscriptionDetails : {}", subscriptionDetailsDTO);
-        SubscriptionDetails subscriptionDetails = subscriptionDetailsMapper.toEntity(subscriptionDetailsDTO);
-        subscriptionDetails = subscriptionDetailsRepository.save(subscriptionDetails);
-        return subscriptionDetailsMapper.toDto(subscriptionDetails);
+    public SubscriptionDetailsDto save(SubscriptionDetailsDto subscriptionDetailsDto) {
+        LOG.debug("Request to save SubscriptionDetails : {}", subscriptionDetailsDto);
+        SubscriptionDetailsDao subscriptionDetailsDao = subscriptionDetailsMapper.toEntity(subscriptionDetailsDto);
+        subscriptionDetailsDao = subscriptionDetailsRepository.save(subscriptionDetailsDao);
+        return subscriptionDetailsMapper.toDto(subscriptionDetailsDao);
     }
 
     /**
      * Update a subscriptionDetails.
      *
-     * @param subscriptionDetailsDTO the entity to save.
+     * @param subscriptionDetailsDto the entity to save.
      * @return the persisted entity.
      */
-    public SubscriptionDetailsDTO update(SubscriptionDetailsDTO subscriptionDetailsDTO) {
-        LOG.debug("Request to update SubscriptionDetails : {}", subscriptionDetailsDTO);
-        SubscriptionDetails subscriptionDetails = subscriptionDetailsMapper.toEntity(subscriptionDetailsDTO);
-        subscriptionDetails = subscriptionDetailsRepository.save(subscriptionDetails);
-        return subscriptionDetailsMapper.toDto(subscriptionDetails);
+    public SubscriptionDetailsDto update(SubscriptionDetailsDto subscriptionDetailsDto) {
+        LOG.debug("Request to update SubscriptionDetails : {}", subscriptionDetailsDto);
+        SubscriptionDetailsDao subscriptionDetailsDao = subscriptionDetailsMapper.toEntity(subscriptionDetailsDto);
+        subscriptionDetailsDao = subscriptionDetailsRepository.save(subscriptionDetailsDao);
+        return subscriptionDetailsMapper.toDto(subscriptionDetailsDao);
     }
 
     /**
      * Partially update a subscriptionDetails.
      *
-     * @param subscriptionDetailsDTO the entity to update partially.
+     * @param subscriptionDetailsDto the entity to update partially.
      * @return the persisted entity.
      */
-    public Optional<SubscriptionDetailsDTO> partialUpdate(SubscriptionDetailsDTO subscriptionDetailsDTO) {
-        LOG.debug("Request to partially update SubscriptionDetails : {}", subscriptionDetailsDTO);
+    public Optional<SubscriptionDetailsDto> partialUpdate(SubscriptionDetailsDto subscriptionDetailsDto) {
+        LOG.debug("Request to partially update SubscriptionDetails : {}", subscriptionDetailsDto);
 
         return subscriptionDetailsRepository
-            .findById(subscriptionDetailsDTO.getId())
+            .findById(subscriptionDetailsDto.getId())
             .map(existingSubscriptionDetails -> {
-                subscriptionDetailsMapper.partialUpdate(existingSubscriptionDetails, subscriptionDetailsDTO);
+                subscriptionDetailsMapper.partialUpdate(existingSubscriptionDetails, subscriptionDetailsDto);
 
                 return existingSubscriptionDetails;
             })
@@ -86,7 +87,7 @@ public class SubscriptionDetailsService {
      * @return the list of entities.
      */
     @Transactional(readOnly = true)
-    public List<SubscriptionDetailsDTO> findAll() {
+    public List<SubscriptionDetailsDto> findAll() {
         LOG.debug("Request to get all SubscriptionDetails");
         return subscriptionDetailsRepository
             .findAll()
@@ -102,7 +103,7 @@ public class SubscriptionDetailsService {
      * @return the entity.
      */
     @Transactional(readOnly = true)
-    public Optional<SubscriptionDetailsDTO> findOne(Long id) {
+    public Optional<SubscriptionDetailsDto> findOne(UUID id) {
         LOG.debug("Request to get SubscriptionDetails : {}", id);
         return subscriptionDetailsRepository.findById(id).map(subscriptionDetailsMapper::toDto);
     }
@@ -112,7 +113,7 @@ public class SubscriptionDetailsService {
      *
      * @param id the id of the entity.
      */
-    public void delete(Long id) {
+    public void delete(UUID id) {
         LOG.debug("Request to delete SubscriptionDetails : {}", id);
         subscriptionDetailsRepository.deleteById(id);
     }

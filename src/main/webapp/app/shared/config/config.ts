@@ -41,7 +41,7 @@ import { faUsersCog } from '@fortawesome/free-solid-svg-icons/faUsersCog';
 import { faWrench } from '@fortawesome/free-solid-svg-icons/faWrench';
 
 const datetimeFormats: IntlDateTimeFormats = {
-  en: {
+  ru: {
     short: {
       year: 'numeric',
       month: 'short',
@@ -66,7 +66,7 @@ const datetimeFormats: IntlDateTimeFormats = {
       minute: 'numeric',
     },
   },
-  ru: {
+  en: {
     short: {
       year: 'numeric',
       month: 'short',

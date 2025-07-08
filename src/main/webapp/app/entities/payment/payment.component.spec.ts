@@ -58,7 +58,7 @@ describe('Component Tests', () => {
     describe('Mount', () => {
       it('Should call load all on init', async () => {
         // GIVEN
-        paymentServiceStub.retrieve.resolves({ headers: {}, data: [{ id: 123 }] });
+        paymentServiceStub.retrieve.resolves({ headers: {}, data: [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }] });
 
         // WHEN
         const wrapper = shallowMount(Payment, { global: mountOptions });
@@ -67,7 +67,7 @@ describe('Component Tests', () => {
 
         // THEN
         expect(paymentServiceStub.retrieve.calledOnce).toBeTruthy();
-        expect(comp.payments[0]).toEqual(expect.objectContaining({ id: 123 }));
+        expect(comp.payments[0]).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
       });
 
       it('should calculate the sort attribute for an id', async () => {
@@ -95,7 +95,7 @@ describe('Component Tests', () => {
 
       it('should load a page', async () => {
         // GIVEN
-        paymentServiceStub.retrieve.resolves({ headers: {}, data: [{ id: 123 }] });
+        paymentServiceStub.retrieve.resolves({ headers: {}, data: [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }] });
 
         // WHEN
         comp.page = 2;
@@ -103,7 +103,7 @@ describe('Component Tests', () => {
 
         // THEN
         expect(paymentServiceStub.retrieve.called).toBeTruthy();
-        expect(comp.payments[0]).toEqual(expect.objectContaining({ id: 123 }));
+        expect(comp.payments[0]).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
       });
 
       it('should re-initialize the page', async () => {
@@ -111,7 +111,7 @@ describe('Component Tests', () => {
         comp.page = 2;
         await comp.$nextTick();
         paymentServiceStub.retrieve.reset();
-        paymentServiceStub.retrieve.resolves({ headers: {}, data: [{ id: 123 }] });
+        paymentServiceStub.retrieve.resolves({ headers: {}, data: [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }] });
 
         // WHEN
         comp.clear();
@@ -120,7 +120,7 @@ describe('Component Tests', () => {
         // THEN
         expect(comp.page).toEqual(1);
         expect(paymentServiceStub.retrieve.callCount).toEqual(1);
-        expect(comp.payments[0]).toEqual(expect.objectContaining({ id: 123 }));
+        expect(comp.payments[0]).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
       });
 
       it('should calculate the sort attribute for a non-id attribute', async () => {
@@ -139,7 +139,7 @@ describe('Component Tests', () => {
         paymentServiceStub.delete.resolves({});
 
         // WHEN
-        comp.prepareRemove({ id: 123 });
+        comp.prepareRemove({ id: '9fec3727-3421-4967-b213-ba36557ca194' });
 
         comp.removePayment();
         await comp.$nextTick(); // clear components

@@ -1,11 +1,11 @@
 export interface IPaymentSystem {
-  id?: number;
+  id?: string;
   name?: string;
 }
 
 export class PaymentSystem implements IPaymentSystem {
   constructor(
-    public id?: number,
+    public id?: string,
     public name?: string,
   ) {}
 }

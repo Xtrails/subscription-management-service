@@ -1,7 +1,7 @@
 package ru.ani.subscription.management.service.service.mapper;
 
-import static ru.ani.subscription.management.service.domain.ClientSubscriptionAsserts.*;
-import static ru.ani.subscription.management.service.domain.ClientSubscriptionTestSamples.*;
+import static ru.ani.subscription.management.service.domain.ClientSubscriptionDaoAsserts.*;
+import static ru.ani.subscription.management.service.domain.ClientSubscriptionDaoTestSamples.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,8 +17,8 @@ class ClientSubscriptionMapperTest {
 
     @Test
     void shouldConvertToDtoAndBack() {
-        var expected = getClientSubscriptionSample1();
+        var expected = getClientSubscriptionDaoSample1();
         var actual = clientSubscriptionMapper.toEntity(clientSubscriptionMapper.toDto(expected));
-        assertClientSubscriptionAllPropertiesEquals(expected, actual);
+        assertClientSubscriptionDaoAllPropertiesEquals(expected, actual);
     }
 }

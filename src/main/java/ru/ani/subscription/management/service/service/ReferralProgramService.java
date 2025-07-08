@@ -3,19 +3,20 @@ package ru.ani.subscription.management.service.service;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.ani.subscription.management.service.domain.ReferralProgram;
+import ru.ani.subscription.management.service.domain.ReferralProgramDao;
 import ru.ani.subscription.management.service.repository.ReferralProgramRepository;
-import ru.ani.subscription.management.service.service.dto.ReferralProgramDTO;
+import ru.ani.subscription.management.service.service.dto.ReferralProgramDto;
 import ru.ani.subscription.management.service.service.mapper.ReferralProgramMapper;
 
 /**
- * Service Implementation for managing {@link ru.ani.subscription.management.service.domain.ReferralProgram}.
+ * Service Implementation for managing {@link ru.ani.subscription.management.service.domain.ReferralProgramDao}.
  */
 @Service
 @Transactional
@@ -35,42 +36,42 @@ public class ReferralProgramService {
     /**
      * Save a referralProgram.
      *
-     * @param referralProgramDTO the entity to save.
+     * @param referralProgramDto the entity to save.
      * @return the persisted entity.
      */
-    public ReferralProgramDTO save(ReferralProgramDTO referralProgramDTO) {
-        LOG.debug("Request to save ReferralProgram : {}", referralProgramDTO);
-        ReferralProgram referralProgram = referralProgramMapper.toEntity(referralProgramDTO);
-        referralProgram = referralProgramRepository.save(referralProgram);
-        return referralProgramMapper.toDto(referralProgram);
+    public ReferralProgramDto save(ReferralProgramDto referralProgramDto) {
+        LOG.debug("Request to save ReferralProgram : {}", referralProgramDto);
+        ReferralProgramDao referralProgramDao = referralProgramMapper.toEntity(referralProgramDto);
+        referralProgramDao = referralProgramRepository.save(referralProgramDao);
+        return referralProgramMapper.toDto(referralProgramDao);
     }
 
     /**
      * Update a referralProgram.
      *
-     * @param referralProgramDTO the entity to save.
+     * @param referralProgramDto the entity to save.
      * @return the persisted entity.
      */
-    public ReferralProgramDTO update(ReferralProgramDTO referralProgramDTO) {
-        LOG.debug("Request to update ReferralProgram : {}", referralProgramDTO);
-        ReferralProgram referralProgram = referralProgramMapper.toEntity(referralProgramDTO);
-        referralProgram = referralProgramRepository.save(referralProgram);
-        return referralProgramMapper.toDto(referralProgram);
+    public ReferralProgramDto update(ReferralProgramDto referralProgramDto) {
+        LOG.debug("Request to update ReferralProgram : {}", referralProgramDto);
+        ReferralProgramDao referralProgramDao = referralProgramMapper.toEntity(referralProgramDto);
+        referralProgramDao = referralProgramRepository.save(referralProgramDao);
+        return referralProgramMapper.toDto(referralProgramDao);
     }
 
     /**
      * Partially update a referralProgram.
      *
-     * @param referralProgramDTO the entity to update partially.
+     * @param referralProgramDto the entity to update partially.
      * @return the persisted entity.
      */
-    public Optional<ReferralProgramDTO> partialUpdate(ReferralProgramDTO referralProgramDTO) {
-        LOG.debug("Request to partially update ReferralProgram : {}", referralProgramDTO);
+    public Optional<ReferralProgramDto> partialUpdate(ReferralProgramDto referralProgramDto) {
+        LOG.debug("Request to partially update ReferralProgram : {}", referralProgramDto);
 
         return referralProgramRepository
-            .findById(referralProgramDTO.getId())
+            .findById(referralProgramDto.getId())
             .map(existingReferralProgram -> {
-                referralProgramMapper.partialUpdate(existingReferralProgram, referralProgramDTO);
+                referralProgramMapper.partialUpdate(existingReferralProgram, referralProgramDto);
 
                 return existingReferralProgram;
             })
@@ -84,7 +85,7 @@ public class ReferralProgramService {
      * @return the list of entities.
      */
     @Transactional(readOnly = true)
-    public List<ReferralProgramDTO> findAll() {
+    public List<ReferralProgramDto> findAll() {
         LOG.debug("Request to get all ReferralPrograms");
         return referralProgramRepository
             .findAll()
@@ -98,7 +99,7 @@ public class ReferralProgramService {
      *  @return the list of entities.
      */
     @Transactional(readOnly = true)
-    public List<ReferralProgramDTO> findAllWhereExternalUserIsNull() {
+    public List<ReferralProgramDto> findAllWhereExternalUserIsNull() {
         LOG.debug("Request to get all referralPrograms where ExternalUser is null");
         return StreamSupport.stream(referralProgramRepository.findAll().spliterator(), false)
             .filter(referralProgram -> referralProgram.getExternalUser() == null)
@@ -113,7 +114,7 @@ public class ReferralProgramService {
      * @return the entity.
      */
     @Transactional(readOnly = true)
-    public Optional<ReferralProgramDTO> findOne(Long id) {
+    public Optional<ReferralProgramDto> findOne(UUID id) {
         LOG.debug("Request to get ReferralProgram : {}", id);
         return referralProgramRepository.findById(id).map(referralProgramMapper::toDto);
     }
@@ -123,7 +124,7 @@ public class ReferralProgramService {
      *
      * @param id the id of the entity.
      */
-    public void delete(Long id) {
+    public void delete(UUID id) {
         LOG.debug("Request to delete ReferralProgram : {}", id);
         referralProgramRepository.deleteById(id);
     }

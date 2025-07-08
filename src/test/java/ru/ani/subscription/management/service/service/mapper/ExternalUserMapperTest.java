@@ -1,7 +1,7 @@
 package ru.ani.subscription.management.service.service.mapper;
 
-import static ru.ani.subscription.management.service.domain.ExternalUserAsserts.*;
-import static ru.ani.subscription.management.service.domain.ExternalUserTestSamples.*;
+import static ru.ani.subscription.management.service.domain.ExternalUserDaoAsserts.*;
+import static ru.ani.subscription.management.service.domain.ExternalUserDaoTestSamples.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,8 +17,8 @@ class ExternalUserMapperTest {
 
     @Test
     void shouldConvertToDtoAndBack() {
-        var expected = getExternalUserSample1();
+        var expected = getExternalUserDaoSample1();
         var actual = externalUserMapper.toEntity(externalUserMapper.toDto(expected));
-        assertExternalUserAllPropertiesEquals(expected, actual);
+        assertExternalUserDaoAllPropertiesEquals(expected, actual);
     }
 }

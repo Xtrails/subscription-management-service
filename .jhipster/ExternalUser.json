@@ -1,10 +1,15 @@
 {
   "annotations": {
-    "changelogDate": "20250627111743"
+    "changelogDate": "20250707224602"
   },
   "applications": ["subscriptionManagementService"],
   "dto": "mapstruct",
   "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "UUID",
+      "fieldValidateRules": ["required", "unique"]
+    },
     {
       "fieldName": "externalUserId",
       "fieldType": "String",

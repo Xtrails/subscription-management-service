@@ -3,6 +3,7 @@ package ru.ani.subscription.management.service.service;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
@@ -11,13 +12,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.ani.subscription.management.service.domain.ClientSubscription;
+import ru.ani.subscription.management.service.domain.ClientSubscriptionDao;
 import ru.ani.subscription.management.service.repository.ClientSubscriptionRepository;
-import ru.ani.subscription.management.service.service.dto.ClientSubscriptionDTO;
+import ru.ani.subscription.management.service.service.dto.ClientSubscriptionDto;
 import ru.ani.subscription.management.service.service.mapper.ClientSubscriptionMapper;
 
 /**
- * Service Implementation for managing {@link ru.ani.subscription.management.service.domain.ClientSubscription}.
+ * Service Implementation for managing {@link ru.ani.subscription.management.service.domain.ClientSubscriptionDao}.
  */
 @Service
 @Transactional
@@ -40,42 +41,42 @@ public class ClientSubscriptionService {
     /**
      * Save a clientSubscription.
      *
-     * @param clientSubscriptionDTO the entity to save.
+     * @param clientSubscriptionDto the entity to save.
      * @return the persisted entity.
      */
-    public ClientSubscriptionDTO save(ClientSubscriptionDTO clientSubscriptionDTO) {
-        LOG.debug("Request to save ClientSubscription : {}", clientSubscriptionDTO);
-        ClientSubscription clientSubscription = clientSubscriptionMapper.toEntity(clientSubscriptionDTO);
-        clientSubscription = clientSubscriptionRepository.save(clientSubscription);
-        return clientSubscriptionMapper.toDto(clientSubscription);
+    public ClientSubscriptionDto save(ClientSubscriptionDto clientSubscriptionDto) {
+        LOG.debug("Request to save ClientSubscription : {}", clientSubscriptionDto);
+        ClientSubscriptionDao clientSubscriptionDao = clientSubscriptionMapper.toEntity(clientSubscriptionDto);
+        clientSubscriptionDao = clientSubscriptionRepository.save(clientSubscriptionDao);
+        return clientSubscriptionMapper.toDto(clientSubscriptionDao);
     }
 
     /**
      * Update a clientSubscription.
      *
-     * @param clientSubscriptionDTO the entity to save.
+     * @param clientSubscriptionDto the entity to save.
      * @return the persisted entity.
      */
-    public ClientSubscriptionDTO update(ClientSubscriptionDTO clientSubscriptionDTO) {
-        LOG.debug("Request to update ClientSubscription : {}", clientSubscriptionDTO);
-        ClientSubscription clientSubscription = clientSubscriptionMapper.toEntity(clientSubscriptionDTO);
-        clientSubscription = clientSubscriptionRepository.save(clientSubscription);
-        return clientSubscriptionMapper.toDto(clientSubscription);
+    public ClientSubscriptionDto update(ClientSubscriptionDto clientSubscriptionDto) {
+        LOG.debug("Request to update ClientSubscription : {}", clientSubscriptionDto);
+        ClientSubscriptionDao clientSubscriptionDao = clientSubscriptionMapper.toEntity(clientSubscriptionDto);
+        clientSubscriptionDao = clientSubscriptionRepository.save(clientSubscriptionDao);
+        return clientSubscriptionMapper.toDto(clientSubscriptionDao);
     }
 
     /**
      * Partially update a clientSubscription.
      *
-     * @param clientSubscriptionDTO the entity to update partially.
+     * @param clientSubscriptionDto the entity to update partially.
      * @return the persisted entity.
      */
-    public Optional<ClientSubscriptionDTO> partialUpdate(ClientSubscriptionDTO clientSubscriptionDTO) {
-        LOG.debug("Request to partially update ClientSubscription : {}", clientSubscriptionDTO);
+    public Optional<ClientSubscriptionDto> partialUpdate(ClientSubscriptionDto clientSubscriptionDto) {
+        LOG.debug("Request to partially update ClientSubscription : {}", clientSubscriptionDto);
 
         return clientSubscriptionRepository
-            .findById(clientSubscriptionDTO.getId())
+            .findById(clientSubscriptionDto.getId())
             .map(existingClientSubscription -> {
-                clientSubscriptionMapper.partialUpdate(existingClientSubscription, clientSubscriptionDTO);
+                clientSubscriptionMapper.partialUpdate(existingClientSubscription, clientSubscriptionDto);
 
                 return existingClientSubscription;
             })
@@ -90,7 +91,7 @@ public class ClientSubscriptionService {
      * @return the list of entities.
      */
     @Transactional(readOnly = true)
-    public Page<ClientSubscriptionDTO> findAll(Pageable pageable) {
+    public Page<ClientSubscriptionDto> findAll(Pageable pageable) {
         LOG.debug("Request to get all ClientSubscriptions");
         return clientSubscriptionRepository.findAll(pageable).map(clientSubscriptionMapper::toDto);
     }
@@ -100,7 +101,7 @@ public class ClientSubscriptionService {
      *  @return the list of entities.
      */
     @Transactional(readOnly = true)
-    public List<ClientSubscriptionDTO> findAllWherePaymentIsNull() {
+    public List<ClientSubscriptionDto> findAllWherePaymentIsNull() {
         LOG.debug("Request to get all clientSubscriptions where Payment is null");
         return StreamSupport.stream(clientSubscriptionRepository.findAll().spliterator(), false)
             .filter(clientSubscription -> clientSubscription.getPayment() == null)
@@ -115,7 +116,7 @@ public class ClientSubscriptionService {
      * @return the entity.
      */
     @Transactional(readOnly = true)
-    public Optional<ClientSubscriptionDTO> findOne(Long id) {
+    public Optional<ClientSubscriptionDto> findOne(UUID id) {
         LOG.debug("Request to get ClientSubscription : {}", id);
         return clientSubscriptionRepository.findById(id).map(clientSubscriptionMapper::toDto);
     }
@@ -125,7 +126,7 @@ public class ClientSubscriptionService {
      *
      * @param id the id of the entity.
      */
-    public void delete(Long id) {
+    public void delete(UUID id) {
         LOG.debug("Request to delete ClientSubscription : {}", id);
         clientSubscriptionRepository.deleteById(id);
     }
