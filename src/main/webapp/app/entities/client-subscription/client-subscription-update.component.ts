@@ -81,7 +81,6 @@ export default defineComponent({
       },
       user: {},
       subscriptionDetails: {},
-      payment: {},
     };
     const v$ = useVuelidate(validationRules, clientSubscription as any);
     v$.value.$validate();

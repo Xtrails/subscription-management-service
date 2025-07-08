@@ -128,9 +128,7 @@ describe('Service Tests', () => {
       it('should partial update a ReferralProgram', async () => {
         const patchObject = {
           name: 'BBBBBB',
-          referralCode: 'BBBBBB',
           description: 'BBBBBB',
-          startDttm: dayjs(currentDate).format(DATE_FORMAT),
           endDttm: dayjs(currentDate).format(DATE_FORMAT),
           ...new ReferralProgram(),
         };

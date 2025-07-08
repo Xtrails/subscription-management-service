@@ -54,6 +54,11 @@ public class CacheConfiguration {
             createCache(cm, ru.ani.subscription.management.service.domain.SourceApplicationDao.class.getName());
             createCache(cm, ru.ani.subscription.management.service.domain.SourceApplicationDao.class.getName() + ".referralPrograms");
             createCache(cm, ru.ani.subscription.management.service.domain.SourceApplicationDao.class.getName() + ".subscriptionDetails");
+            createCache(cm, ru.ani.subscription.management.service.domain.ReferralProgramDao.class.getName() + ".referralCreators");
+            createCache(cm, ru.ani.subscription.management.service.domain.SourceApplicationDao.class.getName() + ".externalUsers");
+            createCache(cm, ru.ani.subscription.management.service.domain.SubscriptionAccessDao.class.getName());
+            createCache(cm, ru.ani.subscription.management.service.domain.SubscriptionDetailsDao.class.getName() + ".subscriptionAccesses");
+            createCache(cm, ru.ani.subscription.management.service.domain.SubscriptionAccessDao.class.getName() + ".subscriptionDetails");
             // jhipster-needle-ehcache-add-entry
         };
     }

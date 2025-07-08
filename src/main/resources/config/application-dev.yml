@@ -20,6 +20,7 @@ logging:
     org.hibernate.SQL: DEBUG
     ru.ani.subscription.management.service: DEBUG
     jdk.internal.httpclient.debug: INFO
+    javax.management.remote.rmi: INFO
 
 spring:
   devtools:
@@ -39,6 +40,7 @@ spring:
     hikari:
       poolName: Hikari
       auto-commit: false
+      schema: subscription_management_service
   liquibase:
     # Remove 'faker' if you do not want the sample data to be loaded automatically
     contexts: dev #, faker

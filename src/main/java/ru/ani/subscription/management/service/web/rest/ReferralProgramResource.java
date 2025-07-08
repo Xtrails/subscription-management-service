@@ -135,15 +135,10 @@ public class ReferralProgramResource {
     /**
      * {@code GET  /referral-programs} : get all the referralPrograms.
      *
-     * @param filter the filter of the request.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of referralPrograms in body.
      */
     @GetMapping("")
-    public List<ReferralProgramDto> getAllReferralPrograms(@RequestParam(name = "filter", required = false) String filter) {
-        if ("externaluser-is-null".equals(filter)) {
-            LOG.debug("REST request to get all ReferralPrograms where externalUser is null");
-            return referralProgramService.findAllWhereExternalUserIsNull();
-        }
+    public List<ReferralProgramDto> getAllReferralPrograms() {
         LOG.debug("REST request to get all ReferralPrograms");
         return referralProgramService.findAll();
     }

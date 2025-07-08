@@ -57,9 +57,6 @@ public class ExternalUserDaoAsserts {
      * @param actual the actual entity
      */
     public static void assertExternalUserDaoUpdatableRelationshipsEquals(ExternalUserDao expected, ExternalUserDao actual) {
-        assertThat(actual)
-            .as("Verify ExternalUserDao relationships")
-            .satisfies(a -> assertThat(a.getReferralCreator()).as("check referralCreator").isEqualTo(expected.getReferralCreator()))
-            .satisfies(a -> assertThat(a.getReferralProgram()).as("check referralProgram").isEqualTo(expected.getReferralProgram()));
+        // empty method
     }
 }

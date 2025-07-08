@@ -14,7 +14,6 @@ import ru.ani.subscription.management.service.domain.enumeration.PaymentStatus;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class PaymentDto implements Serializable {
 
-    @NotNull
     private UUID id;
 
     @NotNull
@@ -29,11 +28,9 @@ public class PaymentDto implements Serializable {
     @NotNull
     private String hashSum;
 
-    private ClientSubscriptionDto clientSubscription;
-
     private ExternalUserDto user;
 
-    private ClientSubscriptionDto clietntSubscription;
+    private ClientSubscriptionDto clientSubscription;
 
     private PaymentSystemDto paymentSystem;
 
@@ -77,14 +74,6 @@ public class PaymentDto implements Serializable {
         this.hashSum = hashSum;
     }
 
-    public ClientSubscriptionDto getClientSubscription() {
-        return clientSubscription;
-    }
-
-    public void setClientSubscription(ClientSubscriptionDto clientSubscription) {
-        this.clientSubscription = clientSubscription;
-    }
-
     public ExternalUserDto getUser() {
         return user;
     }
@@ -93,12 +82,12 @@ public class PaymentDto implements Serializable {
         this.user = user;
     }
 
-    public ClientSubscriptionDto getClietntSubscription() {
-        return clietntSubscription;
+    public ClientSubscriptionDto getClientSubscription() {
+        return clientSubscription;
     }
 
-    public void setClietntSubscription(ClientSubscriptionDto clietntSubscription) {
-        this.clietntSubscription = clietntSubscription;
+    public void setClientSubscription(ClientSubscriptionDto clientSubscription) {
+        this.clientSubscription = clientSubscription;
     }
 
     public PaymentSystemDto getPaymentSystem() {
@@ -139,9 +128,8 @@ public class PaymentDto implements Serializable {
             ", status='" + getStatus() + "'" +
             ", paymentDttm='" + getPaymentDttm() + "'" +
             ", hashSum='" + getHashSum() + "'" +
-            ", clientSubscription=" + getClientSubscription() +
             ", user=" + getUser() +
-            ", clietntSubscription=" + getClietntSubscription() +
+            ", clientSubscription=" + getClientSubscription() +
             ", paymentSystem=" + getPaymentSystem() +
             "}";
     }

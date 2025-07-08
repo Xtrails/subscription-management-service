@@ -7,8 +7,8 @@ import PaymentUpdate from './payment-update.vue';
 import PaymentService from './payment.service';
 import AlertService from '@/shared/alert/alert.service';
 
-import ClientSubscriptionService from '@/entities/client-subscription/client-subscription.service';
 import ExternalUserService from '@/entities/external-user/external-user.service';
+import ClientSubscriptionService from '@/entities/client-subscription/client-subscription.service';
 import PaymentSystemService from '@/entities/payment-system/payment-system.service';
 
 type PaymentUpdateComponentType = InstanceType<typeof PaymentUpdate>;
@@ -54,12 +54,12 @@ describe('Component Tests', () => {
         provide: {
           alertService,
           paymentService: () => paymentServiceStub,
-          clientSubscriptionService: () =>
-            sinon.createStubInstance<ClientSubscriptionService>(ClientSubscriptionService, {
-              retrieve: sinon.stub().resolves({}),
-            } as any),
           externalUserService: () =>
             sinon.createStubInstance<ExternalUserService>(ExternalUserService, {
+              retrieve: sinon.stub().resolves({}),
+            } as any),
+          clientSubscriptionService: () =>
+            sinon.createStubInstance<ClientSubscriptionService>(ClientSubscriptionService, {
               retrieve: sinon.stub().resolves({}),
             } as any),
           paymentSystemService: () =>

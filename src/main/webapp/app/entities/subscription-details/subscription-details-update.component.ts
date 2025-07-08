@@ -9,6 +9,8 @@ import { useAlertService } from '@/shared/alert/alert.service';
 
 import SourceApplicationService from '@/entities/source-application/source-application.service';
 import { type ISourceApplication } from '@/shared/model/source-application.model';
+import SubscriptionAccessService from '@/entities/subscription-access/subscription-access.service';
+import { type ISubscriptionAccess } from '@/shared/model/subscription-access.model';
 import { type ISubscriptionDetails, SubscriptionDetails } from '@/shared/model/subscription-details.model';
 
 export default defineComponent({
@@ -23,6 +25,10 @@ export default defineComponent({
     const sourceApplicationService = inject('sourceApplicationService', () => new SourceApplicationService());
 
     const sourceApplications: Ref<ISourceApplication[]> = ref([]);
+
+    const subscriptionAccessService = inject('subscriptionAccessService', () => new SubscriptionAccessService());
+
+    const subscriptionAccesses: Ref<ISubscriptionAccess[]> = ref([]);
     const isSaving = ref(false);
     const currentLanguage = inject('currentLanguage', () => computed(() => navigator.language ?? 'ru'), true);
 
@@ -50,6 +56,11 @@ export default defineComponent({
         .then(res => {
           sourceApplications.value = res.data;
         });
+      subscriptionAccessService()
+        .retrieve()
+        .then(res => {
+          subscriptionAccesses.value = res.data;
+        });
     };
 
     initRelationships();
@@ -64,11 +75,15 @@ export default defineComponent({
       price: {
         required: validations.required(t$('entity.validation.required').toString()),
       },
+      priceByMonth: {},
       duration: {
         required: validations.required(t$('entity.validation.required').toString()),
-        integer: validations.integer(t$('entity.validation.number').toString()),
+      },
+      active: {
+        required: validations.required(t$('entity.validation.required').toString()),
       },
       sourceApplication: {},
+      subscriptionAccesses: {},
     };
     const v$ = useVuelidate(validationRules, subscriptionDetails as any);
     v$.value.$validate();
@@ -81,11 +96,14 @@ export default defineComponent({
       isSaving,
       currentLanguage,
       sourceApplications,
+      subscriptionAccesses,
       v$,
       t$,
     };
   },
-  created(): void {},
+  created(): void {
+    this.subscriptionDetails.subscriptionAccesses = [];
+  },
   methods: {
     save(): void {
       this.isSaving = true;
@@ -116,6 +134,13 @@ export default defineComponent({
             this.alertService.showHttpError(error.response);
           });
       }
+    },
+
+    getSelected(selectedVals, option, pkField = 'id'): any {
+      if (selectedVals) {
+        return selectedVals.find(value => option[pkField] === value[pkField]) ?? option;
+      }
+      return option;
     },
   },
 });

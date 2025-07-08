@@ -30,8 +30,6 @@
           <tr>
             <th scope="row"><span v-text="t$('global.field.id')"></span></th>
             <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.externalUser.externalUserId')"></span></th>
-            <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.externalUser.referralCreator')"></span></th>
-            <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.externalUser.referralProgram')"></span></th>
             <th scope="row"></th>
           </tr>
         </thead>
@@ -43,20 +41,6 @@
               }}</router-link>
             </td>
             <td>{{ externalUser.externalUserId }}</td>
-            <td>
-              <div v-if="externalUser.referralCreator">
-                <router-link :to="{ name: 'ReferralProgramView', params: { referralProgramId: externalUser.referralCreator.id } }">{{
-                  externalUser.referralCreator.id
-                }}</router-link>
-              </div>
-            </td>
-            <td>
-              <div v-if="externalUser.referralProgram">
-                <router-link :to="{ name: 'ReferralProgramView', params: { referralProgramId: externalUser.referralProgram.id } }">{{
-                  externalUser.referralProgram.id
-                }}</router-link>
-              </div>
-            </td>
             <td class="text-right">
               <div class="btn-group">
                 <router-link :to="{ name: 'ExternalUserView', params: { externalUserId: externalUser.id } }" custom v-slot="{ navigate }">

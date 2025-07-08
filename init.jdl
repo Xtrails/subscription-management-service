@@ -1,5 +1,129 @@
-//jhipster jdl initinit.jdl --force
-//Запустите JHipster с помощью --incremental-changelogопции anytime, чтобы включить его.
+application {
+  config {
+    baseName subscriptionManagementService
+    applicationType monolith
+    authenticationType oauth2
+    buildTool gradle
+    clientFramework vue
+    languages [en, ru]
+    packageName ru.ani.subscription.management.service
+    prodDatabaseType postgresql
+    dtoSuffix Dto
+    entitySuffix Dao
+    reactive false
+    nativeLanguage ru
+    clientThemeVariant dark
+  }
+  entities *
+  dto * with mapstruct
+}
+
+deployment {
+  deploymentType kubernetes
+  dockerRepositoryName "subscriptionManagementService"
+  monitoring prometheus
+}
+
+entity ExternalUser {
+  id UUID unique,
+  externalUserId String required unique
+}
+
+//Связь клиента и подписки
+entity ClientSubscription {
+  id UUID unique,
+  startDttm LocalDate required,
+  endDttm LocalDate required,
+  status SubscriptionStatus required
+}
+
+//Описание подписки
+entity SubscriptionDetails {
+  id UUID unique,
+  name String required,
+  description String,
+  price BigDecimal required,
+  priceByMonth BigDecimal,
+  duration String required,
+  active Boolean required
+}
+
+//Доступы предоставляемые по подписке
+entity SubscriptionAccess {
+  id UUID unique,
+  name String required,
+  description String,
+  order Integer,
+  role String,
+  roleGroup String,
+  active Boolean required
+}
+
+//Реферальная программа
+entity ReferralProgram {
+  id UUID unique,
+  name String required,
+  referralCode String required unique,
+  description String,
+  startDttm LocalDate required,
+  endDttm LocalDate required,
+  rewardAmount BigDecimal required,
+  status ReferralStatus required
+}
+
+//Платеж
+entity Payment {
+  id UUID unique,
+  amount BigDecimal required,
+  status PaymentStatus required,
+  paymentDttm LocalDate required,
+  hashSum String required
+}
+
+//Платежная система
+entity PaymentSystem {
+  id UUID unique,
+  name String required unique
+}
+
+//Название сервиса или приложения
+entity SourceApplication {
+  id UUID unique,
+  applicationName String required unique
+}
+
+enum SubscriptionStatus {
+  ACTIVE, EXPIRED, CANCELLED
+}
+
+enum ReferralStatus {
+  PENDING, COMPLETED, EXPIRED
+}
+
+enum PaymentStatus {
+  PENDING, COMPLETED, FAILED
+}
+
+relationship ManyToOne {
+  ClientSubscription{user} to ExternalUser,
+  ClientSubscription{subscriptionDetails} to SubscriptionDetails,
+  ReferralProgram{referralCreator} to ExternalUser,
+  Payment{user} to ExternalUser,
+  SourceApplication{user} to ExternalUser,
+  Payment{clientSubscription} to ClientSubscription
+  Payment{paymentSystem} to PaymentSystem
+}
+
+relationship OneToMany {
+  SourceApplication to ReferralProgram{sourceApplication},
+  SourceApplication to SubscriptionDetails{sourceApplication}
+}
+
+relationship ManyToMany {
+  SubscriptionAccess{subscriptionDetails required} to SubscriptionDetails{subscriptionAccess}
+}
+
+paginate ClientSubscription, Payment with infinite-scroll
 
 //application {
 //  config {
@@ -38,118 +162,3 @@
 //  appsFolders [subscriptionManagementServiceFront, subscriptionManagementServiceBack]
 //  dockerRepositoryName "subscriptionManagementService"
 //}
-
-application {
-  config {
-    baseName subscriptionManagementService
-    applicationType monolith
-    authenticationType oauth2
-    buildTool gradle
-    clientFramework vue
-    languages [en, ru]
-    packageName ru.ani.subscription.management.service
-    prodDatabaseType postgresql
-    dtoSuffix Dto
-    entitySuffix Dao
-    reactive false
-    nativeLanguage ru
-    clientThemeVariant dark
-  }
-  entities *
-  dto * with mapstruct
-}
-
-deployment {
-  deploymentType kubernetes
-  dockerRepositoryName "subscriptionManagementService"
-  monitoring prometheus
-}
-
-entity ExternalUser {
-  id UUID required unique,
-  externalUserId String required unique
-}
-
-//Связь клиента и подписки
-entity ClientSubscription {
-  id UUID required unique,
-  startDttm LocalDate required,
-  endDttm LocalDate required,
-  status SubscriptionStatus required
-}
-
-//Описание подписки
-entity SubscriptionDetails {
-  id UUID required unique,
-  name String required,
-  description String,
-  price BigDecimal required,
-  duration Integer required
-}
-
-//Реферальная программа
-entity ReferralProgram {
-  id UUID required unique,
-  name String required,
-  referralCode String required unique,
-  description String,
-  startDttm LocalDate required,
-  endDttm LocalDate required,
-  rewardAmount BigDecimal required,
-  status ReferralStatus required
-}
-
-//Платеж
-entity Payment {
-  id UUID required unique,
-  amount BigDecimal required,
-  status PaymentStatus required,
-  paymentDttm LocalDate required,
-  hashSum String required
-}
-
-//Платежная система
-entity PaymentSystem {
-  id UUID required unique,
-  name String required unique
-}
-
-//Название сервиса или приложения
-entity SourceApplication {
-  id UUID required unique,
-  applicationName String required unique
-}
-
-enum SubscriptionStatus {
-  ACTIVE, EXPIRED, CANCELLED
-}
-
-enum ReferralStatus {
-  PENDING, COMPLETED, EXPIRED
-}
-
-enum PaymentStatus {
-  PENDING, COMPLETED, FAILED
-}
-
-relationship ManyToOne {
-  ClientSubscription{user} to ExternalUser,
-  ClientSubscription{subscriptionDetails} to SubscriptionDetails,
-  ExternalUser{referralProgram} to ReferralProgram,
-  Payment{user} to ExternalUser,
-  SourceApplication{user} to ExternalUser,
-  Payment{clietntSubscription} to ClientSubscription
-  Payment{paymentSystem} to PaymentSystem
-}
-
-relationship OneToOne {
-  ExternalUser{referralCreator} to ReferralProgram,
-  Payment{clientSubscription} to ClientSubscription
-}
-
-relationship OneToMany {
-  SourceApplication{referralPrograms} to ReferralProgram,
-  SourceApplication{subscriptionDetails} to SubscriptionDetails
-}
-
-paginate ClientSubscription, Payment with infinite-scroll

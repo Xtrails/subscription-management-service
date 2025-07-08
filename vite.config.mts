@@ -22,6 +22,11 @@ let config = defineConfig({
           ],
           dest: 'swagger-ui',
         },
+        // Добавлено: копирование изображений
+        {
+          src: normalizePath(fileURLToPath(new URL('./src/main/webapp/content/images/*', import.meta.url))),
+          dest: 'assets/content/images',
+        },
       ],
     }),
   ],

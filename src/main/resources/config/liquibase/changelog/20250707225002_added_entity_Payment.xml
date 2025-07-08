@@ -26,13 +26,10 @@
             <column name="hash_sum" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
-            <column name="client_subscription_id" type="${uuidType}">
-                <constraints nullable="true" unique="true" uniqueConstraintName="ux_payment__client_subscription_id" />
-            </column>
             <column name="user_id" type="${uuidType}">
                 <constraints nullable="true" />
             </column>
-            <column name="clietnt_subscription_id" type="${uuidType}">
+            <column name="client_subscription_id" type="${uuidType}">
                 <constraints nullable="true" />
             </column>
             <column name="payment_system_id" type="${uuidType}">

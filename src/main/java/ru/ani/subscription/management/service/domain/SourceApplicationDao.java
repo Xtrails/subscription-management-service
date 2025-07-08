@@ -14,17 +14,16 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
  * A SourceApplicationDao.
  */
 @Entity
-@Table(name = "source_application")
+@Table(name = "source_application", schema = "subscription_management_service")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class SourceApplicationDao implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @NotNull
     @Id
     @GeneratedValue
-    @Column(name = "id", nullable = false, unique = true)
+    @Column(name = "id", unique = true)
     private UUID id;
 
     @NotNull
@@ -33,16 +32,15 @@ public class SourceApplicationDao implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "sourceApplication")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnoreProperties(value = { "externalUser", "sourceApplication" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "referralCreator", "sourceApplication" }, allowSetters = true)
     private Set<ReferralProgramDao> referralPrograms = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "sourceApplication")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnoreProperties(value = { "sourceApplication" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "sourceApplication", "subscriptionAccesses" }, allowSetters = true)
     private Set<SubscriptionDetailsDao> subscriptionDetails = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "referralCreator", "referralProgram" }, allowSetters = true)
     private ExternalUserDao user;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -92,13 +90,13 @@ public class SourceApplicationDao implements Serializable {
         return this;
     }
 
-    public SourceApplicationDao addReferralPrograms(ReferralProgramDao referralProgram) {
+    public SourceApplicationDao addReferralProgram(ReferralProgramDao referralProgram) {
         this.referralPrograms.add(referralProgram);
         referralProgram.setSourceApplication(this);
         return this;
     }
 
-    public SourceApplicationDao removeReferralPrograms(ReferralProgramDao referralProgram) {
+    public SourceApplicationDao removeReferralProgram(ReferralProgramDao referralProgram) {
         this.referralPrograms.remove(referralProgram);
         referralProgram.setSourceApplication(null);
         return this;

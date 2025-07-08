@@ -13,7 +13,6 @@ import ru.ani.subscription.management.service.domain.enumeration.SubscriptionSta
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ClientSubscriptionDto implements Serializable {
 
-    @NotNull
     private UUID id;
 
     @NotNull

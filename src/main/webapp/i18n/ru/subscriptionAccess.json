@@ -1,0 +1,30 @@
+{
+  "subscriptionManagementServiceApp": {
+    "subscriptionAccess": {
+      "home": {
+        "title": "Subscription Accesses",
+        "refreshListLabel": "Обновить список",
+        "createLabel": "Создать новый Subscription Access",
+        "createOrEditLabel": "Создать или отредактировать Subscription Access",
+        "notFound": "Subscription Accesses не найдено"
+      },
+      "created": "Новый Subscription Access создан с идентификатором { param }",
+      "updated": "Subscription Access обновлен с идентификатором { param }",
+      "deleted": "Subscription Access удален с идентификатором { param }",
+      "delete": {
+        "question": "Вы уверены что хотите удалить Subscription Access { id }?"
+      },
+      "detail": {
+        "title": "Subscription Access"
+      },
+      "id": "Id",
+      "name": "Name",
+      "description": "Description",
+      "order": "Order",
+      "role": "Role",
+      "roleGroup": "Role Group",
+      "active": "Active",
+      "subscriptionDetails": "Subscription Details"
+    }
+  }
+}

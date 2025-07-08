@@ -57,7 +57,14 @@ public class SubscriptionDetailsDaoAsserts {
             .satisfies(a -> assertThat(a.getName()).as("check name").isEqualTo(expected.getName()))
             .satisfies(a -> assertThat(a.getDescription()).as("check description").isEqualTo(expected.getDescription()))
             .satisfies(a -> assertThat(a.getPrice()).as("check price").usingComparator(bigDecimalCompareTo).isEqualTo(expected.getPrice()))
-            .satisfies(a -> assertThat(a.getDuration()).as("check duration").isEqualTo(expected.getDuration()));
+            .satisfies(a ->
+                assertThat(a.getPriceByMonth())
+                    .as("check priceByMonth")
+                    .usingComparator(bigDecimalCompareTo)
+                    .isEqualTo(expected.getPriceByMonth())
+            )
+            .satisfies(a -> assertThat(a.getDuration()).as("check duration").isEqualTo(expected.getDuration()))
+            .satisfies(a -> assertThat(a.getActive()).as("check active").isEqualTo(expected.getActive()));
     }
 
     /**
@@ -72,6 +79,9 @@ public class SubscriptionDetailsDaoAsserts {
     ) {
         assertThat(actual)
             .as("Verify SubscriptionDetailsDao relationships")
-            .satisfies(a -> assertThat(a.getSourceApplication()).as("check sourceApplication").isEqualTo(expected.getSourceApplication()));
+            .satisfies(a -> assertThat(a.getSourceApplication()).as("check sourceApplication").isEqualTo(expected.getSourceApplication()))
+            .satisfies(a ->
+                assertThat(a.getSubscriptionAccesses()).as("check subscriptionAccesses").isEqualTo(expected.getSubscriptionAccesses())
+            );
     }
 }

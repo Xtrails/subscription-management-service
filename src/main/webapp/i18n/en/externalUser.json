@@ -18,9 +18,7 @@
         "title": "External User"
       },
       "id": "Id",
-      "externalUserId": "External User Id",
-      "referralCreator": "Referral Creator",
-      "referralProgram": "Referral Program"
+      "externalUserId": "External User Id"
     }
   }
 }

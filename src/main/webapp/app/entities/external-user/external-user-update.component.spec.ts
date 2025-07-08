@@ -7,8 +7,6 @@ import ExternalUserUpdate from './external-user-update.vue';
 import ExternalUserService from './external-user.service';
 import AlertService from '@/shared/alert/alert.service';
 
-import ReferralProgramService from '@/entities/referral-program/referral-program.service';
-
 type ExternalUserUpdateComponentType = InstanceType<typeof ExternalUserUpdate>;
 
 let route: Partial<RouteLocation>;
@@ -52,10 +50,6 @@ describe('Component Tests', () => {
         provide: {
           alertService,
           externalUserService: () => externalUserServiceStub,
-          referralProgramService: () =>
-            sinon.createStubInstance<ReferralProgramService>(ReferralProgramService, {
-              retrieve: sinon.stub().resolves({}),
-            } as any),
         },
       };
     });

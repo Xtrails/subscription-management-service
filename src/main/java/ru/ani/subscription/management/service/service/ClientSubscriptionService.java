@@ -1,11 +1,7 @@
 package ru.ani.subscription.management.service.service;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -94,19 +90,6 @@ public class ClientSubscriptionService {
     public Page<ClientSubscriptionDto> findAll(Pageable pageable) {
         LOG.debug("Request to get all ClientSubscriptions");
         return clientSubscriptionRepository.findAll(pageable).map(clientSubscriptionMapper::toDto);
-    }
-
-    /**
-     *  Get all the clientSubscriptions where Payment is {@code null}.
-     *  @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<ClientSubscriptionDto> findAllWherePaymentIsNull() {
-        LOG.debug("Request to get all clientSubscriptions where Payment is null");
-        return StreamSupport.stream(clientSubscriptionRepository.findAll().spliterator(), false)
-            .filter(clientSubscription -> clientSubscription.getPayment() == null)
-            .map(clientSubscriptionMapper::toDto)
-            .collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**

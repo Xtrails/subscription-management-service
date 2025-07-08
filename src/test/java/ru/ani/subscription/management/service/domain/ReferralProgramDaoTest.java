@@ -25,17 +25,15 @@ class ReferralProgramDaoTest {
     }
 
     @Test
-    void externalUserTest() {
+    void referralCreatorTest() {
         ReferralProgramDao referralProgramDao = getReferralProgramDaoRandomSampleGenerator();
         ExternalUserDao externalUserDaoBack = getExternalUserDaoRandomSampleGenerator();
 
-        referralProgramDao.setExternalUser(externalUserDaoBack);
-        assertThat(referralProgramDao.getExternalUser()).isEqualTo(externalUserDaoBack);
-        assertThat(externalUserDaoBack.getReferralCreator()).isEqualTo(referralProgramDao);
+        referralProgramDao.setReferralCreator(externalUserDaoBack);
+        assertThat(referralProgramDao.getReferralCreator()).isEqualTo(externalUserDaoBack);
 
-        referralProgramDao.externalUser(null);
-        assertThat(referralProgramDao.getExternalUser()).isNull();
-        assertThat(externalUserDaoBack.getReferralCreator()).isNull();
+        referralProgramDao.referralCreator(null);
+        assertThat(referralProgramDao.getReferralCreator()).isNull();
     }
 
     @Test

@@ -28,15 +28,15 @@ class SourceApplicationDaoTest {
     }
 
     @Test
-    void referralProgramsTest() {
+    void referralProgramTest() {
         SourceApplicationDao sourceApplicationDao = getSourceApplicationDaoRandomSampleGenerator();
         ReferralProgramDao referralProgramDaoBack = getReferralProgramDaoRandomSampleGenerator();
 
-        sourceApplicationDao.addReferralPrograms(referralProgramDaoBack);
+        sourceApplicationDao.addReferralProgram(referralProgramDaoBack);
         assertThat(sourceApplicationDao.getReferralPrograms()).containsOnly(referralProgramDaoBack);
         assertThat(referralProgramDaoBack.getSourceApplication()).isEqualTo(sourceApplicationDao);
 
-        sourceApplicationDao.removeReferralPrograms(referralProgramDaoBack);
+        sourceApplicationDao.removeReferralProgram(referralProgramDaoBack);
         assertThat(sourceApplicationDao.getReferralPrograms()).doesNotContain(referralProgramDaoBack);
         assertThat(referralProgramDaoBack.getSourceApplication()).isNull();
 

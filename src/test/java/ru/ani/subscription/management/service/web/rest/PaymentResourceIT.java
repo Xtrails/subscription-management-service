@@ -366,7 +366,7 @@ class PaymentResourceIT {
         PaymentDao partialUpdatedPaymentDao = new PaymentDao();
         partialUpdatedPaymentDao.setId(paymentDao.getId());
 
-        partialUpdatedPaymentDao.amount(UPDATED_AMOUNT).paymentDttm(UPDATED_PAYMENT_DTTM).hashSum(UPDATED_HASH_SUM);
+        partialUpdatedPaymentDao.amount(UPDATED_AMOUNT).status(UPDATED_STATUS).hashSum(UPDATED_HASH_SUM);
 
         restPaymentMockMvc
             .perform(

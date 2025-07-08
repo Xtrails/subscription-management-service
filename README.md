@@ -2,6 +2,18 @@
 
 This application was generated using JHipster 8.11.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.11.0](https://www.jhipster.tech/documentation-archive/v8.11.0).
 
+## Инструкции по генерации
+
+### Перегенерация всего
+
+- `jhipster jdl init.jdl --force`
+
+### Перегенерация entity
+
+- Изменить нужную entity в `init.jdl`
+- Обновление entity в /.jhipster `jhipster jdl ./init.jdl --json-only`
+- Запуск генерации кода `jhipster entity <entityName> --[options]` (запустите JHipster с помощью --incremental-changelog опции anytime, чтобы включить его)
+
 ## Project Structure
 
 Node is required for generation and recommended for development. `package.json` is always generated for a better development experience with prettier, commit hooks, scripts and so on.

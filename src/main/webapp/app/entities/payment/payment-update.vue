@@ -105,6 +105,19 @@
             </div>
           </div>
           <div class="form-group">
+            <label class="form-control-label" v-text="t$('subscriptionManagementServiceApp.payment.user')" for="payment-user"></label>
+            <select class="form-control" id="payment-user" data-cy="user" name="user" v-model="payment.user">
+              <option :value="null"></option>
+              <option
+                :value="payment.user && externalUserOption.id === payment.user.id ? payment.user : externalUserOption"
+                v-for="externalUserOption in externalUsers"
+                :key="externalUserOption.id"
+              >
+                {{ externalUserOption.id }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
             <label
               class="form-control-label"
               v-text="t$('subscriptionManagementServiceApp.payment.clientSubscription')"
@@ -122,46 +135,6 @@
                 :value="
                   payment.clientSubscription && clientSubscriptionOption.id === payment.clientSubscription.id
                     ? payment.clientSubscription
-                    : clientSubscriptionOption
-                "
-                v-for="clientSubscriptionOption in clientSubscriptions"
-                :key="clientSubscriptionOption.id"
-              >
-                {{ clientSubscriptionOption.id }}
-              </option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-control-label" v-text="t$('subscriptionManagementServiceApp.payment.user')" for="payment-user"></label>
-            <select class="form-control" id="payment-user" data-cy="user" name="user" v-model="payment.user">
-              <option :value="null"></option>
-              <option
-                :value="payment.user && externalUserOption.id === payment.user.id ? payment.user : externalUserOption"
-                v-for="externalUserOption in externalUsers"
-                :key="externalUserOption.id"
-              >
-                {{ externalUserOption.id }}
-              </option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label
-              class="form-control-label"
-              v-text="t$('subscriptionManagementServiceApp.payment.clietntSubscription')"
-              for="payment-clietntSubscription"
-            ></label>
-            <select
-              class="form-control"
-              id="payment-clietntSubscription"
-              data-cy="clietntSubscription"
-              name="clietntSubscription"
-              v-model="payment.clietntSubscription"
-            >
-              <option :value="null"></option>
-              <option
-                :value="
-                  payment.clietntSubscription && clientSubscriptionOption.id === payment.clietntSubscription.id
-                    ? payment.clietntSubscription
                     : clientSubscriptionOption
                 "
                 v-for="clientSubscriptionOption in clientSubscriptions"

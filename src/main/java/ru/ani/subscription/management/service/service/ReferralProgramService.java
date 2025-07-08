@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -90,19 +89,6 @@ public class ReferralProgramService {
         return referralProgramRepository
             .findAll()
             .stream()
-            .map(referralProgramMapper::toDto)
-            .collect(Collectors.toCollection(LinkedList::new));
-    }
-
-    /**
-     *  Get all the referralPrograms where ExternalUser is {@code null}.
-     *  @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<ReferralProgramDto> findAllWhereExternalUserIsNull() {
-        LOG.debug("Request to get all referralPrograms where ExternalUser is null");
-        return StreamSupport.stream(referralProgramRepository.findAll().spliterator(), false)
-            .filter(referralProgram -> referralProgram.getExternalUser() == null)
             .map(referralProgramMapper::toDto)
             .collect(Collectors.toCollection(LinkedList::new));
     }

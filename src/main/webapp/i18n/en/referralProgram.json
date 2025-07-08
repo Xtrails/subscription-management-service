@@ -25,7 +25,7 @@
       "endDttm": "End Dttm",
       "rewardAmount": "Reward Amount",
       "status": "Status",
-      "externalUser": "External User",
+      "referralCreator": "Referral Creator",
       "sourceApplication": "Source Application"
     }
   }

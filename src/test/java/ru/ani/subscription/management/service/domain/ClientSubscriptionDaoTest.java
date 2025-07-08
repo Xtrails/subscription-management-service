@@ -3,7 +3,6 @@ package ru.ani.subscription.management.service.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static ru.ani.subscription.management.service.domain.ClientSubscriptionDaoTestSamples.*;
 import static ru.ani.subscription.management.service.domain.ExternalUserDaoTestSamples.*;
-import static ru.ani.subscription.management.service.domain.PaymentDaoTestSamples.*;
 import static ru.ani.subscription.management.service.domain.SubscriptionDetailsDaoTestSamples.*;
 
 import org.junit.jupiter.api.Test;
@@ -47,19 +46,5 @@ class ClientSubscriptionDaoTest {
 
         clientSubscriptionDao.subscriptionDetails(null);
         assertThat(clientSubscriptionDao.getSubscriptionDetails()).isNull();
-    }
-
-    @Test
-    void paymentTest() {
-        ClientSubscriptionDao clientSubscriptionDao = getClientSubscriptionDaoRandomSampleGenerator();
-        PaymentDao paymentDaoBack = getPaymentDaoRandomSampleGenerator();
-
-        clientSubscriptionDao.setPayment(paymentDaoBack);
-        assertThat(clientSubscriptionDao.getPayment()).isEqualTo(paymentDaoBack);
-        assertThat(paymentDaoBack.getClientSubscription()).isEqualTo(clientSubscriptionDao);
-
-        clientSubscriptionDao.payment(null);
-        assertThat(clientSubscriptionDao.getPayment()).isNull();
-        assertThat(paymentDaoBack.getClientSubscription()).isNull();
     }
 }

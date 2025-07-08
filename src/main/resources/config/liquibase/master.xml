@@ -19,13 +19,15 @@
     <include file="config/liquibase/changelog/20250707225002_added_entity_Payment.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20250707225102_added_entity_PaymentSystem.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20250707225202_added_entity_SourceApplication.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250708120142_added_entity_SubscriptionAccess.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
-    <include file="config/liquibase/changelog/20250707224602_added_entity_constraints_ExternalUser.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20250707224702_added_entity_constraints_ClientSubscription.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20250707224802_added_entity_constraints_SubscriptionDetails.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20250707224902_added_entity_constraints_ReferralProgram.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20250707225002_added_entity_constraints_Payment.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20250707225202_added_entity_constraints_SourceApplication.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250708120142_added_entity_constraints_SubscriptionAccess.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->
+    <include file="config/liquibase/changelog/20250709020800_run_V1_INIT_DATA.xml" relativeToChangelogFile="false"/>
 </databaseChangeLog>

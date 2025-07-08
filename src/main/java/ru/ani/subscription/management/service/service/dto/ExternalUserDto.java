@@ -11,15 +11,10 @@ import java.util.UUID;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ExternalUserDto implements Serializable {
 
-    @NotNull
     private UUID id;
 
     @NotNull
     private String externalUserId;
-
-    private ReferralProgramDto referralCreator;
-
-    private ReferralProgramDto referralProgram;
 
     public UUID getId() {
         return id;
@@ -35,22 +30,6 @@ public class ExternalUserDto implements Serializable {
 
     public void setExternalUserId(String externalUserId) {
         this.externalUserId = externalUserId;
-    }
-
-    public ReferralProgramDto getReferralCreator() {
-        return referralCreator;
-    }
-
-    public void setReferralCreator(ReferralProgramDto referralCreator) {
-        this.referralCreator = referralCreator;
-    }
-
-    public ReferralProgramDto getReferralProgram() {
-        return referralProgram;
-    }
-
-    public void setReferralProgram(ReferralProgramDto referralProgram) {
-        this.referralProgram = referralProgram;
     }
 
     @Override
@@ -80,8 +59,6 @@ public class ExternalUserDto implements Serializable {
         return "ExternalUserDto{" +
             "id='" + getId() + "'" +
             ", externalUserId='" + getExternalUserId() + "'" +
-            ", referralCreator=" + getReferralCreator() +
-            ", referralProgram=" + getReferralProgram() +
             "}";
     }
 }

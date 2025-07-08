@@ -32,8 +32,11 @@
             <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.subscriptionDetails.name')"></span></th>
             <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.subscriptionDetails.description')"></span></th>
             <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.subscriptionDetails.price')"></span></th>
+            <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.subscriptionDetails.priceByMonth')"></span></th>
             <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.subscriptionDetails.duration')"></span></th>
+            <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.subscriptionDetails.active')"></span></th>
             <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.subscriptionDetails.sourceApplication')"></span></th>
+            <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.subscriptionDetails.subscriptionAccess')"></span></th>
             <th scope="row"></th>
           </tr>
         </thead>
@@ -47,7 +50,9 @@
             <td>{{ subscriptionDetails.name }}</td>
             <td>{{ subscriptionDetails.description }}</td>
             <td>{{ subscriptionDetails.price }}</td>
+            <td>{{ subscriptionDetails.priceByMonth }}</td>
             <td>{{ subscriptionDetails.duration }}</td>
+            <td>{{ subscriptionDetails.active }}</td>
             <td>
               <div v-if="subscriptionDetails.sourceApplication">
                 <router-link
@@ -55,6 +60,16 @@
                   >{{ subscriptionDetails.sourceApplication.id }}</router-link
                 >
               </div>
+            </td>
+            <td>
+              <span v-for="(subscriptionAccess, i) in subscriptionDetails.subscriptionAccesses" :key="subscriptionAccess.id"
+                >{{ i > 0 ? ', ' : '' }}
+                <router-link
+                  class="form-control-static"
+                  :to="{ name: 'SubscriptionAccessView', params: { subscriptionAccessId: subscriptionAccess.id } }"
+                  >{{ subscriptionAccess.id }}</router-link
+                >
+              </span>
             </td>
             <td class="text-right">
               <div class="btn-group">

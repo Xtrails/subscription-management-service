@@ -14,7 +14,8 @@
         "referralProgram": "Referral Program",
         "payment": "Payment",
         "paymentSystem": "Payment System",
-        "sourceApplication": "Source Application"
+        "sourceApplication": "Source Application",
+        "subscriptionAccess": "Subscription Access"
       },
       "account": {
         "main": "Account",

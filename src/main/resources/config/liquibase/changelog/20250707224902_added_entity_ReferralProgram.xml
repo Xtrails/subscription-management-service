@@ -35,6 +35,9 @@
             <column name="status" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
+            <column name="referral_creator_id" type="${uuidType}">
+                <constraints nullable="true" />
+            </column>
             <column name="source_application_id" type="${uuidType}">
                 <constraints nullable="true" />
             </column>

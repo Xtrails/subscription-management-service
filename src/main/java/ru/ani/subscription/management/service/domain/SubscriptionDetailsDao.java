@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -13,17 +15,16 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
  * A SubscriptionDetailsDao.
  */
 @Entity
-@Table(name = "subscription_details")
+@Table(name = "subscription_details", schema = "subscription_management_service")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class SubscriptionDetailsDao implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @NotNull
     @Id
     @GeneratedValue
-    @Column(name = "id", nullable = false, unique = true)
+    @Column(name = "id", unique = true)
     private UUID id;
 
     @NotNull
@@ -37,13 +38,25 @@ public class SubscriptionDetailsDao implements Serializable {
     @Column(name = "price", precision = 21, scale = 2, nullable = false)
     private BigDecimal price;
 
+    @Column(name = "price_by_month", precision = 21, scale = 2)
+    private BigDecimal priceByMonth;
+
     @NotNull
     @Column(name = "duration", nullable = false)
-    private Integer duration;
+    private String duration;
+
+    @NotNull
+    @Column(name = "active", nullable = false)
+    private Boolean active;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "referralPrograms", "subscriptionDetails", "user" }, allowSetters = true)
     private SourceApplicationDao sourceApplication;
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "subscriptionDetails", cascade = CascadeType.MERGE)
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonIgnoreProperties(value = { "subscriptionDetails" }, allowSetters = true)
+    private Set<SubscriptionAccessDao> subscriptionAccesses = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -99,17 +112,43 @@ public class SubscriptionDetailsDao implements Serializable {
         this.price = price;
     }
 
-    public Integer getDuration() {
+    public BigDecimal getPriceByMonth() {
+        return this.priceByMonth;
+    }
+
+    public SubscriptionDetailsDao priceByMonth(BigDecimal priceByMonth) {
+        this.setPriceByMonth(priceByMonth);
+        return this;
+    }
+
+    public void setPriceByMonth(BigDecimal priceByMonth) {
+        this.priceByMonth = priceByMonth;
+    }
+
+    public String getDuration() {
         return this.duration;
     }
 
-    public SubscriptionDetailsDao duration(Integer duration) {
+    public SubscriptionDetailsDao duration(String duration) {
         this.setDuration(duration);
         return this;
     }
 
-    public void setDuration(Integer duration) {
+    public void setDuration(String duration) {
         this.duration = duration;
+    }
+
+    public Boolean getActive() {
+        return this.active;
+    }
+
+    public SubscriptionDetailsDao active(Boolean active) {
+        this.setActive(active);
+        return this;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
     public SourceApplicationDao getSourceApplication() {
@@ -122,6 +161,37 @@ public class SubscriptionDetailsDao implements Serializable {
 
     public SubscriptionDetailsDao sourceApplication(SourceApplicationDao sourceApplication) {
         this.setSourceApplication(sourceApplication);
+        return this;
+    }
+
+    public Set<SubscriptionAccessDao> getSubscriptionAccesses() {
+        return this.subscriptionAccesses;
+    }
+
+    public void setSubscriptionAccesses(Set<SubscriptionAccessDao> subscriptionAccesses) {
+        if (this.subscriptionAccesses != null) {
+            this.subscriptionAccesses.forEach(i -> i.removeSubscriptionDetails(this));
+        }
+        if (subscriptionAccesses != null) {
+            subscriptionAccesses.forEach(i -> i.addSubscriptionDetails(this));
+        }
+        this.subscriptionAccesses = subscriptionAccesses;
+    }
+
+    public SubscriptionDetailsDao subscriptionAccesses(Set<SubscriptionAccessDao> subscriptionAccesses) {
+        this.setSubscriptionAccesses(subscriptionAccesses);
+        return this;
+    }
+
+    public SubscriptionDetailsDao addSubscriptionAccess(SubscriptionAccessDao subscriptionAccess) {
+        this.subscriptionAccesses.add(subscriptionAccess);
+        subscriptionAccess.getSubscriptionDetails().add(this);
+        return this;
+    }
+
+    public SubscriptionDetailsDao removeSubscriptionAccess(SubscriptionAccessDao subscriptionAccess) {
+        this.subscriptionAccesses.remove(subscriptionAccess);
+        subscriptionAccess.getSubscriptionDetails().remove(this);
         return this;
     }
 
@@ -152,7 +222,9 @@ public class SubscriptionDetailsDao implements Serializable {
             ", name='" + getName() + "'" +
             ", description='" + getDescription() + "'" +
             ", price=" + getPrice() +
-            ", duration=" + getDuration() +
+            ", priceByMonth=" + getPriceByMonth() +
+            ", duration='" + getDuration() + "'" +
+            ", active='" + getActive() + "'" +
             "}";
     }
 }

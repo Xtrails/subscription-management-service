@@ -15,17 +15,16 @@ import ru.ani.subscription.management.service.domain.enumeration.PaymentStatus;
  * A PaymentDao.
  */
 @Entity
-@Table(name = "payment")
+@Table(name = "payment", schema = "subscription_management_service")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class PaymentDao implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @NotNull
     @Id
     @GeneratedValue
-    @Column(name = "id", nullable = false, unique = true)
+    @Column(name = "id", unique = true)
     private UUID id;
 
     @NotNull
@@ -45,18 +44,12 @@ public class PaymentDao implements Serializable {
     @Column(name = "hash_sum", nullable = false)
     private String hashSum;
 
-    @JsonIgnoreProperties(value = { "user", "subscriptionDetails", "payment" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(unique = true)
-    private ClientSubscriptionDao clientSubscription;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "referralCreator", "referralProgram" }, allowSetters = true)
     private ExternalUserDao user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "user", "subscriptionDetails", "payment" }, allowSetters = true)
-    private ClientSubscriptionDao clietntSubscription;
+    @JsonIgnoreProperties(value = { "user", "subscriptionDetails" }, allowSetters = true)
+    private ClientSubscriptionDao clientSubscription;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private PaymentSystemDao paymentSystem;
@@ -128,19 +121,6 @@ public class PaymentDao implements Serializable {
         this.hashSum = hashSum;
     }
 
-    public ClientSubscriptionDao getClientSubscription() {
-        return this.clientSubscription;
-    }
-
-    public void setClientSubscription(ClientSubscriptionDao clientSubscription) {
-        this.clientSubscription = clientSubscription;
-    }
-
-    public PaymentDao clientSubscription(ClientSubscriptionDao clientSubscription) {
-        this.setClientSubscription(clientSubscription);
-        return this;
-    }
-
     public ExternalUserDao getUser() {
         return this.user;
     }
@@ -154,16 +134,16 @@ public class PaymentDao implements Serializable {
         return this;
     }
 
-    public ClientSubscriptionDao getClietntSubscription() {
-        return this.clietntSubscription;
+    public ClientSubscriptionDao getClientSubscription() {
+        return this.clientSubscription;
     }
 
-    public void setClietntSubscription(ClientSubscriptionDao clientSubscription) {
-        this.clietntSubscription = clientSubscription;
+    public void setClientSubscription(ClientSubscriptionDao clientSubscription) {
+        this.clientSubscription = clientSubscription;
     }
 
-    public PaymentDao clietntSubscription(ClientSubscriptionDao clientSubscription) {
-        this.setClietntSubscription(clientSubscription);
+    public PaymentDao clientSubscription(ClientSubscriptionDao clientSubscription) {
+        this.setClientSubscription(clientSubscription);
         return this;
     }
 

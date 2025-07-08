@@ -17,12 +17,6 @@
             <column name="external_user_id" type="varchar(255)">
                 <constraints nullable="false" unique="true" uniqueConstraintName="ux_external_user__external_user_id" />
             </column>
-            <column name="referral_creator_id" type="${uuidType}">
-                <constraints nullable="true" unique="true" uniqueConstraintName="ux_external_user__referral_creator_id" />
-            </column>
-            <column name="referral_program_id" type="${uuidType}">
-                <constraints nullable="true" />
-            </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
     </changeSet>

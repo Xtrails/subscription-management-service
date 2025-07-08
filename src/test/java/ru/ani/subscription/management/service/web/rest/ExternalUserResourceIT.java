@@ -301,6 +301,8 @@ class ExternalUserResourceIT {
         ExternalUserDao partialUpdatedExternalUserDao = new ExternalUserDao();
         partialUpdatedExternalUserDao.setId(externalUserDao.getId());
 
+        partialUpdatedExternalUserDao.externalUserId(UPDATED_EXTERNAL_USER_ID);
+
         restExternalUserMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedExternalUserDao.getId())

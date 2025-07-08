@@ -375,7 +375,7 @@ class ClientSubscriptionResourceIT {
         ClientSubscriptionDao partialUpdatedClientSubscriptionDao = new ClientSubscriptionDao();
         partialUpdatedClientSubscriptionDao.setId(clientSubscriptionDao.getId());
 
-        partialUpdatedClientSubscriptionDao.startDttm(UPDATED_START_DTTM);
+        partialUpdatedClientSubscriptionDao.endDttm(UPDATED_END_DTTM).status(UPDATED_STATUS);
 
         restClientSubscriptionMockMvc
             .perform(

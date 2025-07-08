@@ -8,6 +8,7 @@ import SubscriptionDetailsService from './subscription-details.service';
 import AlertService from '@/shared/alert/alert.service';
 
 import SourceApplicationService from '@/entities/source-application/source-application.service';
+import SubscriptionAccessService from '@/entities/subscription-access/subscription-access.service';
 
 type SubscriptionDetailsUpdateComponentType = InstanceType<typeof SubscriptionDetailsUpdate>;
 
@@ -54,6 +55,10 @@ describe('Component Tests', () => {
           subscriptionDetailsService: () => subscriptionDetailsServiceStub,
           sourceApplicationService: () =>
             sinon.createStubInstance<SourceApplicationService>(SourceApplicationService, {
+              retrieve: sinon.stub().resolves({}),
+            } as any),
+          subscriptionAccessService: () =>
+            sinon.createStubInstance<SubscriptionAccessService>(SubscriptionAccessService, {
               retrieve: sinon.stub().resolves({}),
             } as any),
         },

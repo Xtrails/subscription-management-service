@@ -7,6 +7,7 @@ import ReferralProgramUpdate from './referral-program-update.vue';
 import ReferralProgramService from './referral-program.service';
 import AlertService from '@/shared/alert/alert.service';
 
+import ExternalUserService from '@/entities/external-user/external-user.service';
 import SourceApplicationService from '@/entities/source-application/source-application.service';
 
 type ReferralProgramUpdateComponentType = InstanceType<typeof ReferralProgramUpdate>;
@@ -52,6 +53,10 @@ describe('Component Tests', () => {
         provide: {
           alertService,
           referralProgramService: () => referralProgramServiceStub,
+          externalUserService: () =>
+            sinon.createStubInstance<ExternalUserService>(ExternalUserService, {
+              retrieve: sinon.stub().resolves({}),
+            } as any),
           sourceApplicationService: () =>
             sinon.createStubInstance<SourceApplicationService>(SourceApplicationService, {
               retrieve: sinon.stub().resolves({}),

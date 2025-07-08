@@ -11,7 +11,6 @@ import java.util.UUID;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class SourceApplicationDto implements Serializable {
 
-    @NotNull
     private UUID id;
 
     @NotNull

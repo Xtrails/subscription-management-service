@@ -22,9 +22,8 @@
       "status": "Status",
       "paymentDttm": "Payment Dttm",
       "hashSum": "Hash Sum",
-      "clientSubscription": "Client Subscription",
       "user": "User",
-      "clietntSubscription": "Clietnt Subscription",
+      "clientSubscription": "Client Subscription",
       "paymentSystem": "Payment System"
     }
   }

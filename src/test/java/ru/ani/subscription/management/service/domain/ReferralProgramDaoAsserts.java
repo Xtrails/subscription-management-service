@@ -71,6 +71,7 @@ public class ReferralProgramDaoAsserts {
     public static void assertReferralProgramDaoUpdatableRelationshipsEquals(ReferralProgramDao expected, ReferralProgramDao actual) {
         assertThat(actual)
             .as("Verify ReferralProgramDao relationships")
+            .satisfies(a -> assertThat(a.getReferralCreator()).as("check referralCreator").isEqualTo(expected.getReferralCreator()))
             .satisfies(a -> assertThat(a.getSourceApplication()).as("check sourceApplication").isEqualTo(expected.getSourceApplication()));
     }
 }

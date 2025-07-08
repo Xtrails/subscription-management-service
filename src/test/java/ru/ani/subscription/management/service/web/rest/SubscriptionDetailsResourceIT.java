@@ -45,8 +45,14 @@ class SubscriptionDetailsResourceIT {
     private static final BigDecimal DEFAULT_PRICE = new BigDecimal(1);
     private static final BigDecimal UPDATED_PRICE = new BigDecimal(2);
 
-    private static final Integer DEFAULT_DURATION = 1;
-    private static final Integer UPDATED_DURATION = 2;
+    private static final BigDecimal DEFAULT_PRICE_BY_MONTH = new BigDecimal(1);
+    private static final BigDecimal UPDATED_PRICE_BY_MONTH = new BigDecimal(2);
+
+    private static final String DEFAULT_DURATION = "AAAAAAAAAA";
+    private static final String UPDATED_DURATION = "BBBBBBBBBB";
+
+    private static final Boolean DEFAULT_ACTIVE = false;
+    private static final Boolean UPDATED_ACTIVE = true;
 
     private static final String ENTITY_API_URL = "/api/subscription-details";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -81,7 +87,9 @@ class SubscriptionDetailsResourceIT {
             .name(DEFAULT_NAME)
             .description(DEFAULT_DESCRIPTION)
             .price(DEFAULT_PRICE)
-            .duration(DEFAULT_DURATION);
+            .priceByMonth(DEFAULT_PRICE_BY_MONTH)
+            .duration(DEFAULT_DURATION)
+            .active(DEFAULT_ACTIVE);
     }
 
     /**
@@ -95,7 +103,9 @@ class SubscriptionDetailsResourceIT {
             .name(UPDATED_NAME)
             .description(UPDATED_DESCRIPTION)
             .price(UPDATED_PRICE)
-            .duration(UPDATED_DURATION);
+            .priceByMonth(UPDATED_PRICE_BY_MONTH)
+            .duration(UPDATED_DURATION)
+            .active(UPDATED_ACTIVE);
     }
 
     @BeforeEach
@@ -234,6 +244,28 @@ class SubscriptionDetailsResourceIT {
 
     @Test
     @Transactional
+    void checkActiveIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        // set the field null
+        subscriptionDetailsDao.setActive(null);
+
+        // Create the SubscriptionDetails, which fails.
+        SubscriptionDetailsDto subscriptionDetailsDto = subscriptionDetailsMapper.toDto(subscriptionDetailsDao);
+
+        restSubscriptionDetailsMockMvc
+            .perform(
+                post(ENTITY_API_URL)
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(subscriptionDetailsDto))
+            )
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     void getAllSubscriptionDetails() throws Exception {
         // Initialize the database
         insertedSubscriptionDetailsDao = subscriptionDetailsRepository.saveAndFlush(subscriptionDetailsDao);
@@ -247,7 +279,9 @@ class SubscriptionDetailsResourceIT {
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
             .andExpect(jsonPath("$.[*].price").value(hasItem(sameNumber(DEFAULT_PRICE))))
-            .andExpect(jsonPath("$.[*].duration").value(hasItem(DEFAULT_DURATION)));
+            .andExpect(jsonPath("$.[*].priceByMonth").value(hasItem(sameNumber(DEFAULT_PRICE_BY_MONTH))))
+            .andExpect(jsonPath("$.[*].duration").value(hasItem(DEFAULT_DURATION)))
+            .andExpect(jsonPath("$.[*].active").value(hasItem(DEFAULT_ACTIVE)));
     }
 
     @Test
@@ -265,7 +299,9 @@ class SubscriptionDetailsResourceIT {
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION))
             .andExpect(jsonPath("$.price").value(sameNumber(DEFAULT_PRICE)))
-            .andExpect(jsonPath("$.duration").value(DEFAULT_DURATION));
+            .andExpect(jsonPath("$.priceByMonth").value(sameNumber(DEFAULT_PRICE_BY_MONTH)))
+            .andExpect(jsonPath("$.duration").value(DEFAULT_DURATION))
+            .andExpect(jsonPath("$.active").value(DEFAULT_ACTIVE));
     }
 
     @Test
@@ -289,7 +325,13 @@ class SubscriptionDetailsResourceIT {
             .orElseThrow();
         // Disconnect from session so that the updates on updatedSubscriptionDetailsDao are not directly saved in db
         em.detach(updatedSubscriptionDetailsDao);
-        updatedSubscriptionDetailsDao.name(UPDATED_NAME).description(UPDATED_DESCRIPTION).price(UPDATED_PRICE).duration(UPDATED_DURATION);
+        updatedSubscriptionDetailsDao
+            .name(UPDATED_NAME)
+            .description(UPDATED_DESCRIPTION)
+            .price(UPDATED_PRICE)
+            .priceByMonth(UPDATED_PRICE_BY_MONTH)
+            .duration(UPDATED_DURATION)
+            .active(UPDATED_ACTIVE);
         SubscriptionDetailsDto subscriptionDetailsDto = subscriptionDetailsMapper.toDto(updatedSubscriptionDetailsDao);
 
         restSubscriptionDetailsMockMvc
@@ -387,7 +429,12 @@ class SubscriptionDetailsResourceIT {
         SubscriptionDetailsDao partialUpdatedSubscriptionDetailsDao = new SubscriptionDetailsDao();
         partialUpdatedSubscriptionDetailsDao.setId(subscriptionDetailsDao.getId());
 
-        partialUpdatedSubscriptionDetailsDao.name(UPDATED_NAME);
+        partialUpdatedSubscriptionDetailsDao
+            .name(UPDATED_NAME)
+            .description(UPDATED_DESCRIPTION)
+            .priceByMonth(UPDATED_PRICE_BY_MONTH)
+            .duration(UPDATED_DURATION)
+            .active(UPDATED_ACTIVE);
 
         restSubscriptionDetailsMockMvc
             .perform(
@@ -423,7 +470,9 @@ class SubscriptionDetailsResourceIT {
             .name(UPDATED_NAME)
             .description(UPDATED_DESCRIPTION)
             .price(UPDATED_PRICE)
-            .duration(UPDATED_DURATION);
+            .priceByMonth(UPDATED_PRICE_BY_MONTH)
+            .duration(UPDATED_DURATION)
+            .active(UPDATED_ACTIVE);
 
         restSubscriptionDetailsMockMvc
             .perform(

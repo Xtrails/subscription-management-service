@@ -36,6 +36,7 @@
             <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.referralProgram.endDttm')"></span></th>
             <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.referralProgram.rewardAmount')"></span></th>
             <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.referralProgram.status')"></span></th>
+            <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.referralProgram.referralCreator')"></span></th>
             <th scope="row"><span v-text="t$('subscriptionManagementServiceApp.referralProgram.sourceApplication')"></span></th>
             <th scope="row"></th>
           </tr>
@@ -54,6 +55,13 @@
             <td>{{ referralProgram.endDttm }}</td>
             <td>{{ referralProgram.rewardAmount }}</td>
             <td v-text="t$('subscriptionManagementServiceApp.ReferralStatus.' + referralProgram.status)"></td>
+            <td>
+              <div v-if="referralProgram.referralCreator">
+                <router-link :to="{ name: 'ExternalUserView', params: { externalUserId: referralProgram.referralCreator.id } }">{{
+                  referralProgram.referralCreator.id
+                }}</router-link>
+              </div>
+            </td>
             <td>
               <div v-if="referralProgram.sourceApplication">
                 <router-link
