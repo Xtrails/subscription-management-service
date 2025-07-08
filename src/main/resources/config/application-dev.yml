@@ -39,6 +39,7 @@ spring:
     hikari:
       poolName: Hikari
       auto-commit: false
+      schema: subscription_management_service
   liquibase:
     # Remove 'faker' if you do not want the sample data to be loaded automatically
     contexts: dev #, faker
